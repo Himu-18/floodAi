@@ -1,0 +1,26 @@
+# ── Secrets — কখনো commit/share করা যাবে না ──
+.env
+*.env
+!.env.example
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# ── ML model artifacts (train_model.py দিয়ে regenerate করা যায়) ──
+backend/model/*.pkl
+
+# ── Database (local dev data, প্রোডাকশনে আলাদা DB থাকা উচিত) ──
+*.db
+*.sqlite3
+
+# ── Backtest/calibration আউটপুট (generated, প্রয়োজনে আবার বানানো যায়) ──
+backend/backtest_results.csv
+
+# ── OS/Editor ──
+.DS_Store
+.vscode/
