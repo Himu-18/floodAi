@@ -1,0 +1,12 @@
+Flask
+flask-cors
+requests
+beautifulsoup4
+openpyxl
+python-dotenv
+groq
+schedule
+numpy
+pandas
+scikit-learn
+reportlab
