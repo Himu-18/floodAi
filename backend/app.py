@@ -958,6 +958,30 @@ def login():
 
 
 # ============================================================
+# BACKGROUND SCHEDULER (শুধু Render-এ, production-এ)
+# ============================================================
+# Render নিজে থেকেই RENDER=true environment variable সেট করে দেয়।
+# লোকালে (VS Code) এই ব্লক চলবে না, তাই লোকাল workflow (আলাদা করে
+# `python scheduler.py` চালানো) আগের মতোই কাজ করবে। কিন্তু Render-এ
+# gunicorn app.py import করলে এখানেই একটা background thread-এ
+# scheduler.py-র সব cron job (১৫ মিনিট/১ ঘণ্টা/সকাল-সন্ধ্যা আপডেট)
+# চালু হয়ে যাবে, আলাদা কোনো service/খরচ ছাড়াই।
+if os.getenv("RENDER"):
+    import threading
+
+    def _start_background_scheduler():
+        import time
+        time.sleep(5)  # Flask পুরোপুরি bind হওয়ার সময় দেওয়া
+        from scheduler import run_scheduler_loop
+        try:
+            run_scheduler_loop()
+        except Exception as e:
+            print(f"⚠️ Background scheduler crashed: {e}")
+
+    threading.Thread(target=_start_background_scheduler, daemon=True).start()
+    print("🕐 Background scheduler thread started (Render production mode)")
+
+# ============================================================
 # RUN SERVER
 # ============================================================
 if __name__ == '__main__':

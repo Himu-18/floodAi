@@ -4,10 +4,11 @@
 
 import requests
 import time
+import os
 import schedule
 from datetime import datetime
 
-BACKEND_URL = "http://127.0.0.1:5000"
+BACKEND_URL = f"http://127.0.0.1:{os.getenv('PORT', '5000')}"
 
 # High risk districts — এগুলো বেশি frequently update হবে
 HIGH_RISK_DISTRICTS = [
@@ -113,9 +114,14 @@ def collect_validation():
     except Exception as e:
         log(f"❌ Validation log — {str(e)}")
 
-if __name__ == "__main__":
-    # Schedule করো — এটা __main__ ব্লকের ভিতরে রাখা হয়েছে যাতে কেউ
-    # ভবিষ্যতে import করলে সব cron job স্বয়ংক্রিয়ভাবে register হয়ে না যায়।
+def run_scheduler_loop():
+    """
+    সব cron job register করে অনন্তকাল ধরে চালায়। এটা এখন একটা ফাংশনে
+    রাখা হয়েছে যাতে app.py চাইলে এটাকে background thread হিসেবে
+    সরাসরি চালাতে পারে (production/Render-এ আলাদা scheduler process
+    চালানোর দরকার নেই) — অথবা এই ফাইল সরাসরি `python scheduler.py`
+    দিয়ে লোকালেও চালানো যায় (নিচের __main__ ব্লক দেখুন)।
+    """
     schedule.every(15).minutes.do(collect_high_risk)
     schedule.every(1).hours.do(collect_all)
     schedule.every().day.at("06:00").do(morning_report)
@@ -140,3 +146,6 @@ if __name__ == "__main__":
             time.sleep(30)
     except KeyboardInterrupt:
         log("🛑 Scheduler বন্ধ করা হলো (Ctrl+C)")
+
+if __name__ == "__main__":
+    run_scheduler_loop()
