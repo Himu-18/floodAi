@@ -123,6 +123,12 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 .emergency-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .emergency-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:1.2rem;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(13,31,60,0.06)}
 .emergency-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(192,57,43,0.08);flex-shrink:0}
+.check-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.check-list li{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.check-badge{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(39,174,96,0.12)}
+.check-badge i{color:#27ae60}
+.cross-badge{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(192,57,43,0.1)}
+.cross-badge i{color:#c0392b}
 .emergency-name{font-size:12px;color:var(--muted);margin-bottom:3px}
 .emergency-num{font-size:17px;font-weight:700;color:var(--blue)}
 
@@ -164,7 +170,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 .modal-btn:hover{background:var(--blue2)}
 
 /* ── REPORT FAB ── */
-.report-fab{position:fixed;bottom:2rem;right:2rem;width:56px;height:56px;background:var(--blue);color:#fff;border:none;border-radius:50%;cursor:pointer;box-shadow:0 4px 20px rgba(26,95,168,0.4);z-index:500;transition:all .2s;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI Emoji','Noto Color Emoji',sans-serif;font-size:24px;transform:rotate(-12deg)}
+.report-fab{position:fixed;bottom:2rem;right:2rem;width:72px;height:72px;background:var(--blue);color:#fff;border:none;border-radius:50%;cursor:pointer;box-shadow:0 4px 20px rgba(26,95,168,0.4);z-index:500;transition:all .2s;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI Emoji','Noto Color Emoji',sans-serif;font-size:32px;transform:rotate(-12deg)}
 .report-fab:hover{transform:scale(1.1) rotate(0deg)}
 
 /* ── FOOTER ── */
@@ -192,7 +198,7 @@ footer{background:#fff;border-top:1px solid var(--border);padding:1.5rem 3rem;te
   .map-grid{grid-template-columns:1fr!important}
   .map-grid>div:last-child{height:280px!important}
   .modal-box{width:95%;margin:1rem}
-  .report-fab{bottom:1.2rem;right:1.2rem;width:48px;height:48px;font-size:18px}
+  .report-fab{bottom:1.2rem;right:1.2rem;width:60px;height:60px;font-size:26px}
   .upstream-box{font-size:12px}
   .divider{margin:0 1.2rem}
   .hero{height:auto;min-height:560px}
@@ -293,7 +299,7 @@ footer{background:#fff;border-top:1px solid var(--border);padding:1.5rem 3rem;te
       📥 PDF Report Download
     </button>
     <div class="card" style="margin-top:1.5rem">
-      <h3 style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:0.5rem">📆 আগামী ৭ দিনের নদীর Discharge পূর্বাভাস</h3>
+      <h3 style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:0.5rem;display:flex;align-items:center;gap:8px"><i data-lucide="calendar-days" width="17" height="17"></i>আগামী ৭ দিনের নদীর Discharge পূর্বাভাস</h3>
       <div class="forecast-grid" id="forecastGrid"></div>
     </div>
     <div class="card" style="margin-top:1.5rem;padding:0;overflow:hidden">
@@ -343,7 +349,7 @@ footer{background:#fff;border-top:1px solid var(--border);padding:1.5rem 3rem;te
 
     <div class="card" style="padding:0;overflow:hidden;margin-top:1.5rem">
       <div style="padding:1.5rem; border-bottom:1px solid var(--border); background:rgba(240,244,248,0.3);">
-        <h3 style="font-size:14px;font-weight:600;color:var(--text);margin:0;">📅 আগামী ৭ দিনের বৃষ্টিপাতের পূর্বাভাস</h3>
+        <h3 style="font-size:14px;font-weight:600;color:var(--text);margin:0;display:flex;align-items:center;gap:8px"><i data-lucide="calendar-days" width="17" height="17"></i>আগামী ৭ দিনের বৃষ্টিপাতের পূর্বাভাস</h3>
       </div>
       <table class="river-table">
         <thead>
@@ -473,25 +479,25 @@ footer{background:#fff;border-top:1px solid var(--border);padding:1.5rem 3rem;te
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem" class="stats-2col">
       <div class="card" style="border-left:3px solid #27ae60">
-        <h3 style="font-size:14px;font-weight:600;color:#27ae60;margin-bottom:1rem">✅ বন্যায় যা করবেন</h3>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
-          <li style="font-size:13px;color:var(--muted)">📻 রেডিও/TV তে সরকারি নির্দেশনা শুনুন</li>
-          <li style="font-size:13px;color:var(--muted)">🏠 উঁচু জায়গায় আশ্রয় নিন</li>
-          <li style="font-size:13px;color:var(--muted)">💊 ওষুধ ও জরুরি কাগজপত্র সাথে নিন</li>
-          <li style="font-size:13px;color:var(--muted)">🥫 শুকনো খাবার ও পানি মজুত রাখুন</li>
-          <li style="font-size:13px;color:var(--muted)">📱 ফোন চার্জ রাখুন</li>
-          <li style="font-size:13px;color:var(--muted)">👨‍👩‍👧 পরিবারকে একসাথে রাখুন</li>
+        <h3 style="font-size:14px;font-weight:600;color:#27ae60;margin-bottom:1rem;display:flex;align-items:center;gap:8px"><i data-lucide="check-circle-2" width="18" height="18"></i>বন্যায় যা করবেন</h3>
+        <ul class="check-list">
+          <li><span class="check-badge"><i data-lucide="radio" width="14" height="14"></i></span>রেডিও/TV তে সরকারি নির্দেশনা শুনুন</li>
+          <li><span class="check-badge"><i data-lucide="home" width="14" height="14"></i></span>উঁচু জায়গায় আশ্রয় নিন</li>
+          <li><span class="check-badge"><i data-lucide="pill" width="14" height="14"></i></span>ওষুধ ও জরুরি কাগজপত্র সাথে নিন</li>
+          <li><span class="check-badge"><i data-lucide="package" width="14" height="14"></i></span>শুকনো খাবার ও পানি মজুত রাখুন</li>
+          <li><span class="check-badge"><i data-lucide="battery-charging" width="14" height="14"></i></span>ফোন চার্জ রাখুন</li>
+          <li><span class="check-badge"><i data-lucide="users" width="14" height="14"></i></span>পরিবারকে একসাথে রাখুন</li>
         </ul>
       </div>
       <div class="card" style="border-left:3px solid #c0392b">
-        <h3 style="font-size:14px;font-weight:600;color:#c0392b;margin-bottom:1rem">❌ বন্যায় যা করবেন না</h3>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
-          <li style="font-size:13px;color:var(--muted)">⚡ বৈদ্যুতিক খুঁটি স্পর্শ করবেন না</li>
-          <li style="font-size:13px;color:var(--muted)">🌊 বন্যার পানিতে সাঁতার কাটবেন না</li>
-          <li style="font-size:13px;color:var(--muted)">🚗 বন্যার পানিতে গাড়ি চালাবেন না</li>
-          <li style="font-size:13px;color:var(--muted)">🏚️ দুর্বল বাঁধের কাছে থাকবেন না</li>
-          <li style="font-size:13px;color:var(--muted)">💧 বন্যার পানি পান করবেন না</li>
-          <li style="font-size:13px;color:var(--muted)">📣 গুজবে কান দেবেন না</li>
+        <h3 style="font-size:14px;font-weight:600;color:#c0392b;margin-bottom:1rem;display:flex;align-items:center;gap:8px"><i data-lucide="x-circle" width="18" height="18"></i>বন্যায় যা করবেন না</h3>
+        <ul class="check-list">
+          <li><span class="cross-badge"><i data-lucide="zap" width="14" height="14"></i></span>বৈদ্যুতিক খুঁটি স্পর্শ করবেন না</li>
+          <li><span class="cross-badge"><i data-lucide="waves" width="14" height="14"></i></span>বন্যার পানিতে সাঁতার কাটবেন না</li>
+          <li><span class="cross-badge"><i data-lucide="car" width="14" height="14"></i></span>বন্যার পানিতে গাড়ি চালাবেন না</li>
+          <li><span class="cross-badge"><i data-lucide="alert-triangle" width="14" height="14"></i></span>দুর্বল বাঁধের কাছে থাকবেন না</li>
+          <li><span class="cross-badge"><i data-lucide="droplet" width="14" height="14"></i></span>বন্যার পানি পান করবেন না</li>
+          <li><span class="cross-badge"><i data-lucide="ear-off" width="14" height="14"></i></span>গুজবে কান দেবেন না</li>
         </ul>
       </div>
     </div>
@@ -585,9 +591,14 @@ footer{background:#fff;border-top:1px solid var(--border);padding:1.5rem 3rem;te
 
 <!-- FOOTER -->
 <footer>
+  <div style="max-width:700px;margin:0 auto 0.8rem;font-size:11.5px;color:var(--muted);line-height:1.6;background:rgba(26,95,168,0.06);border:1px solid rgba(26,95,168,0.15);border-radius:8px;padding:0.7rem 1rem;display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;flex-wrap:wrap">
+    <i data-lucide="info" width="15" height="15" style="flex-shrink:0;color:var(--blue)"></i>
+    <span>এই পূর্বাভাস AI-ভিত্তিক সহায়ক তথ্য মাত্র, সরকারি সতর্কতার বিকল্প নয়, জরুরি সিদ্ধান্তের জন্য BWDB/FFWC-র সরকারি ঘোষণা অনুসরণ করুন।</span>
+  </div>
   <img src="assets/floodAi-icon.png" alt="floodAi" style="width:16px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:4px"> <strong>floodAi</strong> — Bangladesh Flood Warning System &nbsp;·&nbsp;
   <a href="http://www.bwdb.gov.bd" target="_blank" style="color:var(--blue);text-decoration:none">BWDB</a> &nbsp;·&nbsp;
   <a href="http://www.ffwc.gov.bd" target="_blank" style="color:var(--blue);text-decoration:none">FFWC</a>
+  <div style="margin-top:0.6rem;font-size:12px;font-weight:700;color:#0d1f2d">Developed by Hafiz Al Himu<br><span style="font-weight:600;font-size:11px;color:var(--muted)">Student of Disaster Science and Management, Begum Rokeya University, Rangpur</span></div>
 </footer>
 
 <!-- FLOATING REPORT BUTTON -->
