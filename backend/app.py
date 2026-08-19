@@ -912,7 +912,7 @@ def chat():
         from groq import Groq
         client = Groq(api_key=GROQ_API_KEY)
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=[
                 {"role": "system", "content": "তুমি FloodAI এর বন্যা বিশেষজ্ঞ। বাংলাদেশের বন্যা, নদী, আবহাওয়া, দুর্যোগ ব্যবস্থাপনা নিয়ে বাংলায় সহজ ভাষায় সংক্ষিপ্ত উত্তর দাও।"},
                 {"role": "user", "content": msg}
