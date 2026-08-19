@@ -43,7 +43,7 @@ def apply_override(
         # অনুযায়ী calibrate করা, দৈনিক-total থ্রেশহোল্ডের থেকে ভিন্ন স্কেলে
         if total_6h > 150: probability = max(probability, 95)
         elif total_6h > 80: probability = max(probability, 75)
-        elif total_6h > 40: probability = max(probability, 55)
+        elif total_6h > 65: probability = max(probability, 55)
         elif total_6h > 15: probability = max(probability, 35)
         return probability, True, "6h_rolling_intensity"
 
