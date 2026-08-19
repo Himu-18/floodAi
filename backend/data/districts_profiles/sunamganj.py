@@ -39,7 +39,7 @@ SUNAMGANJ_PROFILE = {
             "river_structure": {"category": "medium (সুরমার পুরনো/ছোট শাখা)", "catchment": "সুরমার একটা distributary", "flow_behavior": "মূল সুরমার চেয়ে ছোট", "upstream_reference": "Shillong, IN", "lag_time_hours": 10},
             "danger_level_m": 6.55, "highest_recorded_m": None, "verified_source": "flood_config.py-র সাথে মিলেছে",
             "ml_features_verified": {
-                "reference_discharge_m3s": {"old_buggy_value": 655, "corrected_estimate": 300, "confidence": "low — সুরমার তুলনায় ছোট distributary"},
+                "reference_discharge_m3s": {"old_buggy_value": 655, "corrected_estimate": 2950, "corrected_range": "২,৯০০-৩,০০০ m³/s (Sunamganj downstream point field survey, Rahman/Koley/Akter 2018, American Journal of Water Resources)", "confidence": "moderate — আগের ৩০০ m³/s অনুমান ভুল প্রমাণিত হয়েছে: এই স্টেশনের coordinate থেকে fetch হওয়া live discharge (~১,৩৫০-১,৪০০ m³/s) মূল সুরমা নদীর সমান মাত্রার, ছোট শাখা নদীর মতো না — অর্থাৎ এই coordinate কার্যত মূল সুরমারই flow measure করছে। ফিল্ড সার্ভে অনুযায়ী Sunamganj পয়েন্টে discharge ২,৯৫১.৮৫ m³/s পর্যন্ত ওঠে, তাই সেটাই reference হিসেবে বসানো হলো — আগের ৩০০ (৪.৫ গুণ কম) দিয়ে প্রায় সবসময় false-positive 'বিপদ' দেখাচ্ছিল"},
                 "cn": {"old_value": None, "reviewed_estimate": 86, "confidence": "moderate"},
                 "risk_category": {"old_value": None, "reviewed_estimate": "উচ্চ", "reasoning": "মূল সুরমার তুলনায় সামান্য কম critical"},
             },
