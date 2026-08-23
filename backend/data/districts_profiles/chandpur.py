@@ -2,7 +2,8 @@
 # FloodAI — data/district_profiles/chandpur.py — জেলা #৪১
 # 🔍 সবচেয়ে গুরুত্বপূর্ণ confluence point — পদ্মা+যমুনা+মেঘনার সম্পূর্ণ
 # মিলিত প্রবাহ এখানেই।
-# ⚠️ এখনো model.py/app.py এর সাথে wire করা হয়নি।
+# ✅ (২০২৬-০৮) এখন wired — get_reference_discharge(danger_level, district_name)
+# সাধারণ single-river fallback পথেই এই profile খুঁজে পায় ও ব্যবহার করে।
 # ============================================================
 
 CHANDPUR_PROFILE = {
@@ -30,11 +31,11 @@ CHANDPUR_PROFILE = {
         "verified_source": "flood_config.py-র সাথে মিলেছে; Wikipedia (Meghna River — Chandpur গড় discharge তথ্য)",
         "ml_features_verified": {
             "reference_discharge_m3s": {
-                "old_buggy_value": 355, "corrected_estimate": 40500,
-                "corrected_range": "Wikipedia: চাঁদপুরে ১৯৭১-২০০০ গড় discharge ৪০,৫৩২.৯ m³/s, সর্বনিম্ন ~১০,০০০, সর্বোচ্চ ~১,৬০,০০০ m³/s (Banglapedia-র Surma-Meghna System তথ্যের সাথেও মিলে যায়)",
-                "source": "Wikipedia (Meghna River, hydrology infobox — সরাসরি Chandpur-নির্দিষ্ট measurement)",
-                "confidence": "high — এই framework-এ সবচেয়ে নির্ভরযোগ্য reference_discharge, কারণ Chandpur-নির্দিষ্ট measurement সরাসরি পাওয়া গেছে",
-                "note": "⚠️⚠️ পুরনো buggy সূত্র (৩৫৫) বনাম নতুন verified সংখ্যা (৪০,৫০০) — ব্যবধান ১১৪ গুণ! এটা এই framework-এ সবচেয়ে বড় underestimate — রাজবাড়ীর ৩৫-৯০ গুণ ভুলকেও ছাড়িয়ে গেছে, কারণ danger_level এখানে সবচেয়ে ছোট (৩.৫৫মি, tidal reach বলে) অথচ discharge সবচেয়ে বড় (পুরো দেশের সম্মিলিত প্রবাহ)।",
+                "old_buggy_value": 355, "corrected_estimate": 95000,
+                "corrected_range": "৯০,০০০-১,০০,০০০ m³/s অনুমান — সরাসরি published bankfull figure নিম্ন মেঘনা/চাঁদপুরের জন্য পাওয়া যায়নি, তাই পদ্মার bankfull:mean ratio (~২.৫x, Best et al./ResearchGate অনুযায়ী পদ্মার গড় ~৩০,০০০ বনাম bankfull ~৭৬,০০০) একই অনুপাতে চাঁদপুরের গড় (৪০,৫৩২.৯ m³/s, Wikipedia/Banglapedia) -এ প্রয়োগ করে estimate করা",
+                "source": "Wikipedia/Banglapedia (mean discharge) + Padma bankfull:mean ratio extrapolation (এই framework-এ যমুনা/পদ্মাতেও একই পদ্ধতি ব্যবহৃত হয়েছে)",
+                "confidence": "moderate — mean discharge সরাসরি measured/verified, কিন্তু bankfull সংখ্যাটা extrapolated, চাঁদপুর-নির্দিষ্ট bankfull measurement না",
+                "note": "⚠️⚠️ আগে এখানে ভুলবশত mean annual discharge (৪০,৫০০) বসানো ছিল danger-level-equivalent threshold হিসেবে — কিন্তু mean annual মানে বছরের প্রায় অর্ধেক সময়ই প্রবাহ তার চেয়ে বেশি থাকে (বিশেষত বর্ষাকালে), তাই এটা প্রায় সবসময়ই 'উচ্চ ঝুঁকি' দেখাচ্ছিল even স্বাভাবিক মৌসুমি প্রবাহেও। bankfull ব্যবহার করাই সঠিক পদ্ধতি, যেমনটা যমুনা/পদ্মার জন্য আগেই করা হয়েছিল।",
             },
             "cn": {"old_value": 80, "reviewed_estimate": 88, "confidence": "moderate"},
             "risk_category": {"old_value": "উচ্চ", "reviewed_estimate": "উচ্চ (অপরিবর্তিত — ইতিমধ্যে সঠিক)", "reasoning": "দেশের সবচেয়ে গুরুত্বপূর্ণ hydrological node, নিয়মিত নদীভাঙনের শিকার (Chandpur hard-point erosion-control প্রকল্প)"},
