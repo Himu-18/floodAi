@@ -6,7 +6,7 @@
 import os
 import time
 from pathlib import Path
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 import requests
 import sqlite3
@@ -137,10 +137,11 @@ def fetch_weather(lat, lon):
             "rain": data.get("rain", {}).get("1h", 0),
             "wind": data["wind"]["speed"],
             "desc": data["weather"][0]["description"],
+            "ok": True,
         }
     except Exception as e:
         print(f"fetch_weather error: {e}")
-        return {"temp": None, "humidity": None, "rain": 0, "wind": None, "desc": ""}
+        return {"temp": None, "humidity": None, "rain": 0, "wind": None, "desc": "", "ok": False}
 
 def fetch_upstream(city):
     try:
@@ -155,10 +156,11 @@ def fetch_upstream(city):
             "rain": data.get("rain", {}).get("1h", 0),
             "humidity": data["main"]["humidity"],
             "temp": data["main"]["temp"],
+            "ok": True,
         }
     except Exception as e:
         print(f"fetch_upstream error: {e}")
-        return {"city": city.split(",")[0], "rain": 0, "humidity": None, "temp": None}
+        return {"city": city.split(",")[0], "rain": 0, "humidity": None, "temp": None, "ok": False}
 
 # ── FFWC live water-level cache ──
 # fetch_ffwc_live_data() পুরো old.ffwc.gov.bd হোমপেজ scrape করে, তাই প্রতি
@@ -210,10 +212,11 @@ def fetch_river(lat, lon):
             "today": data["daily"]["river_discharge"][0],
             "forecast": data["daily"]["river_discharge"],
             "dates": data["daily"]["time"],
+            "ok": True,
         }
     except Exception as e:
         print(f"fetch_river error: {e}")
-        return {"today": 0, "forecast": [], "dates": []}
+        return {"today": 0, "forecast": [], "dates": [], "ok": False}
 
 def fetch_soil_moisture(lat, lon):
     try:
@@ -392,7 +395,12 @@ def serve_style():
 
 @app.route('/assets/<path:filename>')
 def serve_assets(filename):
-    return send_file(PROJECT_ROOT / "assets" / filename)
+    # ⚠️ FIX (২০২৬-০৮): আগে filename সরাসরি PROJECT_ROOT/"assets"-এর সাথে জোড়া
+    # লেগে send_file-এ যেত, কোনো sanitization ছাড়া — ../ দিয়ে path traversal
+    # করে assets ফোল্ডারের বাইরের ফাইল (backend source code, DB) পড়ার ঝুঁকি
+    # ছিল। send_from_directory নিজে থেকেই traversal প্রতিরোধ করে (safe_join
+    # ব্যবহার করে, ফোল্ডারের বাইরে গেলে 404 দেয়)।
+    return send_from_directory(str(PROJECT_ROOT / "assets"), filename)
 
 @app.route('/api/status')
 def api_status():
@@ -419,6 +427,11 @@ def get_districts_map():
     result = []
     for name, d in DISTRICTS.items():
         live = latest_by_district.get(name)
+        # stale (৬ ঘণ্টার বেশি পুরনো) reading থাকলে সেটাকে "live" হিসেবে না
+        # দেখিয়ে None ধরা হচ্ছে — নাহলে scheduler বন্ধ থাকা অবস্থায় দিনের পর
+        # দিন পুরনো "বিপদ" reading ম্যাপে সক্রিয় সতর্কতা হিসেবে দেখাতে থাকতো।
+        if live and live.get("is_stale"):
+            live = None
         result.append({
             "name": name,
             "lat": d.get("lat"),
@@ -513,13 +526,22 @@ def get_flood(district_name):
         r_data = fetch_river(r["lat"], r["lon"])
         r_discharge = float(r_data.get("today") or 0)
         r_danger = r.get("danger_level") or 0
-        r_ratio = (r_discharge / r_danger) if r_danger else 0
+        # ⚠️ FIX (২০২৬-০৮): আগে discharge (m³/s) কে সরাসরি danger_level (মিটার)
+        # দিয়ে ভাগ করে ratio বানানো হতো — এই দুটো ভিন্ন unit, ফলে কম danger_level
+        # (মিটার)-এর নদী বাস্তব ঝুঁকি কম হলেও artificially বেশি ratio পেয়ে
+        # "risk-determining river" হিসেবে ভুলভাবে নির্বাচিত হতো (সুনামগঞ্জে এই
+        # কারণেই ছোট branch বারবার মূল নদীকে হারিয়ে যাচ্ছিল)। এখন discharge-কে
+        # তার নিজস্ব verified/approximated reference_discharge (m³/s)-এর
+        # সাপেক্ষে ভাগ করা হচ্ছে, যেটা একই unit — apples-to-apples তুলনা।
+        r_reference_discharge = get_reference_discharge(r_danger, district_name) if r_danger else None
+        r_ratio = (r_discharge / r_reference_discharge) if r_reference_discharge else 0
         rivers_status.append({
             "name": r["name"], "discharge_today": round(r_discharge),
             "forecast": r_data["forecast"], "dates": r_data["dates"],
             "danger_level": r_danger, "ratio": round(r_ratio, 3),
             "is_primary": r.get("is_primary", False),
             "ffwc_station": r.get("ffwc_station"), "ffwc_verified": r.get("ffwc_verified"),
+            "fetch_ok": r_data.get("ok", False),
         })
 
     # worst-case: সর্বোচ্চ ratio-র নদীটাই স্কোরিং চালাবে (tie হলে primary জিতবে, কারণ ও লিস্টে প্রথমে থাকে)
@@ -583,13 +605,25 @@ def get_flood(district_name):
 
     risk_score = prediction.get("probability", 0)
 
-    try:
-        save_reading(
-            district_name, round(discharge), soil_moisture,
-            local_rain, upstream_rain, risk_score, prediction["level"]
-        )
-    except Exception as e:
-        print(f"save_reading error: {e}")
+    # ⚠️ FIX (২০২৬-০৮): আগে API ব্যর্থ হলেও (river/weather/upstream fetch fail
+    # করলে) rain/discharge চুপচাপ ০ ধরে prediction চালিয়ে DB-তে save করা হতো —
+    # এতে outage-এর সময় ভুলভাবে "নিরাপদ" reading তৈরি হয়ে আগের সঠিক reading
+    # মুছে যাওয়ার ঝুঁকি ছিল (false-safe)। এখন কোনো critical fetch ব্যর্থ হলে
+    # DB-তে নতুন করে save করা হয় না — শেষ known-good reading DB-তে থেকে যায়,
+    # এবং response-এ data_unavailable flag যোগ হয় যাতে frontend/user বুঝতে
+    # পারে এই মুহূর্তের ডেটা সম্পূর্ণ live না।
+    data_unavailable = not (active_river.get("fetch_ok") and weather_data.get("ok") and upstream_data.get("ok"))
+
+    if not data_unavailable:
+        try:
+            save_reading(
+                district_name, round(discharge), soil_moisture,
+                local_rain, upstream_rain, risk_score, prediction["level"]
+            )
+        except Exception as e:
+            print(f"save_reading error: {e}")
+    else:
+        print(f"⚠️ {district_name}: একটা বা একাধিক live API ব্যর্থ, এই reading DB-তে save করা হলো না")
 
     return jsonify({
         "district": district_name,
@@ -597,6 +631,7 @@ def get_flood(district_name):
         "danger_level": active_danger_level,
         "risk_category": info["risk"],
         "flood_type": info.get("flood_type", "Riverine"),
+        "data_unavailable": data_unavailable,
         "discharge_today": round(discharge),
         "forecast": river["forecast"],
         "dates": river["dates"],
@@ -858,6 +893,7 @@ def active_warnings():
         cursor.execute("""
             SELECT * FROM flood_readings
             WHERE warning_level != 'নিরাপদ'
+              AND timestamp > datetime('now', '-6 hours')
             ORDER BY timestamp DESC
             LIMIT 10
         """)

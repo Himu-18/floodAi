@@ -115,7 +115,14 @@ def get_latest_readings():
     cursor = conn.cursor()
     try:
         cursor.execute("""
-            SELECT fr.district, fr.timestamp, fr.risk_score, fr.warning_level
+            SELECT fr.district, fr.timestamp, fr.risk_score, fr.warning_level,
+                   -- ⚠️ FIX (২০২৬-০৮): আগে শুধু সবচেয়ে সাম্প্রতিক reading আনা হতো,
+                   -- কিন্তু কতটা পুরনো তা যাচাই করা হতো না — scheduler অনেকক্ষণ
+                   -- বন্ধ থাকলে (Render free-tier spin-down ইত্যাদি) দিনের-পর-দিন
+                   -- পুরনো "বিপদ" reading ম্যাপে "live" হিসেবে দেখানোর ঝুঁকি ছিল।
+                   -- এখন ৬ ঘণ্টার বেশি পুরনো হলে is_stale=1 flag যোগ হচ্ছে, frontend
+                   -- এটা দেখে চাইলে আলাদাভাবে (ধূসর/"পুরনো ডেটা") দেখাতে পারবে।
+                   (julianday('now') - julianday(fr.timestamp)) * 24 > 6 AS is_stale
             FROM flood_readings fr
             INNER JOIN (
                 SELECT district, MAX(timestamp) AS max_ts
