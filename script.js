@@ -4,6 +4,20 @@
 
 const BACKEND = "";
 
+// ⚠️ FIX (২০২৬-০৮): এখন district/station নাম static config থেকে আসে বলে
+// XSS ঝুঁকি বাস্তবে কম, কিন্তু ভবিষ্যতে scraped/API/user-submitted ডেটা এই
+// টেমপ্লেটগুলোতে ঢুকলে ঝুঁকি তৈরি হতে পারে — তাই সব dynamic টেক্সট এখন থেকেই
+// escape করে বসানো হচ্ছে, ভবিষ্যতের জন্য নিরাপদ থাকতে।
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 const LEVEL_STYLE = {
     'বিপদ':     { icon: 'fa-circle-exclamation',    text: '#943126', bg: '#fdedec', border: '#c0392b' },
     'সতর্ক':    { icon: 'fa-triangle-exclamation',  text: '#af601a', bg: '#fdf0e4', border: '#e67e22' },
@@ -289,14 +303,14 @@ async function loadDistrictMarkers() {
 
             marker.bindPopup(`
                 <div style="font-family:'Segoe UI',sans-serif;min-width:170px">
-                    <div style="font-weight:700;font-size:14px;margin-bottom:4px">${d.name}</div>
+                    <div style="font-weight:700;font-size:14px;margin-bottom:4px">${escapeHtml(d.name)}</div>
                     <div style="font-size:12px;color:#4a6080;margin-bottom:2px">নদী: ${d.river || '—'}</div>
                     <div style="font-size:12px;color:#4a6080;margin-bottom:2px">বিপদসীমা: ${d.danger_level ?? '—'} মি</div>
                     ${d.ffwc_station ? `<div style="font-size:11px;color:#4a6080;margin-bottom:4px">Station: ${d.ffwc_station}</div>` : ''}
                     ${verifyBadge}
                     ${statusLine}
                     <div style="margin-top:8px">
-                        <button onclick="selectDistrictFromMap('${d.name}')" style="width:100%;padding:6px;background:#1a5fa8;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">এই জেলার বিস্তারিত দেখুন →</button>
+                        <button onclick="selectDistrictFromMap('${escapeHtml(d.name)}')" style="width:100%;padding:6px;background:#1a5fa8;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">এই জেলার বিস্তারিত দেখুন →</button>
                     </div>
                 </div>
             `);
@@ -338,7 +352,7 @@ async function loadAllStationMarkers() {
 
             marker.bindPopup(`
                 <div style="font-family:'Segoe UI',sans-serif;min-width:170px" id="stationPopup-${s.id.replace(/\W/g,'')}">
-                    <div style="font-weight:700;font-size:14px;margin-bottom:4px">${s.name}</div>
+                    <div style="font-weight:700;font-size:14px;margin-bottom:4px">${escapeHtml(s.name)}</div>
                     <div style="font-size:12px;color:#4a6080;margin-bottom:2px">নদী: ${s.river || '—'}</div>
                     <div style="font-size:12px;color:#4a6080;margin-bottom:2px">জেলা: ${s.district || '—'}</div>
                     <div style="font-size:12px;color:#4a6080;margin-bottom:8px">বিপদসীমা: ${s.danger_level ?? '—'} মি</div>
@@ -935,7 +949,7 @@ function loadShelters(district) {
                  font-size:16px;flex-shrink:0"><i class="fa-solid fa-house-chimney"></i></div>
             <div style="flex:1">
                 <div style="font-size:14px;font-weight:600;
-                     color:var(--text);margin-bottom:3px">${s.name}</div>
+                     color:var(--text);margin-bottom:3px">${escapeHtml(s.name)}</div>
                 <div style="font-size:12px;color:var(--muted)">
                     📍 ${s.address} &nbsp;|&nbsp;
                     👥 ধারণক্ষমতা: ${s.capacity} জন
