@@ -129,7 +129,8 @@ def predict_flood(
     confluence_data=None,
     rainfall_intensity_data=None,
     upstream_rain_history=None,
-    cyclone_signal=0
+    cyclone_signal=0,
+    tide_ratio=None
 ):
     if month is None:
         month = datetime.now().month
@@ -161,7 +162,12 @@ def predict_flood(
     # করা হচ্ছে — এটা কম risky, কারণ rule-based logic সরাসরি এই corrected
     # সংখ্যা দিয়েই কাজ করে, কোনো training-time assumption বহন করে না।
     correction_info = get_reference_discharge_correction_info(danger_level, district_name)
-    skip_ml_large_divergence = bool(correction_info and correction_info.get("is_large_divergence"))
+    # ⚠️ FIX (২০২৬-০৮): তাইডাল (Coastal & Tidal) নদীর জন্য discharge_ratio
+    # feature-টা ML model-এর কাছেও সমানভাবে অর্থহীন (জোয়ার-ভাটায় প্রবাহ
+    # দিনে দুইবার দিক বদলায়) — তাই is_large_divergence-এর মতো এখানেও ML
+    # স্কিপ করে rule-based fallback-এ পাঠানো হচ্ছে, যেখানে discharge_score
+    # আলাদাভাবে বাদ দেওয়া হয়েছে তাইডাল জেলার জন্য (নিচে দেখুন)।
+    skip_ml_large_divergence = bool(correction_info and correction_info.get("is_large_divergence")) or flood_type == "Coastal & Tidal"
 
     # ── ML Model Load ──
     model, scaler, features = load_ml_model()
@@ -217,7 +223,16 @@ def predict_flood(
         # সেটা ছোট নদী (যেমন ফেনী, danger_level 5.5m) আর বড় নদী (যেমন যমুনা,
         # danger_level 19.5m) কে একইভাবে treat করত, যেটা বাস্তবসম্মত না।
         # (reference_discharge উপরে একবার হিসাব করা হয়েছে, এখানে আবার করার দরকার নেই)
-        if reference_discharge:
+        # ⚠️ FIX (২০২৬-০৮): জোয়ার-ভাটা নিয়ন্ত্রিত নদীতে (Coastal & Tidal
+        # flood_type) discharge-ratio concept-টাই অর্থহীন — প্রবাহ দিনে
+        # দুইবার দিক বদলায় জোয়ারের কারণে, কোনো একমুখী upstream discharge
+        # হিসেবে এটাকে danger_level-এর সাথে তুলনা করা যায় না (খুলনার profile
+        # ফাইলেই এটা আগে থেকে flag করা ছিল)। তাই এই flood_type-এ discharge_score
+        # স্কিপ করা হচ্ছে — বৃষ্টি/soil-moisture/মৌসুম component ও
+        # coastal_tidal.py-র পূর্ণিমা/cyclone override-ই score চালাবে।
+        if flood_type == "Coastal & Tidal":
+            discharge_score = 0
+        elif reference_discharge:
             discharge_ratio_vs_danger = discharge / reference_discharge
             if discharge_ratio_vs_danger > 1.5: discharge_score = 30
             elif discharge_ratio_vs_danger > 1.0: discharge_score = 22
@@ -300,7 +315,7 @@ def predict_flood(
     moon_bonus_applied = False
     if flood_type == "Coastal & Tidal":
         probability, moon_bonus_applied = coastal_tidal.apply_override(
-            probability, local_rain, is_full_moon, cyclone_signal
+            probability, local_rain, is_full_moon, cyclone_signal, tide_ratio
         )
 
     # 4. Dam-Affected (ড্যাম/ব্যারাজ প্রভাবিত)
@@ -372,7 +387,7 @@ def predict_flood(
     if reports_note:
         message += f" ({reports_note}।)"
         
-    moon_message = coastal_tidal.get_message_fragment(moon_bonus_applied, cyclone_signal)
+    moon_message = coastal_tidal.get_message_fragment(moon_bonus_applied, cyclone_signal, tide_ratio)
     if moon_message:
         message += moon_message
 

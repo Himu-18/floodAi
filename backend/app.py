@@ -71,6 +71,7 @@ CORS(app, resources={r"/api/*": {"origins": CORS_ORIGINS}})
 # ============================================================
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+WORLDTIDES_API_KEY = os.getenv("WORLDTIDES_API_KEY")  # Coastal & Tidal জেলার real tide height-এর জন্য (ঐচ্ছিক — না থাকলে পুরনো lunar-phase heuristic-এ fallback করবে)
 CHAT_RATE_WINDOW_SECONDS = int(os.getenv("CHAT_RATE_WINDOW_SECONDS", "60"))
 CHAT_RATE_MAX_REQUESTS = int(os.getenv("CHAT_RATE_MAX_REQUESTS", "20"))
 _chat_hits = {}
@@ -217,6 +218,55 @@ def fetch_river(lat, lon):
     except Exception as e:
         print(f"fetch_river error: {e}")
         return {"today": 0, "forecast": [], "dates": [], "ok": False}
+
+# ── Tide (WorldTides) — Coastal & Tidal জেলার জন্য ──
+# tide astronomical (predictable), তাই বারবার fetch করার দরকার নেই —
+# প্রতি coordinate-এ ১২ ঘণ্টার cache রাখা হচ্ছে, নাহলে scheduler-এর প্রতি
+# ১৫ মিনিট/১ ঘণ্টার poll-এ WorldTides-এর free credit দ্রুত ফুরিয়ে যাবে।
+_tide_cache = {}
+_TIDE_CACHE_TTL = int(os.getenv("TIDE_CACHE_TTL_SECONDS", 12 * 3600))
+
+def fetch_tide(lat, lon):
+    """
+    WorldTides API দিয়ে এই মুহূর্তের tide height ও local high/low astronomical
+    datum (LAT/HAT) আনে, সেখান থেকে tide_ratio (0=সর্বনিম্ন জোয়ার, ১=সর্বোচ্চ
+    জোয়ার) হিসাব করে — এটাই coastal_tidal.py-র আগের crude "পূর্ণিমা বোনাস"-এর
+    জায়গায় real, location-specific সংখ্যা দেবে।
+    WORLDTIDES_API_KEY সেট না থাকলে ok=False রিটার্ন করে, caller তখন পুরনো
+    lunar-phase heuristic-এ fallback করবে (কোনো regression হবে না)।
+    """
+    if not WORLDTIDES_API_KEY:
+        return {"ok": False, "tide_ratio": None, "current_height_m": None}
+
+    cache_key = (round(lat, 2), round(lon, 2))
+    now = time.time()
+    cached = _tide_cache.get(cache_key)
+    if cached and (now - cached["fetched_at"]) < _TIDE_CACHE_TTL:
+        return cached["data"]
+
+    try:
+        r = requests.get(
+            "https://www.worldtides.info/api/v3",
+            params={"heights": "", "datums": "", "lat": lat, "lon": lon, "key": WORLDTIDES_API_KEY},
+            timeout=8
+        )
+        data = r.json()
+        datums = {d["name"]: d["height"] for d in data.get("datums", [])}
+        lat_datum = datums.get("LAT")
+        hat_datum = datums.get("HAT")
+        current_height = data["heights"][0]["height"] if data.get("heights") else None
+
+        tide_ratio = None
+        if current_height is not None and lat_datum is not None and hat_datum is not None and (hat_datum - lat_datum) != 0:
+            tide_ratio = (current_height - lat_datum) / (hat_datum - lat_datum)
+            tide_ratio = max(0.0, min(1.0, tide_ratio))  # ০-১ এর মধ্যে বেঁধে রাখা
+
+        result = {"ok": tide_ratio is not None, "tide_ratio": tide_ratio, "current_height_m": current_height}
+        _tide_cache[cache_key] = {"data": result, "fetched_at": now}
+        return result
+    except Exception as e:
+        print(f"fetch_tide error: {e}")
+        return {"ok": False, "tide_ratio": None, "current_height_m": None}
 
 def fetch_soil_moisture(lat, lon):
     try:
@@ -569,6 +619,13 @@ def get_flood(district_name):
     rainfall_intensity_data = get_rainfall_intensity_data(district_name, info, info["lat"], info["lon"])
     upstream_rain_history = get_upstream_rain_history(district_name, info)
 
+    # শুধু Coastal & Tidal জেলার জন্য tide fetch করা হচ্ছে (অন্য জেলায় এই
+    # data প্রাসঙ্গিক না, অকারণে WorldTides credit খরচ করার দরকার নেই)
+    tide_ratio = None
+    if info.get("flood_type") == "Coastal & Tidal":
+        tide_data = fetch_tide(info["lat"], info["lon"])
+        tide_ratio = tide_data.get("tide_ratio")
+
     try:
         prediction = predict_flood(
             discharge=discharge,
@@ -591,7 +648,8 @@ def get_flood(district_name):
             # কোনো জেলার entry-তে ম্যানুয়ালি 'cyclone_signal' key বসালে
             # (যেমন সত্যিকারের ঘূর্ণিঝড় সতর্কতার সময়) সেটা এখানে ব্যবহার
             # হবে, না থাকলে ডিফল্ট ০ (কোনো প্রভাব নেই)।
-            cyclone_signal=info.get("cyclone_signal", 0)
+            cyclone_signal=info.get("cyclone_signal", 0),
+            tide_ratio=tide_ratio
         )
     except Exception as e:
         print(f"Prediction Error: {e}")
@@ -815,6 +873,11 @@ def download_pdf(district_name):
         rainfall_intensity_data = get_rainfall_intensity_data(district_name, info, info["lat"], info["lon"])
         upstream_rain_history = get_upstream_rain_history(district_name, info)
 
+        tide_ratio = None
+        if info.get("flood_type") == "Coastal & Tidal":
+            tide_data = fetch_tide(info["lat"], info["lon"])
+            tide_ratio = tide_data.get("tide_ratio")
+
         try:
             prediction = predict_flood(
                 discharge=discharge,
@@ -833,7 +896,8 @@ def download_pdf(district_name):
                 confluence_data=confluence_data,
                 rainfall_intensity_data=rainfall_intensity_data,
                 upstream_rain_history=upstream_rain_history,
-                cyclone_signal=info.get("cyclone_signal", 0)
+                cyclone_signal=info.get("cyclone_signal", 0),
+                tide_ratio=tide_ratio
             )
         except Exception as e:
             print(f"Prediction Error (PDF): {e}")
