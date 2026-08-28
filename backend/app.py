@@ -268,6 +268,51 @@ def fetch_tide(lat, lon):
         print(f"fetch_tide error: {e}")
         return {"ok": False, "tide_ratio": None, "current_height_m": None}
 
+# ── Cyclone signal proxy (GDACS) — Coastal & Tidal জেলার জন্য ──
+# BMD-র নিজস্ব "Signals" ওয়েবসাইট scanned image/PDF (readable text না),
+# তাই সরাসরি scrape অনির্ভরযোগ্য। এর বদলে GDACS (জাতিসংঘ/EU-সমর্থিত global
+# disaster monitoring, structured JSON API) থেকে বঙ্গোপসাগর অঞ্চলে active
+# tropical cyclone আছে কিনা চেক করে BMD-স্টাইল ১-১১ signal-এর একটা
+# approximation করা হচ্ছে। এটা BMD-র official সংখ্যার হুবহু বদলি না,
+# শুধু একটা reasonable proxy যতক্ষণ না সত্যিকারের BMD feed পাওয়া যায়।
+GDACS_EVENTS_URL = "https://www.gdacs.org/gdacsapi/api/Events/geteventlist/EVENTS4APP"
+# বাংলাদেশ ও তার আশেপাশে (৫° buffer সহ) বঙ্গোপসাগর অঞ্চল
+_BD_BBOX = {"min_lat": 15.0, "max_lat": 32.0, "min_lon": 82.5, "max_lon": 98.0}
+_cyclone_cache = {"data": None, "fetched_at": 0}
+_CYCLONE_CACHE_TTL = int(os.getenv("CYCLONE_CACHE_TTL_SECONDS", 3 * 3600))  # ৩ ঘণ্টা — cyclone tide-এর চেয়ে দ্রুত বদলাতে পারে, তাই কম TTL
+
+def fetch_cyclone_signal():
+    now = time.time()
+    if _cyclone_cache["data"] is not None and (now - _cyclone_cache["fetched_at"]) < _CYCLONE_CACHE_TTL:
+        return _cyclone_cache["data"]
+
+    result = {"cyclone_signal": 0, "ok": False, "event_name": None}
+    try:
+        r = requests.get(GDACS_EVENTS_URL, timeout=10)
+        events = r.json()
+        features = events.get("features", []) if isinstance(events, dict) else (events or [])
+        for ev in features:
+            props = ev.get("properties", ev) or {}
+            if props.get("eventtype") != "TC":
+                continue
+            coords = (ev.get("geometry") or {}).get("coordinates", [None, None])
+            lon, lat = (coords[0], coords[1]) if len(coords) >= 2 else (props.get("lon"), props.get("lat"))
+            if lat is None or lon is None:
+                continue
+            if not (_BD_BBOX["min_lat"] <= lat <= _BD_BBOX["max_lat"] and _BD_BBOX["min_lon"] <= lon <= _BD_BBOX["max_lon"]):
+                continue  # দূরের cyclone প্রাসঙ্গিক না
+            alert_level = str(props.get("alertlevel") or "").lower()
+            sig = {"red": 10, "orange": 7, "green": 4}.get(alert_level, 0)
+            if sig > result["cyclone_signal"]:
+                result = {"cyclone_signal": sig, "ok": True, "event_name": props.get("eventname") or props.get("name")}
+    except Exception as e:
+        print(f"fetch_cyclone_signal error: {e}")
+        result = {"cyclone_signal": 0, "ok": False, "event_name": None}
+
+    _cyclone_cache["data"] = result
+    _cyclone_cache["fetched_at"] = now
+    return result
+
 def fetch_soil_moisture(lat, lon):
     try:
         r = requests.get(
@@ -619,12 +664,14 @@ def get_flood(district_name):
     rainfall_intensity_data = get_rainfall_intensity_data(district_name, info, info["lat"], info["lon"])
     upstream_rain_history = get_upstream_rain_history(district_name, info)
 
-    # শুধু Coastal & Tidal জেলার জন্য tide fetch করা হচ্ছে (অন্য জেলায় এই
-    # data প্রাসঙ্গিক না, অকারণে WorldTides credit খরচ করার দরকার নেই)
+    # শুধু Coastal & Tidal জেলার জন্য tide/cyclone fetch করা হচ্ছে (অন্য
+    # জেলায় এই data প্রাসঙ্গিক না, অকারণে API call/credit খরচ করার দরকার নেই)
     tide_ratio = None
+    live_cyclone_signal = 0
     if info.get("flood_type") == "Coastal & Tidal":
         tide_data = fetch_tide(info["lat"], info["lon"])
         tide_ratio = tide_data.get("tide_ratio")
+        live_cyclone_signal = fetch_cyclone_signal().get("cyclone_signal", 0)
 
     try:
         prediction = predict_flood(
@@ -644,11 +691,12 @@ def get_flood(district_name):
             confluence_data=confluence_data,
             rainfall_intensity_data=rainfall_intensity_data,
             upstream_rain_history=upstream_rain_history,
-            # ⚠️ এখনো কোনো live BMD cyclone API নেই — flood_config.py-তে
-            # কোনো জেলার entry-তে ম্যানুয়ালি 'cyclone_signal' key বসালে
-            # (যেমন সত্যিকারের ঘূর্ণিঝড় সতর্কতার সময়) সেটা এখানে ব্যবহার
-            # হবে, না থাকলে ডিফল্ট ০ (কোনো প্রভাব নেই)।
-            cyclone_signal=info.get("cyclone_signal", 0),
+            # ✅ (২০২৬-০৮) GDACS API থেকে live cyclone signal proxy আনা হচ্ছে
+            # (BMD-র নিজস্ব ওয়েবসাইট scanned PDF হওয়ায় সরাসরি scrape করা
+            # যায়নি)। flood_config.py-তে ম্যানুয়াল override থাকলে সেটাও
+            # বিবেচনা করা হচ্ছে (দুটোর মধ্যে বড়টা), যাতে কোনো একটা মিস
+            # করলে অন্যটা catch করে।
+            cyclone_signal=max(live_cyclone_signal, info.get("cyclone_signal", 0)),
             tide_ratio=tide_ratio
         )
     except Exception as e:
@@ -874,9 +922,11 @@ def download_pdf(district_name):
         upstream_rain_history = get_upstream_rain_history(district_name, info)
 
         tide_ratio = None
+        live_cyclone_signal = 0
         if info.get("flood_type") == "Coastal & Tidal":
             tide_data = fetch_tide(info["lat"], info["lon"])
             tide_ratio = tide_data.get("tide_ratio")
+            live_cyclone_signal = fetch_cyclone_signal().get("cyclone_signal", 0)
 
         try:
             prediction = predict_flood(
@@ -896,7 +946,7 @@ def download_pdf(district_name):
                 confluence_data=confluence_data,
                 rainfall_intensity_data=rainfall_intensity_data,
                 upstream_rain_history=upstream_rain_history,
-                cyclone_signal=info.get("cyclone_signal", 0),
+                cyclone_signal=max(live_cyclone_signal, info.get("cyclone_signal", 0)),
                 tide_ratio=tide_ratio
             )
         except Exception as e:
