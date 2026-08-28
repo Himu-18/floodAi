@@ -162,12 +162,20 @@ def predict_flood(
     # করা হচ্ছে — এটা কম risky, কারণ rule-based logic সরাসরি এই corrected
     # সংখ্যা দিয়েই কাজ করে, কোনো training-time assumption বহন করে না।
     correction_info = get_reference_discharge_correction_info(danger_level, district_name)
-    # ⚠️ FIX (২০২৬-০৮): তাইডাল (Coastal & Tidal) নদীর জন্য discharge_ratio
-    # feature-টা ML model-এর কাছেও সমানভাবে অর্থহীন (জোয়ার-ভাটায় প্রবাহ
-    # দিনে দুইবার দিক বদলায়) — তাই is_large_divergence-এর মতো এখানেও ML
-    # স্কিপ করে rule-based fallback-এ পাঠানো হচ্ছে, যেখানে discharge_score
-    # আলাদাভাবে বাদ দেওয়া হয়েছে তাইডাল জেলার জন্য (নিচে দেখুন)।
-    skip_ml_large_divergence = bool(correction_info and correction_info.get("is_large_divergence")) or flood_type == "Coastal & Tidal"
+    # ⚠️ FIX (২০২৬-০৮): আগে শুধু tidal নদীর জন্য ML স্কিপ করা হতো, কিন্তু
+    # একই সমস্যা (discharge-ratio concept-টাই অর্থহীন) অন্য কারণেও হতে
+    # পারে — যেমন বাঁধ-নিয়ন্ত্রিত নদী (তিস্তা ব্যারেজ/নীলফামারী, dry/wet
+    # season-এ discharge-এ বিশাল তফাত) বা প্রায়-মৃত/স্থবির নদী (মেহেরপুর)।
+    # এই ক্ষেত্রগুলোতে profile-এই স্পষ্টভাবে "confidence": "none"/"N/A"
+    # flag করা আছে — সেটা এখানে সাধারণভাবে চেক করা হচ্ছে, flood_type
+    # হার্ডকোড করার বদলে, যাতে ভবিষ্যতে এরকম আরও case ধরা পড়ে।
+    reference_confidence = str((correction_info or {}).get("confidence") or "").strip().lower()
+    reference_unreliable = reference_confidence in ("none", "n/a")
+    skip_ml_large_divergence = (
+        bool(correction_info and correction_info.get("is_large_divergence"))
+        or flood_type == "Coastal & Tidal"
+        or reference_unreliable
+    )
 
     # ── ML Model Load ──
     model, scaler, features = load_ml_model()
@@ -227,10 +235,13 @@ def predict_flood(
         # flood_type) discharge-ratio concept-টাই অর্থহীন — প্রবাহ দিনে
         # দুইবার দিক বদলায় জোয়ারের কারণে, কোনো একমুখী upstream discharge
         # হিসেবে এটাকে danger_level-এর সাথে তুলনা করা যায় না (খুলনার profile
-        # ফাইলেই এটা আগে থেকে flag করা ছিল)। তাই এই flood_type-এ discharge_score
-        # স্কিপ করা হচ্ছে — বৃষ্টি/soil-moisture/মৌসুম component ও
-        # coastal_tidal.py-র পূর্ণিমা/cyclone override-ই score চালাবে।
-        if flood_type == "Coastal & Tidal":
+        # ফাইলেই এটা আগে থেকে flag করা ছিল)। এখন এই একই স্কিপ-লজিক
+        # সাধারণীকৃত করা হলো (flood_type হার্ডকোড না করে) — যেকোনো জেলার
+        # profile-এ confidence: "none"/"N/A" flag থাকলেই (যেমন নীলফামারীর
+        # ব্যারেজ-নিয়ন্ত্রিত তিস্তা, মেহেরপুরের প্রায়-মৃত নদী) discharge_score
+        # বাদ যাবে — বৃষ্টি/soil-moisture/মৌসুম component ও প্রাসঙ্গিক
+        # flood_type override-ই তখন score চালাবে।
+        if flood_type == "Coastal & Tidal" or reference_unreliable:
             discharge_score = 0
         elif reference_discharge:
             discharge_ratio_vs_danger = discharge / reference_discharge
