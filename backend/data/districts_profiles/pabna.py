@@ -37,7 +37,7 @@ PABNA_PROFILE = {
             },
             "danger_level_m": 13.80, "verified_source": "flood_config.py-র সাথে মিলেছে",
             "ml_features_verified": {
-                "reference_discharge_m3s": {"old_buggy_value": 1380, "corrected_estimate": 30000, "corrected_range": "রাজবাড়ীর গঙ্গা রেফারেন্স — এটা প্রকৃতপক্ষে সবচেয়ে authoritative গঙ্গা gauge, ভবিষ্যতে বাকি সব গঙ্গা-স্টেশনের জন্য এটাকে primary reference source হিসেবে ব্যবহার করা যেতে পারে", "confidence": "high — সবচেয়ে বেশি cite করা reference gauge"},
+                "reference_discharge_m3s": {"old_buggy_value": 1380, "corrected_estimate": 75000, "corrected_range": "রাজবাড়ীর গঙ্গা রেফারেন্স — এটা প্রকৃতপক্ষে সবচেয়ে authoritative গঙ্গা gauge, ভবিষ্যতে বাকি সব গঙ্গা-স্টেশনের জন্য এটাকে primary reference source হিসেবে ব্যবহার করা যেতে পারে (⚠️ ২০২৬-০৮-২৮: আগে এখানে stale mean-annual ৩০,০০০ ছিল — রাজবাড়ীর reference bankfull-এ ঠিক করার সময় এই কপি sync হয়নি)", "confidence": "high — সবচেয়ে বেশি cite করা reference gauge"},
                 "cn": {"old_value": None, "reviewed_estimate": 88, "confidence": "moderate"},
                 "risk_category": {"old_value": None, "reviewed_estimate": "উচ্চ", "reasoning": "mega_trunk গঙ্গার সবচেয়ে বিখ্যাত gauge পয়েন্ট"},
             },
