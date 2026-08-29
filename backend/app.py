@@ -4,6 +4,7 @@
 # ============================================================
 
 import os
+import re
 import time
 from pathlib import Path
 from flask import Flask, jsonify, request, send_file, send_from_directory
@@ -47,7 +48,7 @@ except ImportError:
 from database import (
     init_db, save_reading, save_community_report,
     get_history, get_community_reports, register_user, get_user,
-    get_latest_readings, DB_PATH
+    get_latest_readings, DB_PATH, save_validation_entry, get_validation_log
 )
 try:
     from pdf_report import generate_flood_report
@@ -997,6 +998,59 @@ def overall_stats():
     })
 
 # ── Active Warnings List ──
+# ── Validation: FloodAI prediction বনাম বাস্তব FFWC observation ──
+# scheduler.py প্রতিদিন এই endpoint কল করে — কিন্তু এটা এতদিন বানানোই
+# হয়নি, তাই daily validation log কখনো কাজ করেনি (২০২৬-০৮-২৮ পর্যন্ত)।
+# এখন থেকে প্রতিদিন verified FFWC station থাকা জেলাগুলোর জন্য FloodAI-র
+# সর্বশেষ prediction ও FFWC-র real live water-level একসাথে DB-তে জমা
+# রাখা হবে — এটাই ধীরে ধীরে বাস্তব (সিন্থেটিক না) ground-truth ডেটাসেট
+# তৈরি করবে, ভবিষ্যতে ML model real data দিয়ে retrain/evaluate করার জন্য।
+@app.route('/api/validation/collect', methods=['POST'])
+def collect_validation_entries():
+    ffwc_live = get_ffwc_live_cached()
+    latest_readings = {r["district"]: r for r in get_latest_readings()}
+    saved, skipped = 0, 0
+
+    for district_name, info in DISTRICTS.items():
+        ffwc_station_raw = info.get("ffwc_station")
+        if not info.get("ffwc_verified") or not ffwc_station_raw:
+            skipped += 1
+            continue
+
+        station_id_match = re.search(r"(SW[\w.]+)", ffwc_station_raw)
+        if not station_id_match:
+            skipped += 1
+            continue
+        station_id = station_id_match.group(1)
+
+        ffwc_data = ffwc_live.get(station_id)
+        reading = latest_readings.get(district_name)
+        if not ffwc_data or not reading or reading.get("is_stale"):
+            skipped += 1
+            continue
+
+        try:
+            save_validation_entry(
+                district=district_name,
+                ffwc_station=station_id,
+                predicted_probability=reading.get("risk_score"),
+                predicted_level=reading.get("warning_level"),
+                ffwc_water_level=float(ffwc_data.get("water_level")) if ffwc_data.get("water_level") else None,
+                ffwc_danger_level=float(ffwc_data.get("danger_level")) if ffwc_data.get("danger_level") else None,
+                ffwc_recorded_at=ffwc_data.get("recorded_at"),
+            )
+            saved += 1
+        except Exception as e:
+            print(f"validation collect error for {district_name}: {e}")
+            skipped += 1
+
+    return jsonify({"saved": saved, "skipped": skipped, "total_districts": len(DISTRICTS)})
+
+@app.route('/api/validation/log')
+def view_validation_log():
+    limit = int(request.args.get("limit", 500))
+    return jsonify(get_validation_log(limit))
+
 @app.route('/api/warnings/active')
 def active_warnings():
     conn = None
