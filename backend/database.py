@@ -51,11 +51,60 @@ def init_db():
             phone TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+
+        -- FloodAI-র prediction বনাম FFWC-র real live observation প্রতিদিন
+        -- জমা রাখার টেবিল — সিন্থেটিক label-এর বদলে বাস্তব ground-truth
+        -- ডেটাসেট ধীরে ধীরে জমা করার জন্য (২০২৬-০৮-২৮ থেকে চালু)
+        CREATE TABLE IF NOT EXISTS validation_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            district TEXT NOT NULL,
+            ffwc_station TEXT,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            predicted_probability REAL,
+            predicted_level TEXT,
+            ffwc_water_level REAL,
+            ffwc_danger_level REAL,
+            ffwc_recorded_at TEXT,
+            actual_danger_ratio REAL,
+            UNIQUE(district, timestamp)
+        );
     """)
 
     conn.commit()
     conn.close()
     print("✅ Database ready!")
+
+def save_validation_entry(district, ffwc_station, predicted_probability, predicted_level,
+                           ffwc_water_level, ffwc_danger_level, ffwc_recorded_at):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        actual_ratio = (ffwc_water_level / ffwc_danger_level) if ffwc_danger_level else None
+        cursor.execute("""
+            INSERT INTO validation_log
+                (district, ffwc_station, predicted_probability, predicted_level,
+                 ffwc_water_level, ffwc_danger_level, ffwc_recorded_at, actual_danger_ratio)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (district, ffwc_station, predicted_probability, predicted_level,
+              ffwc_water_level, ffwc_danger_level, ffwc_recorded_at, actual_ratio))
+        conn.commit()
+    except Exception as e:
+        print(f"DB Error (save_validation_entry): {e}")
+    finally:
+        conn.close()
+
+def get_validation_log(limit=500):
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM validation_log ORDER BY timestamp DESC LIMIT ?", (limit,))
+        return [dict(r) for r in cursor.fetchall()]
+    except Exception as e:
+        print(f"DB Error (get_validation_log): {e}")
+        return []
+    finally:
+        conn.close()
 
 def save_reading(district, discharge, soil_moisture,
                  local_rain, upstream_rain, risk_score, warning_level):
