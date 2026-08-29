@@ -17,7 +17,7 @@ KUSHTIA_PROFILE = {
             },
             "danger_level_m": 13.05, "verified_source": "flood_config.py-র সাথে মিলেছে",
             "ml_features_verified": {
-                "reference_discharge_m3s": {"old_buggy_value": 1305, "corrected_estimate": 30000, "corrected_range": "রাজবাড়ীর গঙ্গা/পদ্মা রেফারেন্স সরাসরি reuse — এটা একই trunk river", "source": "রাজবাড়ী profile (Neill et al.)", "confidence": "moderate-high"},
+                "reference_discharge_m3s": {"old_buggy_value": 1305, "corrected_estimate": 75000, "corrected_range": "bankfull — রাজবাড়ীর গঙ্গা/পদ্মা রেফারেন্স reuse, একই trunk river (⚠️ ২০২৬-০৮-২৮: আগে এখানে stale ৩০,০০০ ছিল — রাজবাড়ীর reference mean-annual থেকে bankfull-এ ঠিক করার সময় এই কপি sync হয়নি, ধরা পড়ল basin-by-basin যাচাইয়ে)", "source": "রাজবাড়ী profile (Neill et al., bankfull)", "confidence": "moderate-high"},
                 "cn": {"old_value": None, "reviewed_estimate": 88, "confidence": "moderate"},
                 "risk_category": {"old_value": None, "reviewed_estimate": "উচ্চ", "reasoning": "mega_trunk গঙ্গার সরাসরি সংস্পর্শ"},
             },
