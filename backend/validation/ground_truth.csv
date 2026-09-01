@@ -1,0 +1,99 @@
+﻿year,district,station,river,flood_occurred,granularity,source
+1998,Dhaka,Dhaka,Buriganga,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Dhaka,Mirpur,Turag,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Dinajpur,Dinajpur,Punarbhaba,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Gaibandha,Gaibandha,Ghagot,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Gazipur,Tongi,Tongi Khal,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Jamalpur,Bahadurabad,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Jamalpur,Jamalpur,Old Brahmaputra,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Kurigram,Kurigram,Dharla,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Kurigram,Noonkhawa,Brahmaputra,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Kurigram,Chilmari,Brahmaputra,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Kushtia,Gorai Rail Bridge,Gorai,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Manikganj,Aricha,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Munshiganj,Bhagyakul,Padma,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Mymensingh,Mymensingh,Old Brahmaputra,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Narayanganj,Narayanganj,Lakhya,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Nilphamari,Dalia,Teesta,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Pabna,Hardinge Bridge,Ganges,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Rajbari,Goalundo,Padma,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Rajshahi,Pankha,Ganges,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Rajshahi,Rajshahi,Ganges,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Rangpur,Kaunia,Teesta,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Rangpur,Badargonj,Jamuneswari,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1998,Sirajganj,Serajgonj,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Dhaka,Dhaka,Buriganga,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Dhaka,Mirpur,Turag,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Dinajpur,Dinajpur,Punarbhaba,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Gaibandha,Gaibandha,Ghagot,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Gazipur,Tongi,Tongi Khal,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Jamalpur,Bahadurabad,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Jamalpur,Jamalpur,Old Brahmaputra,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Jashore,Jhikorgacha,Kobodak,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Kurigram,Kurigram,Dharla,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Kurigram,Noonkhawa,Brahmaputra,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Kurigram,Chilmari,Brahmaputra,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Kushtia,Gorai Rail Bridge,Gorai,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Madaripur,Madaripur,Arialkhan,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Magura,Kamarkhali,Gorai,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Manikganj,Aricha,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Munshiganj,Bhagyakul,Padma,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Mymensingh,Mymensingh,Old Brahmaputra,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Narayanganj,Narayanganj,Lakhya,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Nilphamari,Dalia,Teesta,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Pabna,Hardinge Bridge,Ganges,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Rajbari,Goalundo,Padma,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Rajshahi,Pankha,Ganges,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Rajshahi,Rajshahi,Ganges,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Rangpur,Kaunia,Teesta,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Rangpur,Badargonj,Jamuneswari,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2012,Sirajganj,Serajgonj,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2017,Brahmanbaria,,Titas,1,district,FFWC Annual Flood Report 2017
+2017,Chapainawabganj,,Northern rivers,1,district,FFWC Annual Flood Report 2017
+2017,Dinajpur,,Northern rivers,1,district,FFWC Annual Flood Report 2017
+2017,Faridpur,,Padma,1,district,FFWC Annual Flood Report 2017
+2017,Habiganj,,Khowai,1,district,FFWC Annual Flood Report 2017
+2017,Jashore,,Kobadak/local drainage,1,district,FFWC Annual Flood Report 2017
+2017,Manikganj,,Padma,1,district,FFWC Annual Flood Report 2017
+2017,Moulvibazar,,Surma-Kushiyara/Khowai-Manu-Dhalai,1,district,FFWC Annual Flood Report 2017
+2017,Munshiganj,,Padma,1,district,FFWC Annual Flood Report 2017
+2017,Naogaon,,Northern rivers,1,district,FFWC Annual Flood Report 2017
+2017,Netrokona,,Kangsha/flash-flood rivers,1,district,FFWC Annual Flood Report 2017
+2017,Panchagarh,,Northern rivers,1,district,FFWC Annual Flood Report 2017
+2017,Rajbari,,Padma,1,district,FFWC Annual Flood Report 2017
+2017,Shariatpur,,Padma,1,district,FFWC Annual Flood Report 2017
+2017,Sherpur,,Bhugai/Someswari and flash-flood rivers,1,district,FFWC Annual Flood Report 2017
+2017,Sunamganj,,Surma/haor rivers,1,district,FFWC Annual Flood Report 2017
+2017,Sylhet,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2017
+2017,Thakurgaon,,Northern rivers,1,district,FFWC Annual Flood Report 2017
+2020,Bagerhat,,Pashur,1,district,FFWC Annual Flood Report 2020
+2020,Bandarban,,Matamuhuri,1,district,FFWC Annual Flood Report 2020
+2020,Barguna,,Southern rivers,1,district,FFWC Annual Flood Report 2020
+2020,Barisal,,Southern rivers,1,district,FFWC Annual Flood Report 2020
+2020,Bhola,,Lower Meghna,1,district,FFWC Annual Flood Report 2020
+2020,Brahmanbaria,,Titas,1,district,FFWC Annual Flood Report 2020
+2020,Chandpur,,Meghna,1,district,FFWC Annual Flood Report 2020
+2020,Cox's Bazar,,Matamuhuri,1,district,FFWC Annual Flood Report 2020
+2020,Dhaka,,Padma/Buriganga-Turag system,1,district,FFWC Annual Flood Report 2020
+2020,Dinajpur,,Punarbhaba,1,district,FFWC Annual Flood Report 2020
+2020,Faridpur,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Feni,,Muhuri,1,district,FFWC Annual Flood Report 2020
+2020,Habiganj,,Khowai/Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Jhalakathi,,Southern rivers,1,district,FFWC Annual Flood Report 2020
+2020,Khulna,,Pashur,1,district,FFWC Annual Flood Report 2020
+2020,Madaripur,,Padma/Arial Khan,1,district,FFWC Annual Flood Report 2020
+2020,Manikganj,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Moulvibazar,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2020
+2020,Munshiganj,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Naogaon,,Atrai/Little Jamuna,1,district,FFWC Annual Flood Report 2020
+2020,Narayanganj,,Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Narsingdi,,Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Netrokona,,Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Patuakhali,,Southern rivers,1,district,FFWC Annual Flood Report 2020
+2020,Pirojpur,,Southern rivers,1,district,FFWC Annual Flood Report 2020
+2020,Rajbari,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Rangpur,,Northern rivers,1,district,FFWC Annual Flood Report 2020
+2020,Shariatpur,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Sunamganj,,Surma/Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Sylhet,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2020
+2020,Thakurgaon,,Tangon,1,district,FFWC Annual Flood Report 2020

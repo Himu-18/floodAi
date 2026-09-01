@@ -1,0 +1,50 @@
+year,district,river_or_system,severity_reported,flood_occurred,source,data_status,label_type
+2017,Rajbari,Padma,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Faridpur,Padma,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Manikganj,Padma,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Munshiganj,Padma,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Shariatpur,Padma,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Panchagarh,Northern rivers,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Thakurgaon,Northern rivers,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Dinajpur,Northern rivers,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Naogaon,Northern rivers,moderate_to_severe,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Chapainawabganj,Northern rivers,moderate_to_severe,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Jashore,Kobadak/local drainage,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Sylhet,Surma-Kushiyara,moderate_to_severe,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Moulvibazar,Surma-Kushiyara/Khowai-Manu-Dhalai,moderate_to_severe,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Netrokona,Kangsha/flash-flood rivers,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Sunamganj,Surma/haor rivers,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Brahmanbaria,Titas,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Habiganj,Khowai,moderate,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2017,Sherpur,Bhugai/Someswari and flash-flood rivers,moderate_to_high,1,FFWC Annual Flood Report 2017,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Dinajpur,Punarbhaba,moderate,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Thakurgaon,Tangon,moderate,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Rangpur,Northern rivers,moderate,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Naogaon,Atrai/Little Jamuna,moderate,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Rajbari,Padma,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Faridpur,Padma,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Manikganj,Padma,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Dhaka,Padma/Buriganga-Turag system,moderate,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Munshiganj,Padma,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Madaripur,Padma/Arial Khan,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Shariatpur,Padma,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Khulna,Pashur,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Bagerhat,Pashur,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Barisal,Southern rivers,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Jhalakathi,Southern rivers,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Patuakhali,Southern rivers,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Barguna,Southern rivers,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Pirojpur,Southern rivers,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Sylhet,Surma-Kushiyara,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Sunamganj,Surma/Meghna basin,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Moulvibazar,Surma-Kushiyara,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Habiganj,Khowai/Meghna basin,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Netrokona,Meghna basin,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Brahmanbaria,Titas,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Narayanganj,Meghna basin,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Narsingdi,Meghna basin,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Chandpur,Meghna,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Bhola,Lower Meghna,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Feni,Muhuri,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Bandarban,Matamuhuri,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT
+2020,Cox's Bazar,Matamuhuri,moderate_to_severe,1,FFWC Annual Flood Report 2020,REAL_REPORTED_EVENT,REPORT_EXPLICIT_DISTRICT_EVENT

@@ -43,6 +43,14 @@ from model import predict_flood, get_reference_discharge
 
 OUTPUT_CSV = Path(__file__).parent / "backtest_v2_results.csv"
 
+# stations.py (বাংলা জেলা নাম) কে ground_truth.csv (v3/v6, ইংরেজি জেলা নাম)
+# এর সাথে মেলানোর জন্য mapping — শুধু এই ১২ station-এর জেলাগুলোই যথেষ্ট
+DISTRICT_BN_TO_EN = {
+    "জামালপুর": "Jamalpur", "মানিকগঞ্জ": "Manikganj", "সিরাজগঞ্জ": "Sirajganj",
+    "রাজবাড়ী": "Rajbari", "পাবনা": "Pabna", "শরীয়তপুর": "Shariatpur",
+    "কুড়িগ্রাম": "Kurigram", "গাইবান্ধা": "Gaibandha", "রংপুর": "Rangpur",
+}
+
 
 def fetch_historical_rain(lat, lon, date_str):
     try:
@@ -99,6 +107,58 @@ def load_flood_events():
     return events
 
 
+def load_ground_truth():
+    """
+    build_ground_truth.py-র output — v3 (station-level, ১৯৯৮/২০১২) ও v6
+    (district-level, ২০১৭/২০২০) থেকে আসা real, নির্ভুল ground-truth।
+    এটা পাওয়া গেলে flood_events.csv-এর মোটা দাগের জাতীয় date-range
+    অনুমানের চেয়ে অগ্রাধিকার পাবে (নিচের actual_flood_label() দেখুন)।
+
+    ⚠️ FIX: শুধু (year, district) দিয়ে key করলে multi-station জেলায়
+    (যেমন জামালপুর — Bahadurabad ও Jamalpur town আলাদা নদীতে, একই বছরে
+    ভিন্ন ফলাফল থাকতে পারে) তথ্য হারিয়ে যায়/ভুল হয়ে যায় (dict-এ পরের
+    row আগেরটাকে overwrite করে ফেলে)। তাই এখন দুটো আলাদা lookup রাখা
+    হচ্ছে: (ক) station-নির্দিষ্ট (সবচেয়ে নির্ভুল), (খ) district-level
+    aggregate (কোনো একটা station-এ বন্যা হলেই "হ্যাঁ", fallback হিসেবে)।
+    """
+    path = Path(__file__).parent / "ground_truth.csv"
+    by_station, by_district = {}, {}
+    if not path.exists():
+        print("⚠️ ground_truth.csv পাওয়া যায়নি (আগে build_ground_truth.py চালান) — "
+              "শুধু flood_events.csv-এর জাতীয় date-range অনুমান দিয়ে চলবে।")
+        return by_station, by_district
+    with open(path, encoding="utf-8-sig") as f:
+        for row in csv.DictReader(f):
+            year = int(row["year"])
+            flood = int(row["flood_occurred"])
+            if row["station"]:
+                by_station[(year, row["station"].strip().lower())] = flood
+            dkey = (year, row["district"])
+            by_district[dkey] = max(by_district.get(dkey, 0), flood)  # any station flooded -> district flooded
+    return by_station, by_district
+
+
+def actual_flood_label(date_obj, district_name, station_name, events, ground_truth):
+    """
+    অগ্রাধিকার-ক্রম: (১) সঠিক station-নির্দিষ্ট real observation
+    (সবচেয়ে নির্ভুল), (২) district-level aggregate real observation,
+    (৩) flood_events.csv-এর মোটা দাগের জাতীয় date-range অনুমান (fallback,
+    কম নির্ভুল কিন্তু কভারেজ বেশি)।
+    """
+    by_station, by_district = ground_truth
+    year = date_obj.year
+
+    station_key = (year, station_name.strip().lower())
+    if station_key in by_station:
+        return bool(by_station[station_key])
+
+    district_key = (year, district_name)
+    if district_key in by_district:
+        return bool(by_district[district_key])
+
+    return date_in_any_flood_event(date_obj, events)
+
+
 def date_in_any_flood_event(date_obj, events):
     for ev in events:
         start = datetime.strptime(ev["start_date"], "%Y-%m-%d")
@@ -122,6 +182,7 @@ def sample_dates_for_event(event, days_before=7, step_days=3):
 
 def run_backtest():
     events = load_flood_events()
+    ground_truth = load_ground_truth()
     floodai_records = []
     baseline_records = []
     rows_out = []
@@ -137,7 +198,10 @@ def run_backtest():
                 soil = fetch_historical_soil_moisture(station["lat"], station["lon"], date_str)
                 time.sleep(0.5)  # rate-limit সৌজন্যে
 
-                actual_flood = date_in_any_flood_event(date_obj, events)
+                actual_flood = actual_flood_label(
+                    date_obj, DISTRICT_BN_TO_EN.get(station["district"], station["district"]),
+                    station["name"], events, ground_truth
+                )
 
                 try:
                     pred = predict_flood(

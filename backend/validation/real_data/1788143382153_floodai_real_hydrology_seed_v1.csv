@@ -1,0 +1,35 @@
+year,station,river,latitude,longitude,peak_discharge_m3s,bankfull_discharge_m3s,observation_type,source_class,discharge_ratio_to_bankfull,bankfull_exceeded,derived_severity,data_status,use_note
+1985,Bahadurabad,Jamuna,25.16,89.7,61900.0,48000,observed_annual_max,secondary published table,1.29,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1986,Bahadurabad,Jamuna,25.16,89.7,42000.0,48000,observed_annual_max,secondary published table,0.875,0,0,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1987,Bahadurabad,Jamuna,25.16,89.7,67200.0,48000,observed_annual_max,secondary published table,1.4,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1988,Bahadurabad,Jamuna,25.16,89.7,68700.0,48000,observed_annual_max,secondary published table,1.431,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1989,Bahadurabad,Jamuna,25.16,89.7,70500.0,48000,observed_annual_max,secondary published table,1.469,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1990,Bahadurabad,Jamuna,25.16,89.7,64400.0,48000,observed_annual_max,secondary published table,1.342,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1991,Bahadurabad,Jamuna,25.16,89.7,61500.0,48000,observed_annual_max,secondary published table,1.281,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1992,Bahadurabad,Jamuna,25.16,89.7,65600.0,48000,observed_annual_max,secondary published table,1.367,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1993,Bahadurabad,Jamuna,25.16,89.7,59100.0,48000,observed_annual_max,secondary published table,1.231,1,1,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1994,Bahadurabad,Jamuna,25.16,89.7,39100.0,48000,observed_annual_max,secondary published table,0.815,0,0,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1995,Bahadurabad,Jamuna,25.16,89.7,84200.0,48000,observed_annual_max,secondary published table,1.754,1,3,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1996,Bahadurabad,Jamuna,25.16,89.7,83485.0,48000,observed_annual_max,secondary published table,1.739,1,3,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1997,Bahadurabad,Jamuna,25.16,89.7,79270.0,48000,observed_annual_max,secondary published table,1.651,1,3,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1998,Bahadurabad,Jamuna,25.16,89.7,102535.0,48000,observed_annual_max,secondary published table,2.136,1,3,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1999,Bahadurabad,Jamuna,25.16,89.7,61915.0,48000,observed_annual_max,secondary published table,1.29,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2000,Bahadurabad,Jamuna,25.16,89.7,69320.37,48000,observed_annual_max,secondary published table,1.444,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2001,Bahadurabad,Jamuna,25.16,89.7,49229.56,48000,observed_annual_max,secondary published table,1.026,1,1,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2002,Bahadurabad,Jamuna,25.16,89.7,69727.84,48000,observed_annual_max,secondary published table,1.453,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2003,Bahadurabad,Jamuna,25.16,89.7,65683.93,48000,observed_annual_max,secondary published table,1.368,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2004,Bahadurabad,Jamuna,25.16,89.7,96105.52,48000,observed_annual_max,secondary published table,2.002,1,3,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2005,Bahadurabad,Jamuna,25.16,89.7,58766.89,48000,observed_annual_max,secondary published table,1.224,1,1,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2006,Bahadurabad,Jamuna,25.16,89.7,47666.45,48000,observed_annual_max,secondary published table,0.993,0,0,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2007,Bahadurabad,Jamuna,25.16,89.7,42240.84,48000,observed_annual_max,secondary published table,0.88,0,0,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2008,Bahadurabad,Jamuna,25.16,89.7,62378.87,48000,observed_annual_max,secondary published table,1.3,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2009,Bahadurabad,Jamuna,25.16,89.7,54004.46,48000,observed_annual_max,secondary published table,1.125,1,1,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2010,Bahadurabad,Jamuna,25.16,89.7,45775.37,48000,observed_annual_max,secondary published table,0.954,0,0,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2011,Bahadurabad,Jamuna,25.16,89.7,53317.36,48000,observed_annual_max,secondary published table,1.111,1,1,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2012,Bahadurabad,Jamuna,25.16,89.7,63554.27,48000,observed_annual_max,secondary published table,1.324,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2013,Bahadurabad,Jamuna,25.16,89.7,75660.06,48000,observed_annual_max,secondary published table,1.576,1,3,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2014,Bahadurabad,Jamuna,25.16,89.7,62924.48,48000,observed_annual_max,secondary published table,1.311,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+2015,Bahadurabad,Jamuna,25.16,89.7,68340.72,48000,observed_annual_max,secondary published table,1.424,1,2,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1987,Hardinge Bridge,Ganges/Padma,24.06,89.03,76000.0,43000,observed_event_peak,published historical flood table,1.767,1,3,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1988,Hardinge Bridge,Ganges/Padma,24.06,89.03,72300.0,43000,observed_event_peak,published historical flood table,1.681,1,3,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
+1998,Hardinge Bridge,Ganges/Padma,24.06,89.03,80300.0,43000,observed_event_peak,published historical flood table,1.867,1,3,REAL_OBSERVED_HYDROLOGY,Use as hydrological seed/validation data; not a daily ML training set.
