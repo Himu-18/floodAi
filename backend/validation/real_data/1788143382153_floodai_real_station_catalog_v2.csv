@@ -1,0 +1,23 @@
+station_id,station_name,river,district,upazila,latitude,longitude,data_available_from,data_available_to,data_type,source,record_status,time_span_years,long_record_20y_plus,recommended_for_ml_candidate
+SW135,Juri_Silghat,Juri,Moulvibazar,Moulvibazar Sadar,24.5902,92.1177,1989-02-22,2025-12-24,discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,36.8,1,1
+SW192,Motiganj,Lungla,Moulvibazar,Sreemangal,24.3065,91.6822,1976-06-08,2025-12-25,discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,49.5,1,1
+SW93.5L,Mawa,Ganges-Padma,Munshiganj,Lohajang,23.4748,90.2531,1994-06-01,2025-10-22,discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,31.4,1,1
+SW314,Ghosegaon,Nitai,Mymensingh,Dhobaura,25.1494,90.5176,1965-04-08,2025-11-26,discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,60.6,1,1
+SW228.5,Mymensingh,Old Brahmaputra,Mymensingh,Mymensingh Sadar,24.7367,90.4296,1966-05-03,2025-12-21,discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,59.6,1,1
+SW209A,Tetulia,Mahananda,Panchagarh,Tentulia,26.5054,88.3446,2013-07-17,2025-12-21,discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,12.4,0,1
+SW139,Bardeswari,Karatoa-Atrai-Gur-Gumani-Hurasagar,Panchagarh,Tentulia,26.5046,88.492,1988-03-29,2025-12-29,discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,37.8,1,1
+SW37.5,Betagi,Bishkhali,Barguna,Betagi,22.4161,90.1656,2023-01-07,2025-11-29,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,2.9,0,0
+SW18,Barisal,Kirtankhola,Barisal,Barisal Sadar,22.6966,90.374,2021-07-25,2025-11-27,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,4.3,0,0
+SW7.5,Demra(Balu),Balu,Dhaka,Demra,23.7329,90.4965,2006-03-28,2025-12-18,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,19.7,0,1
+SW179,Demra(Lakhya),Lakhya,Dhaka,Demra,23.7278,90.5059,2006-01-13,2025-12-17,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,19.9,0,1
+SW42,Dhaka_Mill Barrack,Buriganga,Dhaka,Dhaka Sadar(Kotwal),23.6969,90.4195,2006-01-14,2025-12-15,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,19.9,0,1
+SW302,Mirpur,Turag,Dhaka,Mirpur,23.7846,90.3364,2005-11-03,2025-12-18,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,20.1,1,1
+SW299,Tongi,Tongi Khal,Dhaka,Uttara,23.8824,90.4021,2006-01-15,2025-12-17,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,19.9,0,1
+SW198,Haridaspur,Madaripur Beel Route,Gopalganj,Gopalganj Sadar,23.0296,89.8144,2023-07-03,2025-11-11,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,2.4,0,0
+SW241,Khulna,Rupsa-Pasur,Khulna,Khulna Sadar,22.8176,89.569,1998-11-20,2025-12-11,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,27.1,1,1
+SW273,Bhairab Bazar,Surma-Meghna,Kishoreganj,Bhairab,24.0455,90.9911,2001-02-02,2025-12-22,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,24.9,1,1
+SW218,Bardia(Nabaganga),Nabaganga,Narail,Kalia,23.0834,89.6708,1998-11-18,2025-12-13,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,27.1,1,1
+SW103,Bardia(Madhumati),Gorai-Madhumati-Haringhata-Baleswar,Narail,Kalia,23.0988,89.6952,1998-11-18,2025-12-13,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,27.1,1,1
+SW230.1,Ramnagar,Old Brahmaputra,Narsingdi,Roypura,24.037,90.9607,2022-11-13,2025-12-21,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,3.1,0,0
+SW19,Mirzaganj,Barisal-Buriswar,Patuakhali,Mirzaganj,22.3587,90.2304,2022-07-07,2025-11-30,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,3.4,0,0
+SW107,Pirojpur,Gorai-Madhumati-Haringhata-Baleswar,Pirojpur,Pirojpur Sadar,22.5826,89.963,2021-07-26,2025-11-28,tidal_discharge,Bangladesh Water Development Board (BWDB) Hydrology,REAL_SOURCE_AVAILABILITY,4.3,0,0
