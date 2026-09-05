@@ -22,6 +22,29 @@
 1998,Rangpur,Kaunia,Teesta,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 1998,Rangpur,Badargonj,Jamuneswari,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 1998,Sirajganj,Serajgonj,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2004,Gaibandha,Gaibandha,Ghagot,1,station,ReliefWeb river situation 19 Jul 2004
+2004,Jamalpur,Bahadurabad,Jamuna,1,station,ReliefWeb ACT Alert 1/2004
+2004,Jamalpur,Bahadurabad,Jamuna,1,station,ReliefWeb river situation 19 Jul 2004
+2004,Jamalpur,Bahadurabad,Jamuna,0,station,ReliefWeb Monthly Flood Bulletin Aug 2004 (below danger in August)
+2004,Jamalpur,Jamalpur,Old Brahmaputra,0,station,ReliefWeb Monthly Flood Bulletin Aug 2004
+2004,Kurigram,Kurigram,Dharla,1,station,ReliefWeb ACT Alert 1/2004
+2004,Manikganj,Aricha,Jamuna,1,station,ReliefWeb ACT Alert 1/2004
+2004,Manikganj,Aricha,Jamuna,1,station,ReliefWeb river situation 19 Jul 2004
+2004,Pabna,Hardinge-RB,Ganges,0,station,ReliefWeb Monthly Flood Bulletin Aug 2004 (below normal-year level)
+2004,Rajbari,Goalondo,Padma,1,station,ReliefWeb river situation 19 Jul 2004
+2004,Rajbari,Goalondo,Padma,1,station,ReliefWeb river situation 26 Jul 2004
+2004,Sirajganj,Kazipur,Jamuna,1,station,ReliefWeb ACT Alert 1/2004 (Sirajganj point)
+2004,Sirajganj,Kazipur,Jamuna,1,station,ReliefWeb river situation 19 Jul 2004
+2007,Jamalpur,Bahadurabad,Jamuna,1,station,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,Jamalpur,Bahadurabad,Jamuna,1,station,ReliefWeb DMIC SitRep 02 Aug 2007
+2007,Kurigram,Kurigram,Dharla,1,station,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,Kurigram,Kurigram,Dharla,1,station,ReliefWeb DMIC SitRep 02 Aug 2007
+2007,Manikganj,Aricha,Jamuna,1,station,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,Manikganj,Aricha,Jamuna,1,station,ReliefWeb DMIC SitRep 02 Aug 2007
+2007,Rajbari,Goalondo,Padma,1,station,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,Rajbari,Goalondo,Padma,1,station,ReliefWeb DMIC SitRep 02 Aug 2007
+2007,Sirajganj,Kazipur,Jamuna,1,station,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,Sirajganj,Kazipur,Jamuna,1,station,ReliefWeb DMIC SitRep 02 Aug 2007
 2012,Dhaka,Dhaka,Buriganga,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 2012,Dhaka,Mirpur,Turag,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 2012,Dinajpur,Dinajpur,Punarbhaba,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
@@ -66,6 +89,16 @@
 2017,Sunamganj,,Surma/haor rivers,1,district,FFWC Annual Flood Report 2017
 2017,Sylhet,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2017
 2017,Thakurgaon,,Northern rivers,1,district,FFWC Annual Flood Report 2017
+2019,Gaibandha,Gaibandha,Ghagot,1,station,Daily Star 13 Jul 2019
+2019,Gaibandha,Gaibandha,Ghagot,1,station,Dhaka Tribune 19 Jul 2019
+2019,Gaibandha,Gaibandha,Ghagot,1,station,Dhaka Tribune 28 Jul 2019
+2019,Jamalpur,Bahadurabad,Jamuna,1,station,The Watchers 17 Jul 2019 (record high)
+2019,Kurigram,Kurigram,Dharla,1,station,Daily Star 13 Jul 2019
+2019,Kurigram,Kurigram,Dharla,1,station,Dhaka Tribune 28 Jul 2019
+2019,Rajbari,Goalondo,Padma,1,station,Dhaka Tribune 28 Jul 2019
+2019,Rangpur,Kaunia,Teesta,1,station,Daily Star 13 Jul 2019 (প্রথমবার danger mark cross)
+2019,Sirajganj,Kazipur,Jamuna,1,station,Dhaka Tribune 28 Jul 2019
+2019,Sirajganj,Baghabari,Atrai,1,station,Dhaka Tribune 28 Jul 2019
 2020,Bagerhat,,Pashur,1,district,FFWC Annual Flood Report 2020
 2020,Bandarban,,Matamuhuri,1,district,FFWC Annual Flood Report 2020
 2020,Barguna,,Southern rivers,1,district,FFWC Annual Flood Report 2020
@@ -97,3 +130,11 @@
 2020,Sunamganj,,Surma/Meghna basin,1,district,FFWC Annual Flood Report 2020
 2020,Sylhet,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2020
 2020,Thakurgaon,,Tangon,1,district,FFWC Annual Flood Report 2020
+2022,Gaibandha,Gaibandha,Ghagot,1,station,Prothom Alo 21 Jun 2022
+2022,Jamalpur,Bahadurabad,Jamuna,1,station,Prothom Alo 21 Jun 2022
+2022,Jamalpur,Bahadurabad,Jamuna,1,station,Dhaka Tribune 25 Jun 2022
+2022,Kurigram,Kurigram,Dharla,1,station,Prothom Alo 21 Jun 2022
+2022,Sirajganj,Kazipur,Jamuna,1,station,Prothom Alo 21 Jun 2022 (Kazipur point)
+2022,Sirajganj,Kazipur,Jamuna,1,station,Dhaka Tribune 25 Jun 2022
+2022,Sirajganj,Baghabari,Atrai,1,station,Dhaka Tribune 25 Jun 2022
+2024,Rangpur,Kaunia,Teesta,0,station,Wikipedia August 2024 Bangladesh floods (danger level ঠিক ছুঁইছুঁই
