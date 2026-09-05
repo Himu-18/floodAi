@@ -61,8 +61,29 @@ def from_v6_district_events():
     return rows
 
 
+def from_researched_stations():
+    """
+    Claude ওয়েব সার্চ করে সংগ্রহ করা station-নির্দিষ্ট real observation
+    (FFWC bulletin/ReliefWeb/Daily Star/Prothom Alo সূত্রে) — ২০০৪, ২০০৭,
+    ২০১৯, ২০২২, ২০২৪ সালের জন্য, যেগুলো আগে flood_events.csv-এর মোটা
+    জাতীয় date-range অনুমানের উপর নির্ভরশীল ছিল।
+    """
+    rows = []
+    path = REAL_DATA_DIR / "station_level_events_researched.csv"
+    if not path.exists():
+        return rows
+    with open(path, encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            rows.append({
+                "year": int(r["year"]), "district": r["district_en"], "station": r["station"],
+                "river": r["river"], "flood_occurred": int(r["flood_occurred"]),
+                "granularity": "station", "source": r["source"],
+            })
+    return rows
+
+
 def run():
-    all_rows = from_v3_waterlevel() + from_v6_district_events()
+    all_rows = from_v3_waterlevel() + from_v6_district_events() + from_researched_stations()
     all_rows.sort(key=lambda r: (r["year"], r["district"]))
 
     with open(OUT_PATH, "w", newline="", encoding="utf-8-sig") as f:

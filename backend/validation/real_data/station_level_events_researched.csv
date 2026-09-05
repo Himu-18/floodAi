@@ -1,0 +1,42 @@
+year,date,station,district_en,river,status_cm_above_danger,flood_occurred,source
+2004,2004-07-13,Bahadurabad,Jamalpur,Jamuna,67,1,ReliefWeb ACT Alert 1/2004
+2004,2004-07-13,Aricha,Manikganj,Jamuna,2,1,ReliefWeb ACT Alert 1/2004
+2004,2004-07-13,Kazipur,Sirajganj,Jamuna,75,1,ReliefWeb ACT Alert 1/2004 (Sirajganj point)
+2004,2004-07-13,Kurigram,Kurigram,Dharla,91,1,ReliefWeb ACT Alert 1/2004
+2004,2004-07-19,Bahadurabad,Jamalpur,Jamuna,17,1,ReliefWeb river situation 19 Jul 2004
+2004,2004-07-19,Aricha,Manikganj,Jamuna,63,1,ReliefWeb river situation 19 Jul 2004
+2004,2004-07-19,Kazipur,Sirajganj,Jamuna,67,1,ReliefWeb river situation 19 Jul 2004
+2004,2004-07-19,Gaibandha,Gaibandha,Ghagot,72,1,ReliefWeb river situation 19 Jul 2004
+2004,2004-07-19,Goalondo,Rajbari,Padma,110,1,ReliefWeb river situation 19 Jul 2004
+2004,2004-07-26,Goalondo,Rajbari,Padma,125,1,ReliefWeb river situation 26 Jul 2004
+2004,2004-08-20,Bahadurabad,Jamalpur,Jamuna,-30,0,ReliefWeb Monthly Flood Bulletin Aug 2004 (below danger in August)
+2004,2004-08-20,Hardinge-RB,Pabna,Ganges,-40,0,ReliefWeb Monthly Flood Bulletin Aug 2004 (below normal-year level)
+2004,2004-08-20,Jamalpur,Jamalpur,Old Brahmaputra,-20,0,ReliefWeb Monthly Flood Bulletin Aug 2004
+2007,2007-08-01,Bahadurabad,Jamalpur,Jamuna,83,1,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,2007-08-01,Aricha,Manikganj,Jamuna,112,1,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,2007-08-01,Kazipur,Sirajganj,Jamuna,117,1,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,2007-08-01,Kurigram,Kurigram,Dharla,51,1,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,2007-08-01,Goalondo,Rajbari,Padma,136,1,ReliefWeb DMIC SitRep 01 Aug 2007
+2007,2007-08-02,Bahadurabad,Jamalpur,Jamuna,77,1,ReliefWeb DMIC SitRep 02 Aug 2007
+2007,2007-08-02,Aricha,Manikganj,Jamuna,122,1,ReliefWeb DMIC SitRep 02 Aug 2007
+2007,2007-08-02,Kazipur,Sirajganj,Jamuna,120,1,ReliefWeb DMIC SitRep 02 Aug 2007
+2007,2007-08-02,Kurigram,Kurigram,Dharla,43,1,ReliefWeb DMIC SitRep 02 Aug 2007
+2007,2007-08-02,Goalondo,Rajbari,Padma,144,1,ReliefWeb DMIC SitRep 02 Aug 2007
+2019,2019-07-13,Kaunia,Rangpur,Teesta,12,1,Daily Star 13 Jul 2019 (প্রথমবার danger mark cross)
+2019,2019-07-13,Kurigram,Kurigram,Dharla,57,1,Daily Star 13 Jul 2019
+2019,2019-07-13,Gaibandha,Gaibandha,Ghagot,16,1,Daily Star 13 Jul 2019
+2019,2019-07-17,Bahadurabad,Jamalpur,Jamuna,21,1,The Watchers 17 Jul 2019 (record high)
+2019,2019-07-19,Gaibandha,Gaibandha,Ghagot,94,1,Dhaka Tribune 19 Jul 2019
+2019,2019-07-27,Kurigram,Kurigram,Dharla,24,1,Dhaka Tribune 28 Jul 2019
+2019,2019-07-27,Gaibandha,Gaibandha,Ghagot,24,1,Dhaka Tribune 28 Jul 2019
+2019,2019-07-27,Kazipur,Sirajganj,Jamuna,41,1,Dhaka Tribune 28 Jul 2019
+2019,2019-07-27,Baghabari,Sirajganj,Atrai,16,1,Dhaka Tribune 28 Jul 2019
+2019,2019-07-27,Goalondo,Rajbari,Padma,8,1,Dhaka Tribune 28 Jul 2019
+2022,2022-06-20,Bahadurabad,Jamalpur,Jamuna,23,1,Prothom Alo 21 Jun 2022
+2022,2022-06-20,Kazipur,Sirajganj,Jamuna,51,1,Prothom Alo 21 Jun 2022 (Kazipur point)
+2022,2022-06-20,Kurigram,Kurigram,Dharla,34,1,Prothom Alo 21 Jun 2022
+2022,2022-06-20,Gaibandha,Gaibandha,Ghagot,20,1,Prothom Alo 21 Jun 2022
+2022,2022-06-25,Bahadurabad,Jamalpur,Jamuna,9,1,Dhaka Tribune 25 Jun 2022
+2022,2022-06-25,Kazipur,Sirajganj,Jamuna,13,1,Dhaka Tribune 25 Jun 2022
+2022,2022-06-25,Baghabari,Sirajganj,Atrai,25,1,Dhaka Tribune 25 Jun 2022
+2024,2024-08-21,Kaunia,Rangpur,Teesta,-0.7,0,Wikipedia August 2024 Bangladesh floods (danger level ঠিক ছুঁইছুঁই, borderline)
