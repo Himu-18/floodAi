@@ -49,6 +49,8 @@ DISTRICT_BN_TO_EN = {
     "জামালপুর": "Jamalpur", "মানিকগঞ্জ": "Manikganj", "সিরাজগঞ্জ": "Sirajganj",
     "রাজবাড়ী": "Rajbari", "পাবনা": "Pabna", "শরীয়তপুর": "Shariatpur",
     "কুড়িগ্রাম": "Kurigram", "গাইবান্ধা": "Gaibandha", "রংপুর": "Rangpur",
+    "মৌলভীবাজার": "Moulvibazar", "মুন্সিগঞ্জ": "Munshiganj", "ময়মনসিংহ": "Mymensingh",
+    "খুলনা": "Khulna", "ঢাকা": "Dhaka", "কিশোরগঞ্জ": "Kishoreganj",
 }
 
 
