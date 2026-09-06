@@ -87,6 +87,52 @@ VALIDATION_STATIONS = [
         "note": "ব্যারেজ-প্রভাবিত (Teesta Barrage upstream) — dry/wet season flow-এ বিশাল তফাত থাকতে পারে",
         "category": "barrage_affected",
     },
+    # ⬇️ ২০২৬-০৯: v2 station catalog (BWDB, ২০+ বছরের record, ML-candidate
+    # flag থাকা) থেকে নতুন ৬টা station যোগ করা হলো — নতুন নদী-সিস্টেম
+    # (flash flood/urban/tidal/confluence/distributary) কভার করার জন্য,
+    # যাতে শুধু Jamuna-Ganges trunk-নির্ভর না থেকে diversity বাড়ে।
+    {
+        "name": "Moulvibazar", "ffwc_id": "SW202", "river": "Manu",
+        "district": "মৌলভীবাজার", "danger_level_m": 11.3,
+        "lat": 24.57, "lon": 91.7,
+        "note": "Flash Flood — সিলেট অঞ্চলের ভিন্ন hydrological আচরণ কভার করার জন্য",
+        "category": "flash_flood",
+    },
+    {
+        "name": "Mawa", "ffwc_id": "SW93.5", "river": "Padma (Mawa)",
+        "district": "মুন্সিগঞ্জ", "danger_level_m": 5.65,
+        "lat": 23.43, "lon": 90.27,
+        "note": "পদ্মা মূল প্রবাহের downstream point, ঢাকার কাছাকাছি",
+        "category": "mega_trunk",
+    },
+    {
+        "name": "Mymensingh", "ffwc_id": "SW228.5", "river": "Old Brahmaputra",
+        "district": "ময়মনসিংহ", "danger_level_m": 12.05,
+        "lat": 24.95, "lon": 90.67,
+        "note": "distributary (পুরাতন ব্রহ্মপুত্র), ৫৯.৬ বছরের দীর্ঘ record",
+        "category": "distributary",
+    },
+    {
+        "name": "Khulna", "ffwc_id": "SW241", "river": "Rupsa-Pasur",
+        "district": "খুলনা", "danger_level_m": 2.6,
+        "lat": 22.63, "lon": 89.48,
+        "note": "Coastal & Tidal — জোয়ার-ভাটা নদী, WorldTides/tide_ratio ফিক্সের সাথে সরাসরি প্রাসঙ্গিক",
+        "category": "tidal",
+    },
+    {
+        "name": "Mirpur", "ffwc_id": "SW302", "river": "Turag",
+        "district": "ঢাকা", "danger_level_m": 5.5,
+        "lat": 23.82, "lon": 90.37,
+        "note": "Urban Waterlogging — drainage-capacity-নির্ভর, discharge_score skip হওয়া উচিত (confidence:none)",
+        "category": "urban",
+    },
+    {
+        "name": "Bhairab Bazar", "ffwc_id": "SW273", "river": "Upper Meghna",
+        "district": "কিশোরগঞ্জ", "danger_level_m": 5.8,
+        "lat": 23.9, "lon": 90.78,
+        "note": "Surma+Kushiyara মিলিত হয়ে Meghna হওয়ার confluence point, ২৪.৯ বছরের record",
+        "category": "confluence",
+    },
 ]
 
 if __name__ == "__main__":
