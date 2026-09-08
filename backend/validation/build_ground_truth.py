@@ -82,8 +82,33 @@ def from_researched_stations():
     return rows
 
 
+def from_v13_station_master():
+    """
+    v13: station-level feature (peak vs danger water-level, ২০১৭+২০২০)
+    district-level verified label (v9/v10)-এর সাথে join করা। শুধু
+    label_join_status == "LABELED" row নেওয়া হচ্ছে (unverified বাদ)।
+    granularity="district" কারণ flood_occurred আসলে FFWC-র district-level
+    verified determination, station-টা শুধু hydrological context।
+    """
+    rows = []
+    path = REAL_DATA_DIR / "floodai_district_station_master_v13.csv"
+    if not path.exists():
+        return rows
+    with open(path, encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            if r["label_join_status"] != "LABELED":
+                continue
+            rows.append({
+                "year": int(r["year"]), "district": r["district"], "station": r["station"],
+                "river": r["river"], "flood_occurred": int(float(r["flood_occurred"])),
+                "granularity": "district", "source": r["source"],
+            })
+    return rows
+
+
 def run():
-    all_rows = from_v3_waterlevel() + from_v6_district_events() + from_researched_stations()
+    all_rows = (from_v3_waterlevel() + from_v6_district_events()
+                + from_researched_stations() + from_v13_station_master())
     all_rows.sort(key=lambda r: (r["year"], r["district"]))
 
     with open(OUT_PATH, "w", newline="", encoding="utf-8-sig") as f:
@@ -95,7 +120,7 @@ def run():
     print(f"✅ {OUT_PATH} — মোট {len(all_rows)}টা real ground-truth এন্ট্রি "
           f"({flood_count} flood, {len(all_rows) - flood_count} below-danger)")
     print(f"   station-level (v3, সবচেয়ে নির্ভরযোগ্য): {sum(1 for r in all_rows if r['granularity']=='station')}")
-    print(f"   district-level (v6): {sum(1 for r in all_rows if r['granularity']=='district')}")
+    print(f"   district-level (v6/v13): {sum(1 for r in all_rows if r['granularity']=='district')}")
     years = sorted(set(r["year"] for r in all_rows))
     print(f"   বছর কভার করা হয়েছে: {years}")
 

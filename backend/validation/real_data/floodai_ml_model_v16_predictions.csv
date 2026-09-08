@@ -1,0 +1,13 @@
+record_id,year,district,river,station,flood_occurred,predicted_probability,predicted_class
+V13-0029,2020,Rangpur,Teesta,Kaunia,1.0,0.9442635479160755,1
+V13-0030,2020,Rangpur,Jamuneswari,Badarganj,1.0,0.9895719827025468,1
+V13-0041,2020,Manikganj,Jamuna,Aricha,1.0,0.9987537536229208,1
+V13-0048,2020,Dhaka,Buriganga,Dhaka,1.0,0.012281501742712697,0
+V13-0049,2020,Munshiganj,Buriganga,Hariharpara,1.0,0.015088037436651077,0
+V13-0050,2020,Dhaka,Balu,Demra,1.0,0.8902855066144324,1
+V13-0051,2020,Narayanganj,Lakhya,Narayanganj,1.0,0.9801006609836481,1
+V13-0052,2020,Dhaka,Turag,Mirpur,1.0,0.9311995422800565,1
+V13-0054,2020,Manikganj,Kaliganga,Taraghat,1.0,0.9973507066368467,1
+V13-0055,2020,Manikganj,Dhaleswari,Jagir,1.0,0.9945838933066574,1
+V13-0056,2020,Munshiganj,Dhaleswari,Rekabi Bazar,1.0,0.0829532692784457,0
+V13-0057,2020,Dhaka,Banshi,Nayarhat,1.0,0.6743538307656555,1
