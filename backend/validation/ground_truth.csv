@@ -73,13 +73,19 @@
 2012,Sirajganj,Serajgonj,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 2017,Brahmanbaria,,Titas,1,district,FFWC Annual Flood Report 2017
 2017,Chapainawabganj,,Northern rivers,1,district,FFWC Annual Flood Report 2017
+2017,Dhaka,Dhaka,Buriganga,0,district,"FFWC Annual Flood Report 2017, Table 3.1"
+2017,Dhaka,Demra,Balu,0,district,"FFWC Annual Flood Report 2017, Table 3.1"
+2017,Dhaka,Mirpur,Turag,0,district,"FFWC Annual Flood Report 2017, Table 3.1"
 2017,Dinajpur,,Northern rivers,1,district,FFWC Annual Flood Report 2017
 2017,Faridpur,,Padma,1,district,FFWC Annual Flood Report 2017
+2017,Gazipur,Tongi,Tongi Khal,0,district,"FFWC Annual Flood Report 2017, Table 3.1"
 2017,Habiganj,,Khowai,1,district,FFWC Annual Flood Report 2017
 2017,Jashore,,Kobadak/local drainage,1,district,FFWC Annual Flood Report 2017
 2017,Manikganj,,Padma,1,district,FFWC Annual Flood Report 2017
+2017,Manikganj,Aricha,Jamuna,1,district,"FFWC Annual Flood Report 2017, Table 3.1"
 2017,Moulvibazar,,Surma-Kushiyara/Khowai-Manu-Dhalai,1,district,FFWC Annual Flood Report 2017
 2017,Munshiganj,,Padma,1,district,FFWC Annual Flood Report 2017
+2017,Mymensingh,Mymensingh,Old Brahmaputra,0,district,"FFWC Annual Flood Report 2017, Table 3.1"
 2017,Naogaon,,Northern rivers,1,district,FFWC Annual Flood Report 2017
 2017,Netrokona,,Kangsha/flash-flood rivers,1,district,FFWC Annual Flood Report 2017
 2017,Panchagarh,,Northern rivers,1,district,FFWC Annual Flood Report 2017
@@ -108,6 +114,10 @@
 2020,Chandpur,,Meghna,1,district,FFWC Annual Flood Report 2020
 2020,Cox's Bazar,,Matamuhuri,1,district,FFWC Annual Flood Report 2020
 2020,Dhaka,,Padma/Buriganga-Turag system,1,district,FFWC Annual Flood Report 2020
+2020,Dhaka,Dhaka,Buriganga,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Dhaka,Demra,Balu,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Dhaka,Mirpur,Turag,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Dhaka,Nayarhat,Banshi,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Dinajpur,,Punarbhaba,1,district,FFWC Annual Flood Report 2020
 2020,Faridpur,,Padma,1,district,FFWC Annual Flood Report 2020
 2020,Feni,,Muhuri,1,district,FFWC Annual Flood Report 2020
@@ -116,16 +126,24 @@
 2020,Khulna,,Pashur,1,district,FFWC Annual Flood Report 2020
 2020,Madaripur,,Padma/Arial Khan,1,district,FFWC Annual Flood Report 2020
 2020,Manikganj,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Manikganj,Aricha,Jamuna,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Manikganj,Taraghat,Kaliganga,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Manikganj,Jagir,Dhaleswari,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Moulvibazar,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2020
 2020,Munshiganj,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Munshiganj,Hariharpara,Buriganga,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Munshiganj,Rekabi Bazar,Dhaleswari,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Naogaon,,Atrai/Little Jamuna,1,district,FFWC Annual Flood Report 2020
 2020,Narayanganj,,Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Narayanganj,Narayanganj,Lakhya,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Narsingdi,,Meghna basin,1,district,FFWC Annual Flood Report 2020
 2020,Netrokona,,Meghna basin,1,district,FFWC Annual Flood Report 2020
 2020,Patuakhali,,Southern rivers,1,district,FFWC Annual Flood Report 2020
 2020,Pirojpur,,Southern rivers,1,district,FFWC Annual Flood Report 2020
 2020,Rajbari,,Padma,1,district,FFWC Annual Flood Report 2020
 2020,Rangpur,,Northern rivers,1,district,FFWC Annual Flood Report 2020
+2020,Rangpur,Kaunia,Teesta,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Rangpur,Badarganj,Jamuneswari,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Shariatpur,,Padma,1,district,FFWC Annual Flood Report 2020
 2020,Sunamganj,,Surma/Meghna basin,1,district,FFWC Annual Flood Report 2020
 2020,Sylhet,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2020
