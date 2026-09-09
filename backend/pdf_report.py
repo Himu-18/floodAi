@@ -127,7 +127,7 @@ def generate_flood_report(data):
         textColor=colors.darkblue,
         spaceAfter=12
     )
-    elements.append(Paragraph("<b>FloodAI - Early Warning Report</b>", title_style))
+    elements.append(Paragraph("<b>FloodAI - Forecasting, Observing, Monitoring &amp; Decision Support Report</b>", title_style))
     
     # --- 2. Date & Time ---
     # ⚠️ এই লাইনটা ইচ্ছাকৃতভাবে ইংরেজিতে এবং styles['Normal'] (default Helvetica)
