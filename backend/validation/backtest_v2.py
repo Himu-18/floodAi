@@ -51,6 +51,7 @@ DISTRICT_BN_TO_EN = {
     "কুড়িগ্রাম": "Kurigram", "গাইবান্ধা": "Gaibandha", "রংপুর": "Rangpur",
     "মৌলভীবাজার": "Moulvibazar", "মুন্সিগঞ্জ": "Munshiganj", "ময়মনসিংহ": "Mymensingh",
     "খুলনা": "Khulna", "ঢাকা": "Dhaka", "কিশোরগঞ্জ": "Kishoreganj",
+    "পঞ্চগড়": "Panchagarh",
 }
 
 
