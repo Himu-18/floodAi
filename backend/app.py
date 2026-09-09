@@ -11,7 +11,7 @@ from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 import requests
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 # .env ফাইল থেকে environment variable লোড করা (WEATHER_API_KEY, GROQ_API_KEY) —
@@ -331,6 +331,52 @@ def fetch_soil_moisture(lat, lon):
     except Exception as e:
         print(f"fetch_soil_moisture error: {e}")
         return 0.5
+
+# ── Multi-day forecast (২০২৬-০৯)-এর জন্য: নির্দিষ্ট day_offset দিনের
+# পূর্বাভাসিত মোট বৃষ্টিপাত। lat/lon (স্থানীয়) অথবা city (upstream শহর)
+# — যেকোনো একটা দিতে হবে। OpenWeatherMap-এর 5-day/3-hour forecast endpoint
+# ব্যবহার করা হচ্ছে (এখন যেটা upstream_forecast route-এ ব্যবহার হয়, সেটাই) —
+# max ৫ দিন পর্যন্ত পাওয়া যায়, তাই day_offset>4 হলে ফাঁকা/০ রিটার্ন করবে।
+def fetch_daily_rain_forecast(day_offset, lat=None, lon=None, city=None):
+    try:
+        params = {"appid": WEATHER_API_KEY, "units": "metric"}
+        if city:
+            params["q"] = city
+        else:
+            params["lat"] = lat
+            params["lon"] = lon
+        r = requests.get("https://api.openweathermap.org/data/2.5/forecast", params=params, timeout=5)
+        data = r.json()
+        items = data.get("list", [])
+        target_date = (datetime.now() + timedelta(days=day_offset)).strftime("%Y-%m-%d")
+        total = sum(it.get("rain", {}).get("3h", 0) for it in items if it.get("dt_txt", "").startswith(target_date))
+        return round(total, 1)
+    except Exception as e:
+        print(f"fetch_daily_rain_forecast error: {e}")
+        return 0
+
+
+# soil_moisture-এর ভবিষ্যৎ (day_offset দিন পর) মান — Open-Meteo forecast_days
+# বাড়িয়ে সেই নির্দিষ্ট দিনের ২৪ ঘণ্টার গড় বের করা হচ্ছে।
+def fetch_soil_moisture_forecast(lat, lon, day_offset):
+    try:
+        r = requests.get(
+            "https://api.open-meteo.com/v1/forecast",
+            params={
+                "latitude": lat, "longitude": lon,
+                "hourly": "soil_moisture_0_to_1cm",
+                "forecast_days": min(day_offset + 1, 16),
+            },
+            timeout=5
+        )
+        values = r.json()["hourly"]["soil_moisture_0_to_1cm"]
+        start, end = day_offset * 24, day_offset * 24 + 24
+        day_values = values[start:end]
+        return round(sum(day_values) / len(day_values), 3) if day_values else 0.5
+    except Exception as e:
+        print(f"fetch_soil_moisture_forecast error: {e}")
+        return 0.5
+
 
 # ── Flash Flood-এর জন্য: গত ৬ ঘণ্টার rolling rainfall (মিমি)।
 # OpenWeatherMap-এর "rain.1h" শুধু গত ১ ঘণ্টার snapshot দেয়, যেখানে
@@ -790,6 +836,76 @@ def get_river(district_name):
         "forecast": river["forecast"],
         "dates": river["dates"],
     })
+
+# ── Multi-day Flood Forecast API (২০২৬-০৯, প্রথম সংস্করণ) ──
+# ⚠️ predict_flood()-এর জন্য নতুন কোনো মডেল না — শুধু "আজকের" ইনপুটের বদলে
+# ভবিষ্যতের পূর্বাভাসিত discharge/rain/soil-moisture দিয়ে একই মডেল চালানো
+# হচ্ছে। lag_time হিসাব করা হয়েছে এভাবে: upstream rain-এর "উৎস দিন" =
+# target_day − round(lag_time_hours/24) — যাতে ~২৪ ঘণ্টা lag থাকা জেলায়
+# "আগামীকাল"-এর পূর্বাভাস আজকের (ইতিমধ্যে জানা, কম অনিশ্চিত) upstream rain
+# ব্যবহার করে, "আগামীকালের" (এখনো না-ঘটা) rain না।
+# ⚠️ সীমাবদ্ধতা: (১) rainfall forecast নিজেই দিন বাড়ার সাথে কম নির্ভরযোগ্য
+# হয় (বিশেষত মৌসুমী convective বৃষ্টি) — তাই ৩+ দিনের ফলাফলকে "কম নিশ্চিত"
+# হিসেবে দেখানো হচ্ছে, sharp percentage হিসেবে না। (২) confluence/tide/
+# cyclone/rainfall-intensity-এর মতো real-time-নির্ভর feature এই সংস্করণে
+# বাদ দেওয়া হয়েছে (এগুলোর নিজস্ব multi-day forecast এখনো নেই)। (৩) এটা
+# backtest_v2.py দিয়ে validate করা যায়নি — সেটা historical archive (hindsight)
+# ডেটা দিয়ে চলে, "তখন forecast কী বলেছিল" (issued-at-the-time) ডেটা না
+# থাকায় real forecast-skill যাচাই এখনো বাকি।
+@app.route('/api/flood/<district_name>/forecast')
+def get_flood_forecast(district_name):
+    if district_name not in DISTRICTS:
+        return jsonify({"error": "জেলা পাওয়া যায়নি"}), 404
+    info = DISTRICTS[district_name]
+
+    river = fetch_river(info["river_lat"], info["river_lon"])
+    discharge_arr = river.get("forecast") or []
+    lag_time_hours = info.get("lag_time", 24)
+    lag_days_shift = round(lag_time_hours / 24)
+
+    results = []
+    for d in (1, 3, 7):
+        if d >= len(discharge_arr):
+            continue  # Open-Meteo flood API সাধারণত ৭ দিন পর্যন্তই দেয়
+
+        discharge_d = float(discharge_arr[d])
+        local_rain_d = fetch_daily_rain_forecast(d, lat=info["lat"], lon=info["lon"])
+        upstream_source_day = max(0, d - lag_days_shift)
+        upstream_rain_d = fetch_daily_rain_forecast(upstream_source_day, city=info["upstream"])
+        soil_moisture_d = fetch_soil_moisture_forecast(info["lat"], info["lon"], d)
+
+        try:
+            pred = predict_flood(
+                discharge=discharge_d, upstream_rain=upstream_rain_d, local_rain=local_rain_d,
+                soil_moisture=soil_moisture_d, lag_time=lag_time_hours, cn=info.get("cn", 80),
+                risk_category=info.get("risk", "মাঝারি"), district_name=district_name,
+                flood_type=info.get("flood_type", "Riverine"),
+                vulnerable_areas=info.get("vulnerable_areas", []),
+                danger_level=info["danger_level"],
+            )
+        except Exception as e:
+            print(f"forecast day+{d} prediction error: {e}")
+            continue
+
+        results.append({
+            "day_offset": d,
+            "date": river["dates"][d] if d < len(river.get("dates", [])) else None,
+            "probability": pred.get("probability", 0),
+            "level": pred.get("level"),
+            "confidence": "মাঝারি" if d <= 1 else ("নিম্ন" if d >= 7 else "মাঝারি-নিম্ন"),
+            "inputs_used": {
+                "discharge": round(discharge_d), "local_rain_mm": local_rain_d,
+                "upstream_rain_mm": upstream_rain_d, "soil_moisture": soil_moisture_d,
+            },
+        })
+
+    return jsonify({
+        "district": district_name,
+        "lag_time_hours": lag_time_hours,
+        "forecast": results,
+        "note": "৩+ দিনের ফলাফল rainfall-forecast নির্ভুলতার সীমাবদ্ধতার কারণে কম নিশ্চিত — শুধু নির্দেশক (indicative), নিশ্চিত পূর্বাভাস না।",
+    })
+
 
 # ── Satellite API ──
 @app.route('/api/satellite/<district_name>')
