@@ -5,7 +5,9 @@
 # (Surma-Kushiyara, Ajmiriganj/Kuliarchar-এ পুনর্মিলিত) + পুরনো ব্রহ্মপুত্রের
 # সঙ্গমস্থল, হাওর অঞ্চলের ভিন্ন dynamics সহ।
 #
-# ⚠️ এখনো model.py/app.py এর সাথে wire করা হয়নি।
+# ⚠️ reference_discharge/cn/risk_category correction গুলো district_profiles_loader.py
+# দিয়ে model.py-তে স্বয়ংক্রিয়ভাবে wire হয়ে গেছে (verified, ২০২৬-০৯)। vulnerable_areas
+# (হাওর উপজেলা) flood_config.py-তে ম্যানুয়ালি যোগ করা হয়েছে।
 # ============================================================
 
 KISHOREGANJ_PROFILE = {
