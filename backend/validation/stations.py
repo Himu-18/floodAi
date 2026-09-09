@@ -133,6 +133,17 @@ VALIDATION_STATIONS = [
         "note": "Surma+Kushiyara মিলিত হয়ে Meghna হওয়ার confluence point, ২৪.৯ বছরের record",
         "category": "confluence",
     },
+    # ⬇️ ২০২৬-০৯: geographic gap পূরণ — flood_config.py-র verified station
+    # ব্যবহার করে (v2 catalog-এর SW139 Bardeswari-এর নিজস্ব danger_level
+    # নেই, তাই আলাদা কিন্তু একই অঞ্চলের already-verified SW140 station
+    # ব্যবহার করা হলো)
+    {
+        "name": "Panchagarh", "ffwc_id": "SW140", "river": "Upper Karatoa",
+        "district": "পঞ্চগড়", "danger_level_m": 70.3,
+        "lat": 26.13, "lon": 88.71,
+        "note": "উত্তর-পশ্চিম বাংলাদেশ কভার করার প্রথম station (আগে কোনো northwest station ছিল না)",
+        "category": "tributary",
+    },
 ]
 
 if __name__ == "__main__":
