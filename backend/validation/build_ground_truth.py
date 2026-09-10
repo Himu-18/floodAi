@@ -82,6 +82,37 @@ def from_researched_stations():
     return rows
 
 
+STATION_TO_DISTRICT = {"Bahadurabad": "Jamalpur", "Hardinge Bridge": "Pabna"}
+
+
+def from_v1_hydrology_seed():
+    """
+    v1: discharge-based annual flood flag (bankfull_exceeded), Bahadurabad+
+    Hardinge Bridge, ১৯৮৫-২০১৫। v3 (waterlevel-based) ইতিমধ্যে ১৯৯৮ ও ২০১২
+    কভার করে, তাই ডুপ্লিকেট এড়াতে সেই দুই বছর বাদ দিয়ে বাকি ৩১টা নতুন
+    বছর যোগ করা হচ্ছে — এটা independent evidence (discharge, water-level না)।
+    """
+    rows = []
+    path = REAL_DATA_DIR / "1788143382153_floodai_real_hydrology_seed_v1.csv"
+    if not path.exists():
+        return rows
+    with open(path, encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            year = int(r["year"])
+            if year in (1998, 2012):
+                continue  # v3-তে waterlevel-ভিত্তিক এন্ট্রি ইতিমধ্যে আছে
+            district = STATION_TO_DISTRICT.get(r["station"])
+            if not district:
+                continue
+            rows.append({
+                "year": year, "district": district, "station": r["station"],
+                "river": r["river"], "flood_occurred": int(r["bankfull_exceeded"]),
+                "granularity": "station",
+                "source": f"BWDB hydrology seed (discharge, {r['source_class']})",
+            })
+    return rows
+
+
 def from_v13_station_master():
     """
     v13: station-level feature (peak vs danger water-level, ২০১৭+২০২০)
@@ -106,9 +137,31 @@ def from_v13_station_master():
     return rows
 
 
+def from_ffwc_2019_annual_report():
+    """
+    FFWC Annual Flood Report 2019 (old.ffwc.gov.bd/images/annual19.pdf)-এর
+    Section 3.1-3.4 থেকে হাতে তোলা ৬২টা station-এর exact peak/danger-level/
+    days-above-danger ডেটা — এখন পর্যন্ত সবচেয়ে সমৃদ্ধ, নির্ভরযোগ্য একক-বছর
+    উৎস (২০১৯-এর আগের entry ছিল মাত্র ১০টা, এটা দিয়ে অনেক বেশি বেড়ে যাবে)।
+    """
+    rows = []
+    path = REAL_DATA_DIR / "ffwc_2019_annual_report_stations.csv"
+    if not path.exists():
+        return rows
+    with open(path, encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            rows.append({
+                "year": int(r["year"]), "district": r["district"], "station": r["station"],
+                "river": r["river"], "flood_occurred": int(r["exceeded_danger"]),
+                "granularity": "station", "source": r["source"],
+            })
+    return rows
+
+
 def run():
     all_rows = (from_v3_waterlevel() + from_v6_district_events()
-                + from_researched_stations() + from_v13_station_master())
+                + from_researched_stations() + from_v13_station_master()
+                + from_v1_hydrology_seed() + from_ffwc_2019_annual_report())
     all_rows.sort(key=lambda r: (r["year"], r["district"]))
 
     with open(OUT_PATH, "w", newline="", encoding="utf-8-sig") as f:
