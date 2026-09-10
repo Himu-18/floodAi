@@ -1,4 +1,19 @@
 ﻿year,district,station,river,flood_occurred,granularity,source
+1985,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1986,Jamalpur,Bahadurabad,Jamuna,0,station,"BWDB hydrology seed (discharge, secondary published table)"
+1987,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1987,Pabna,Hardinge Bridge,Ganges/Padma,1,station,"BWDB hydrology seed (discharge, published historical flood table)"
+1988,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1988,Pabna,Hardinge Bridge,Ganges/Padma,1,station,"BWDB hydrology seed (discharge, published historical flood table)"
+1989,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1990,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1991,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1992,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1993,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1994,Jamalpur,Bahadurabad,Jamuna,0,station,"BWDB hydrology seed (discharge, secondary published table)"
+1995,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1996,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+1997,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
 1998,Dhaka,Dhaka,Buriganga,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 1998,Dhaka,Mirpur,Turag,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 1998,Dinajpur,Dinajpur,Punarbhaba,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
@@ -22,11 +37,17 @@
 1998,Rangpur,Kaunia,Teesta,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 1998,Rangpur,Badargonj,Jamuneswari,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 1998,Sirajganj,Serajgonj,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+1999,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+2000,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+2001,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+2002,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+2003,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
 2004,Gaibandha,Gaibandha,Ghagot,1,station,ReliefWeb river situation 19 Jul 2004
 2004,Jamalpur,Bahadurabad,Jamuna,1,station,ReliefWeb ACT Alert 1/2004
 2004,Jamalpur,Bahadurabad,Jamuna,1,station,ReliefWeb river situation 19 Jul 2004
 2004,Jamalpur,Bahadurabad,Jamuna,0,station,ReliefWeb Monthly Flood Bulletin Aug 2004 (below danger in August)
 2004,Jamalpur,Jamalpur,Old Brahmaputra,0,station,ReliefWeb Monthly Flood Bulletin Aug 2004
+2004,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
 2004,Kurigram,Kurigram,Dharla,1,station,ReliefWeb ACT Alert 1/2004
 2004,Manikganj,Aricha,Jamuna,1,station,ReliefWeb ACT Alert 1/2004
 2004,Manikganj,Aricha,Jamuna,1,station,ReliefWeb river situation 19 Jul 2004
@@ -35,8 +56,11 @@
 2004,Rajbari,Goalondo,Padma,1,station,ReliefWeb river situation 26 Jul 2004
 2004,Sirajganj,Kazipur,Jamuna,1,station,ReliefWeb ACT Alert 1/2004 (Sirajganj point)
 2004,Sirajganj,Kazipur,Jamuna,1,station,ReliefWeb river situation 19 Jul 2004
+2005,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+2006,Jamalpur,Bahadurabad,Jamuna,0,station,"BWDB hydrology seed (discharge, secondary published table)"
 2007,Jamalpur,Bahadurabad,Jamuna,1,station,ReliefWeb DMIC SitRep 01 Aug 2007
 2007,Jamalpur,Bahadurabad,Jamuna,1,station,ReliefWeb DMIC SitRep 02 Aug 2007
+2007,Jamalpur,Bahadurabad,Jamuna,0,station,"BWDB hydrology seed (discharge, secondary published table)"
 2007,Kurigram,Kurigram,Dharla,1,station,ReliefWeb DMIC SitRep 01 Aug 2007
 2007,Kurigram,Kurigram,Dharla,1,station,ReliefWeb DMIC SitRep 02 Aug 2007
 2007,Manikganj,Aricha,Jamuna,1,station,ReliefWeb DMIC SitRep 01 Aug 2007
@@ -45,6 +69,10 @@
 2007,Rajbari,Goalondo,Padma,1,station,ReliefWeb DMIC SitRep 02 Aug 2007
 2007,Sirajganj,Kazipur,Jamuna,1,station,ReliefWeb DMIC SitRep 01 Aug 2007
 2007,Sirajganj,Kazipur,Jamuna,1,station,ReliefWeb DMIC SitRep 02 Aug 2007
+2008,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+2009,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+2010,Jamalpur,Bahadurabad,Jamuna,0,station,"BWDB hydrology seed (discharge, secondary published table)"
+2011,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
 2012,Dhaka,Dhaka,Buriganga,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 2012,Dhaka,Mirpur,Turag,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 2012,Dinajpur,Dinajpur,Punarbhaba,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
@@ -71,6 +99,9 @@
 2012,Rangpur,Kaunia,Teesta,0,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 2012,Rangpur,Badargonj,Jamuneswari,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
 2012,Sirajganj,Serajgonj,Jamuna,1,station,"FFWC/BWDB Annual Flood Report 2012, Tables 3.1 and 3.2"
+2013,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+2014,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
+2015,Jamalpur,Bahadurabad,Jamuna,1,station,"BWDB hydrology seed (discharge, secondary published table)"
 2017,Brahmanbaria,,Titas,1,district,FFWC Annual Flood Report 2017
 2017,Chapainawabganj,,Northern rivers,1,district,FFWC Annual Flood Report 2017
 2017,Dhaka,Dhaka,Buriganga,0,district,"FFWC Annual Flood Report 2017, Table 3.1"
@@ -95,16 +126,80 @@
 2017,Sunamganj,,Surma/haor rivers,1,district,FFWC Annual Flood Report 2017
 2017,Sylhet,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2017
 2017,Thakurgaon,,Northern rivers,1,district,FFWC Annual Flood Report 2017
+2019,Bandarban,Bandarban,Sangu,1,station,"FFWC Annual Flood Report 2019, Sec 3.4"
+2019,Bandarban,Lama,Matamuhuri,1,station,"FFWC Annual Flood Report 2019, Sec 3.4"
+2019,Bogura,Bogra,Karatoa,0,station,"FFWC Annual Flood Report 2019, Sec 3.1 (DL crossই করেনি)"
+2019,Bogura,Sariakandi,Jamuna,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Brahmanbaria,B.Baria,Titas,0,station,"FFWC Annual Flood Report 2019, Sec 3.3 (DL-এর নিচে)"
+2019,Chandpur,Chandpur,Meghna,1,station,"FFWC Annual Flood Report 2019, Sec 3.3 (tidal fluctuation-চালিত, short duration)"
+2019,Chattogram,Narayanhat,Halda,1,station,"FFWC Annual Flood Report 2019, Sec 3.4"
+2019,Chattogram,Panchpukuria,Halda,1,station,"FFWC Annual Flood Report 2019, Sec 3.4"
+2019,Chattogram,Dohazari,Sangu,1,station,"FFWC Annual Flood Report 2019, Sec 3.4"
+2019,Cox's Bazar,Chiringa,Matamuhuri,1,station,"FFWC Annual Flood Report 2019, Sec 3.4"
+2019,Cumilla,Comilla,Gumti,0,station,"FFWC Annual Flood Report 2019, Table 3.4 (DL-এর নিচে)"
+2019,Dhaka,Dhaka,Buriganga,0,station,"FFWC Annual Flood Report 2019, Sec 3.1 (DL-এর নিচে)"
+2019,Dhaka,Demra,Balu,0,station,"FFWC Annual Flood Report 2019, Sec 3.1 (DL-এর নিচে)"
+2019,Dhaka,Mirpur,Turag,0,station,"FFWC Annual Flood Report 2019, Sec 3.1 (DL-এর নিচে)"
+2019,Dhaka,Nayarhat,Banshi,0,station,"FFWC Annual Flood Report 2019, Table 3.1 (DL-এর নিচে)"
+2019,Dinajpur,Dinajpur,Punarbhaba,0,station,"FFWC Annual Flood Report 2019, Sec 3.2 (DL-এর নিচে)"
+2019,Faridpur,Kamarkhali,Gorai,1,station,"FFWC Annual Flood Report 2019, Sec 3.2"
+2019,Feni,Parshuram,Muhuri,1,station,"FFWC Annual Flood Report 2019, Sec 3.4"
 2019,Gaibandha,Gaibandha,Ghagot,1,station,Daily Star 13 Jul 2019
 2019,Gaibandha,Gaibandha,Ghagot,1,station,Dhaka Tribune 19 Jul 2019
 2019,Gaibandha,Gaibandha,Ghagot,1,station,Dhaka Tribune 28 Jul 2019
+2019,Gaibandha,Gaibandha,Ghagot,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Gaibandha,Fulchari,Jamuna,1,station,"FFWC Annual Flood Report 2019, Sec 3.1 (RHWL exceeded)"
+2019,Gazipur,Tongi,Tongi Khal,0,station,"FFWC Annual Flood Report 2019, Sec 3.1 (DL-এর নিচে)"
+2019,Habiganj,Ballah,Khowai,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Habiganj,Habiganj,Khowai,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
 2019,Jamalpur,Bahadurabad,Jamuna,1,station,The Watchers 17 Jul 2019 (record high)
+2019,Jamalpur,Bahadurabad,Jamuna,1,station,"FFWC Annual Flood Report 2019, Sec 3.1 (RHWL exceeded)"
+2019,Jamalpur,Jamalpur,Old Brahmaputra,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Khagrachhari,Ramgarh,Feni,0,station,"FFWC Annual Flood Report 2019, Sec 3.4 (DL-এর নিচে)"
+2019,Kishoreganj,Bhairab Bazar,Upper Meghna,0,station,"FFWC Annual Flood Report 2019, Sec 3.3 (DL-এর নিচে)"
 2019,Kurigram,Kurigram,Dharla,1,station,Daily Star 13 Jul 2019
 2019,Kurigram,Kurigram,Dharla,1,station,Dhaka Tribune 28 Jul 2019
+2019,Kurigram,Kurigram,Dharla,1,station,"FFWC Annual Flood Report 2019, Sec 3.1 + Table 3.6"
+2019,Kurigram,Noonkhawa,Brahmaputra,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Kurigram,Chilmari,Brahmaputra,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Madaripur,Madaripur,Arialkhan,0,station,"FFWC Annual Flood Report 2019, Sec 3.2 (DL-এর নিচে)"
+2019,Manikganj,Aricha,Jamuna,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Manikganj,Elasin,Dhaleswari,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Manikganj,Taraghat,Kaliganga,0,station,"FFWC Annual Flood Report 2019, Table 3.1 (DL-এর নিচে)"
+2019,Manikganj,Jagir,Dhaleswari,0,station,"FFWC Annual Flood Report 2019, Table 3.1 (DL-এর নিচে)"
+2019,Moulvibazar,Manu Railway Bridge,Manu,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Moulvibazar,Moulvibazar,Manu,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Moulvibazar,Kamalganj,Dhalai,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Munshiganj,Rekabi Bazar,Dhaleswari,0,station,"FFWC Annual Flood Report 2019, Table 3.1 (DL-এর নিচে)"
+2019,Munshiganj,Bhagyakul,Padma,1,station,"FFWC Annual Flood Report 2019, Sec 3.2"
+2019,Mymensingh,Mymensingh,Old Brahmaputra,0,station,"FFWC Annual Flood Report 2019, Sec 3.1 (সারাক্ষণ DL-এর নিচে)"
+2019,Naogaon,Naogaon,Little Jamuna,0,station,"FFWC Annual Flood Report 2019, Sec 3.2 (DL-এর নিচে)"
+2019,Narayanganj,Narayanganj,Lakhya,0,station,"FFWC Annual Flood Report 2019, Sec 3.1 (DL-এর নিচে)"
+2019,Narsingdi,Narsingdi,Meghna,0,station,"FFWC Annual Flood Report 2019, Sec 3.3 (DL-এর নিচে)"
+2019,Netrokona,Durgapur,Someswari,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Netrokona,Kalmakanda,Someswari,1,station,"FFWC Annual Flood Report 2019, Sec 3.3 (medium duration, local drainage congestion)"
+2019,Netrokona,Jariajanjail,Kangsha,0,station,"FFWC Annual Flood Report 2019, Sec 3.3 (DL-এর নিচে)"
+2019,Nilphamari,Dalia,Teesta,1,station,"FFWC Annual Flood Report 2019, Sec 3.1 + Table 3.6"
+2019,Pabna,Hardinge Bridge,Ganges,1,station,"FFWC Annual Flood Report 2019, Sec 3.2 (অক্টোবরের আলাদা ঘটনা, ১৬ বছরে প্রথমবার)"
 2019,Rajbari,Goalondo,Padma,1,station,Dhaka Tribune 28 Jul 2019
+2019,Rajbari,Goalundo,Padma,1,station,"FFWC Annual Flood Report 2019, Sec 3.2"
 2019,Rangpur,Kaunia,Teesta,1,station,Daily Star 13 Jul 2019 (প্রথমবার danger mark cross)
+2019,Rangpur,Kaunia,Teesta,1,station,"FFWC Annual Flood Report 2019, Sec 3.1 + Table 3.1"
+2019,Rangpur,Badarganj,Jamuneswari,0,station,"FFWC Annual Flood Report 2019, Sec 3.1 (সারাক্ষণ DL-এর নিচে)"
+2019,Sherpur,Nakuagaon,Bhugai,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
 2019,Sirajganj,Kazipur,Jamuna,1,station,Dhaka Tribune 28 Jul 2019
 2019,Sirajganj,Baghabari,Atrai,1,station,Dhaka Tribune 28 Jul 2019
+2019,Sirajganj,Kazipur,Jamuna,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Sirajganj,Serajganj,Jamuna,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Sirajganj,Baghabari,Atrai,1,station,"FFWC Annual Flood Report 2019, Sec 3.1"
+2019,Sunamganj,Sunamganj,Surma,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Sunamganj,Lorergarh,Jadukata,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Sylhet,Kanaighat,Surma,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Sylhet,Sylhet,Surma,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Sylhet,Amalshid,Kushiyara,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Sylhet,Sheola,Kushiyara,1,station,"FFWC Annual Flood Report 2019, Sec 3.3"
+2019,Sylhet,Sarighat,Sarigowain,0,station,"FFWC Annual Flood Report 2019, Sec 3.3 (DL-এর নিচে)"
+2019,Thakurgaon,Thakurgaon,Tangon,0,station,"FFWC Annual Flood Report 2019, Sec 3.2 (DL-এর নিচে)"
 2020,Bagerhat,,Pashur,1,district,FFWC Annual Flood Report 2020
 2020,Bandarban,,Matamuhuri,1,district,FFWC Annual Flood Report 2020
 2020,Barguna,,Southern rivers,1,district,FFWC Annual Flood Report 2020
