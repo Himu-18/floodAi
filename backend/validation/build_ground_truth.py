@@ -201,11 +201,33 @@ def from_ffwc_2017_annual_report():
     return rows
 
 
+def from_ffwc_2021_annual_report():
+    """
+    FFWC Annual Flood Report 2021 (old.ffwc.gov.bd/images/annual21.pdf)-এর
+    Table 3.1-3.5 থেকে হাতে তোলা ~৮৮টা station-এর exact danger_level/peak_2021/
+    days-above-danger। ২০২১ সাধারণত "normal" বছর ছিল, কিন্তু ২০ অক্টোবর
+    Teesta-Dalia-তে RHWL exceed করা একটা অস্বাভাবিক দেরি-মৌসুম বন্যা হয়েছিল।
+    """
+    rows = []
+    path = REAL_DATA_DIR / "ffwc_2021_annual_report_stations.csv"
+    if not path.exists():
+        return rows
+    with open(path, encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            rows.append({
+                "year": int(r["year"]), "district": r["district"], "station": r["station"],
+                "river": r["river"], "flood_occurred": int(r["exceeded_danger"]),
+                "granularity": "station", "source": r["source"],
+            })
+    return rows
+
+
 def run():
     all_rows = (from_v3_waterlevel() + from_v6_district_events()
                 + from_researched_stations() + from_v13_station_master()
                 + from_v1_hydrology_seed() + from_ffwc_2019_annual_report()
-                + from_ffwc_2020_annual_report() + from_ffwc_2017_annual_report())
+                + from_ffwc_2020_annual_report() + from_ffwc_2017_annual_report()
+                + from_ffwc_2021_annual_report())
     all_rows.sort(key=lambda r: (r["year"], r["district"]))
 
     with open(OUT_PATH, "w", newline="", encoding="utf-8-sig") as f:
