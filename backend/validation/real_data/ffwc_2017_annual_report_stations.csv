@@ -1,0 +1,86 @@
+year,river,station,district,danger_level_m,peak_2017_m,days_above_danger_2017,exceeded_danger,source,source_url,data_status
+2017,Dharla,Kurigram,Kurigram,26.50,27.84,12,1,"FFWC Annual Flood Report 2017, Table 3.1 (RHWL exceeded)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Teesta,Dalia,Nilphamari,52.40,53.05,6,1,"FFWC Annual Flood Report 2017, Table 3.1 (RHWL exceeded)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Teesta,Kaunia,Rangpur,30.00,29.95,0,0,"FFWC Annual Flood Report 2017, Table 3.1 (DL crossই করেনি)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Jamuneswari,Badarganj,Rangpur,32.16,33.61,8,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Ghagot,Gaibandha,Gaibandha,21.70,22.55,15,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Karatoa,Chakrahimpur,Panchagarh,20.15,20.40,10,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Karatoa,Bogra,Bogura,16.32,15.04,0,0,"FFWC Annual Flood Report 2017, Table 3.1 (DL crossই করেনি)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Brahmaputra,Noonkhawa,Kurigram,27.25,27.39,3,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Brahmaputra,Chilmari,Kurigram,24.00,24.87,14,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Jamuna,Bahadurabad,Jamalpur,19.50,20.84,25,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Jamuna,Sariakandi,Bogura,16.70,17.96,24,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Jamuna,Kazipur,Sirajganj,15.24,16.80,29,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Jamuna,Serajganj,Sirajganj,13.35,14.87,33,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Jamuna,Aricha,Manikganj,9.40,10.16,12,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Gur,Singra,Sirajganj,12.65,13.67,24,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Atrai,Baghabari,Sirajganj,10.40,11.50,22,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Dhaleswari,Elasin,Manikganj,11.40,12.52,31,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Old Brahmaputra,Jamalpur,Jamalpur,17.00,17.01,1,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Old Brahmaputra,Mymensingh,Mymensingh,12.50,12.03,0,0,"FFWC Annual Flood Report 2017, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Lakhya,Lakhpur,Narayanganj,5.80,6.77,22,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Buriganga,Dhaka,Dhaka,6.00,5.22,0,0,"FFWC Annual Flood Report 2017, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Balu,Demra,Dhaka,5.75,5.65,0,0,"FFWC Annual Flood Report 2017, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Lakhya,Narayanganj,Narayanganj,5.50,5.74,10,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Turag,Mirpur,Dhaka,5.94,5.88,0,0,"FFWC Annual Flood Report 2017, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Tongi Khal,Tongi,Gazipur,6.08,6.10,2,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Kaliganga,Taraghat,Manikganj,8.38,9.34,14,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Dhaleswari,Jagir,Manikganj,8.23,9.00,13,1,"FFWC Annual Flood Report 2017, Table 3.1",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Dhaleswari,Rekabi Bazar,Munshiganj,5.18,5.07,0,0,"FFWC Annual Flood Report 2017, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Banshi,Nayarhat,Dhaka,7.32,5.93,0,0,"FFWC Annual Flood Report 2017, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Karatoa,Panchagarh,Panchagarh,70.75,70.81,1,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Punarbhaba,Dinajpur,Dinajpur,33.50,34.30,4,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Tangon,Thakurgaon,Thakurgaon,50.40,51.30,3,1,"FFWC Annual Flood Report 2017, Table 3.2 (RHWL exceeded)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Upper Atrai,Bhusirbandar,Dinajpur,39.62,40.35,3,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Mohananda,Rohanpur,Chapainawabganj,22.00,22.70,14,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Mohananda,Chapai-Nawabganj,Chapainawabganj,21.00,21.16,6,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Little Jamuna,Naogaon,Naogaon,15.24,16.06,13,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Atrai,Mohadebpur,Naogaon,18.59,19.38,7,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Ganges,Pankha,Chapainawabganj,22.50,21.48,0,0,"FFWC Annual Flood Report 2017, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Ganges,Rajshahi,Rajshahi,18.50,17.54,0,0,"FFWC Annual Flood Report 2017, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Ganges,Hardinge Bridge,Pabna,14.25,13.85,0,0,"FFWC Annual Flood Report 2017, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Padma,Goalundo,Rajbari,8.50,9.71,20,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Padma,Bhagyakul,Munshiganj,6.00,6.81,20,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Padma,Sureswar,Shariatpur,4.45,5.04,13,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Gorai,Gorai Railway Bridge,Kushtia,12.75,12.21,0,0,"FFWC Annual Flood Report 2017, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Gorai,Kamarkhali,Faridpur,8.20,8.24,3,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Ichamati,Sakra,Satkhira,3.96,3.67,0,0,"FFWC Annual Flood Report 2017, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Mathabhanga,Chuadanga,Chuadanga,12.04,8.67,0,0,"FFWC Annual Flood Report 2017, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Mathabhanga,Hatboalia,Chuadanga,14.48,10.62,0,0,"FFWC Annual Flood Report 2017, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Kobadak,Jhikargacha,Jashore,4.11,4.65,29,1,"FFWC Annual Flood Report 2017, Table 3.2 (drainage congestion)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Kumar,Faridpur,Faridpur,7.50,5.22,0,0,"FFWC Annual Flood Report 2017, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Arialkhan,Madaripur,Madaripur,4.17,3.89,0,0,"FFWC Annual Flood Report 2017, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Kirtonkhola,Barisal,Barishal,2.55,2.69,1,1,"FFWC Annual Flood Report 2017, Table 3.2",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Pashure,Khulna,Khulna,3.04,3.48,31,1,"FFWC Annual Flood Report 2017, Table 3.2 (RHWL exceeded, tidal)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Surma,Kanaighat,Sylhet,13.20,14.51,92,1,"FFWC Annual Flood Report 2017, Table 3.3 (April-Sept জুড়ে দীর্ঘস্থায়ী)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Surma,Sylhet,Sylhet,11.25,11.70,11,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Surma,Sunamganj,Sunamganj,8.25,9.19,15,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Kushiyara,Amalshid,Sylhet,15.85,17.34,76,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Kushiyara,Sheola,Sylhet,13.50,14.57,88,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Kushiyara,Sherpur,Sylhet,9.00,9.45,76,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Sarigowain,Sarighat,Sylhet,12.80,13.60,9,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Manu,Manu Railway Bridge,Moulvibazar,18.00,19.05,6,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Manu,Moulvibazar,Moulvibazar,11.75,12.56,11,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Khowai,Ballah,Habiganj,21.64,24.02,34,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Khowai,Habiganj,Habiganj,9.50,12.30,18,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Dhalai,Kamalganj,Moulvibazar,19.82,20.45,9,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Old Surma,Derai,Sunamganj,7.00,7.48,37,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Baulai,Khaliajuri,Netrokona,8.50,7.39,0,0,"FFWC Annual Flood Report 2017, Table 3.3 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Bhugai,Nakuagaon,Sherpur,22.40,24.86,3,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Jadukata,Lorergarh,Sunamganj,8.53,10.57,5,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Someswari,Durgapur,Netrokona,13.00,14.45,5,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Kangsha,Jariajanjail,Netrokona,9.75,11.59,82,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Titas,B.Baria,Brahmanbaria,5.50,6.01,30,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Upper Meghna,Bhairab Bazar,Kishoreganj,6.25,6.05,0,0,"FFWC Annual Flood Report 2017, Table 3.3 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Meghna,Narsingdi,Narsingdi,5.70,5.32,0,0,"FFWC Annual Flood Report 2017, Table 3.3 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Gumti,Comilla,Cumilla,11.75,11.78,1,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Gumti,Debiddar,Cumilla,8.50,8.67,2,1,"FFWC Annual Flood Report 2017, Table 3.3",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Meghna,Chandpur,Chandpur,4.00,4.59,1,1,"FFWC Annual Flood Report 2017, Table 3.5 (tidal)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Muhuri,Parshuram,Feni,13.00,15.20,5,1,"FFWC Annual Flood Report 2017, Table 3.4",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Halda,Narayanhat,Chattogram,15.25,16.85,11,1,"FFWC Annual Flood Report 2017, Table 3.4",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Halda,Panchpukuria,Chattogram,9.50,9.70,2,1,"FFWC Annual Flood Report 2017, Table 3.4",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Sangu,Bandarban,Bandarban,15.25,16.60,3,1,"FFWC Annual Flood Report 2017, Table 3.4",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Sangu,Dohazari,Chattogram,7.00,7.79,3,1,"FFWC Annual Flood Report 2017, Table 3.4",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Matamuhuri,Lama,Bandarban,12.25,13.79,5,1,"FFWC Annual Flood Report 2017, Table 3.4",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Matamuhuri,Chiringa,Cox's Bazar,5.75,7.32,10,1,"FFWC Annual Flood Report 2017, Table 3.4 (RHWL exceeded)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2017,Feni,Ramgarh,Khagrachhari,17.37,16.20,0,0,"FFWC Annual Flood Report 2017, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual17.pdf,VERIFIED_FFWC_ANNUAL_REPORT
