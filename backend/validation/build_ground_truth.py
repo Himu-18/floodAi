@@ -158,10 +158,32 @@ def from_ffwc_2019_annual_report():
     return rows
 
 
+def from_ffwc_2020_annual_report():
+    """
+    FFWC Annual Flood Report 2020 (old.ffwc.gov.bd/images/annual20.pdf)-এর
+    Table 3.1-3.5 থেকে হাতে তোলা ৯৯টা station-এর exact danger_level/peak_2020/
+    days-above-danger — ২০১৯-এর চেয়েও বেশি station কভার করে (২০২০ ছিল একটা
+    বড়, দীর্ঘস্থায়ী বছর — ৬টা পৃথক flood spell, জুন-অক্টোবর জুড়ে)।
+    """
+    rows = []
+    path = REAL_DATA_DIR / "ffwc_2020_annual_report_stations.csv"
+    if not path.exists():
+        return rows
+    with open(path, encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            rows.append({
+                "year": int(r["year"]), "district": r["district"], "station": r["station"],
+                "river": r["river"], "flood_occurred": int(r["exceeded_danger"]),
+                "granularity": "station", "source": r["source"],
+            })
+    return rows
+
+
 def run():
     all_rows = (from_v3_waterlevel() + from_v6_district_events()
                 + from_researched_stations() + from_v13_station_master()
-                + from_v1_hydrology_seed() + from_ffwc_2019_annual_report())
+                + from_v1_hydrology_seed() + from_ffwc_2019_annual_report()
+                + from_ffwc_2020_annual_report())
     all_rows.sort(key=lambda r: (r["year"], r["district"]))
 
     with open(OUT_PATH, "w", newline="", encoding="utf-8-sig") as f:

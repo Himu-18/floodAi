@@ -1,0 +1,95 @@
+year,river,station,district,danger_level_m,peak_2020_m,days_above_danger_2020,exceeded_danger,source,source_url,data_status
+2020,Dharla,Kurigram,Kurigram,26.50,27.53,47,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Teesta,Dalia,Nilphamari,52.60,53.15,14,1,"FFWC Annual Flood Report 2020, Table 3.1 (RHWL exceeded)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Teesta,Kaunia,Rangpur,29.20,29.35,4,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Jamuneswari,Badarganj,Rangpur,32.15,32.92,5,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Ghagot,Gaibandha,Gaibandha,21.70,22.64,38,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Karatoa,Chakrahimpur,Panchagarh,20.15,21.31,25,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Karatoa,Bogra,Bogura,16.32,15.54,0,0,"FFWC Annual Flood Report 2020, Table 3.1 (DL crossই করেনি)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Brahmaputra,Noonkhawa,Kurigram,26.50,27.46,28,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Brahmaputra,Chilmari,Kurigram,23.70,24.73,36,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Jamuna,Fulchari,Gaibandha,19.82,21.06,40,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Jamuna,Bahadurabad,Jamalpur,19.50,20.79,40,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Jamuna,Sariakandi,Bogura,16.70,17.98,55,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Jamuna,Kazipur,Sirajganj,15.25,16.47,41,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Jamuna,Serajganj,Sirajganj,13.35,14.36,37,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Jamuna,Aricha,Manikganj,9.40,10.20,31,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Gur,Singra,Sirajganj,12.65,13.76,63,1,"FFWC Annual Flood Report 2020, Table 3.1 (RHWL exceeded)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Atrai,Baghabari,Sirajganj,10.40,11.54,55,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Dhaleswari,Elasin,Manikganj,11.40,12.62,62,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Old Brahmaputra,Jamalpur,Jamalpur,17.00,17.18,8,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Old Brahmaputra,Mymensingh,Mymensingh,12.50,12.43,0,0,"FFWC Annual Flood Report 2020, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Lakhya,Lakhpur,Narayanganj,5.80,5.79,0,0,"FFWC Annual Flood Report 2020, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Buriganga,Dhaka,Dhaka,6.00,5.53,0,0,"FFWC Annual Flood Report 2020, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Buriganga,Hariharpara,Munshiganj,5.79,5.48,0,0,"FFWC Annual Flood Report 2020, Table 3.1 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Balu,Demra,Dhaka,5.75,6.00,18,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Lakhya,Narayanganj,Narayanganj,5.50,5.87,25,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Turag,Mirpur,Dhaka,5.94,6.50,18,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Tongi Khal,Tongi,Gazipur,6.08,6.50,20,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Kaliganga,Taraghat,Manikganj,8.38,9.58,26,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Dhaleswari,Jagir,Manikganj,8.23,9.29,24,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Dhaleswari,Rekabi Bazar,Munshiganj,5.18,5.20,1,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Banshi,Nayarhat,Dhaka,7.32,7.58,11,1,"FFWC Annual Flood Report 2020, Table 3.1",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Punarbhaba,Dinajpur,Dinajpur,33.50,33.60,1,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Tangon,Thakurgaon,Thakurgaon,50.40,50.56,1,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Upper Atrai,Bhusirbandar,Dinajpur,39.62,39.98,4,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Mohananda,Rohanpur,Chapainawabganj,22.00,21.45,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Mohananda,Chapai-Nawabganj,Chapainawabganj,21.00,20.15,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Little Jamuna,Naogaon,Naogaon,15.24,15.43,7,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Atrai,Mohadebpur,Naogaon,18.59,18.94,3,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Atrai,Atrai,Naogaon,13.72,14.40,28,1,"FFWC Annual Flood Report 2020, Table 3.2 (RHWL exceeded)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Ganges,Pankha,Chapainawabganj,22.50,20.87,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Ganges,Rajshahi,Rajshahi,18.50,16.94,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Ganges,Hardinge Bridge,Pabna,14.25,13.50,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Padma,Goalundo,Rajbari,8.65,9.84,60,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Padma,Bhagyakul,Munshiganj,6.30,7.14,41,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Padma,Mawa,Munshiganj,6.10,6.85,40,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Padma,Sureswar,Shariatpur,4.45,4.99,43,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Gorai,Gorai Railway Bridge,Kushtia,12.75,12.13,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Gorai,Kamarkhali,Faridpur,8.20,8.11,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Ichamati,Sakra,Satkhira,3.96,4.42,1,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Mathabhanga,Chuadanga,Chuadanga,12.05,9.48,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Mathabhanga,Hatboalia,Chuadanga,14.50,10.96,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Kobadak,Jhikargacha,Jashore,5.10,4.41,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Betna,Kalaroa,Satkhira,3.81,4.75,101,1,"FFWC Annual Flood Report 2020, Table 3.2 (tidal-প্রভাবিত দীর্ঘ duration)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Kumar,Faridpur,Faridpur,7.50,5.55,0,0,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Arialkhan,Madaripur,Madaripur,4.17,4.37,18,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Kirtonkhola,Barisal,Barishal,2.55,3.07,21,1,"FFWC Annual Flood Report 2020, Table 3.2",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Pashure,Khulna,Khulna,3.04,3.43,48,1,"FFWC Annual Flood Report 2020, Table 3.2 (tidal-প্রভাবিত)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Pashure,Mongla,Bagerhat,2.07,3.16,166,1,"FFWC Annual Flood Report 2020, Table 3.2 (tidal-প্রভাবিত, সারা মৌসুম)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Surma,Kanaighat,Sylhet,13.20,14.04,26,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Surma,Sylhet,Sylhet,11.25,11.36,5,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Surma,Sunamganj,Sunamganj,8.25,8.96,20,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Kushiyara,Amalshid,Sylhet,15.85,16.65,6,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Kushiyara,Sheola,Sylhet,13.50,13.66,3,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Kushiyara,Sherpur,Sylhet,9.00,8.89,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Sarigowain,Sarighat,Sylhet,12.80,13.26,12,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Manu,Manu Railway Bridge,Moulvibazar,18.00,17.61,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Manu,Moulvibazar,Moulvibazar,11.75,11.21,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Khowai,Ballah,Habiganj,21.80,22.04,2,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Khowai,Habiganj,Habiganj,9.50,8.91,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Dhalai,Kamalganj,Moulvibazar,19.82,19.45,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Old Surma,Derai,Sunamganj,7.00,7.41,26,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Baulai,Khaliajuri,Netrokona,8.50,7.28,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Jadukata,Lorergarh,Sunamganj,8.53,10.50,15,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Someswari,Durgapur,Netrokona,13.00,13.34,2,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Someswari,Kalmakanda,Netrokona,7.00,7.38,14,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Bhugai,Nakuagaon,Sherpur,22.40,22.85,4,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Kangsha,Jariajanjail,Netrokona,11.00,10.61,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Titas,B.Baria,Brahmanbaria,5.50,5.85,16,1,"FFWC Annual Flood Report 2020, Table 3.4",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Upper Meghna,Bhairab Bazar,Kishoreganj,6.25,5.73,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Meghna,Narsingdi,Narsingdi,5.70,5.15,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Meghna,Baidyar Bazar,Narayanganj,5.18,5.13,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে, tidal)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Meghna,Meghna Bridge,Munshiganj,5.03,4.48,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে, tidal)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Gumti,Comilla,Cumilla,11.75,9.98,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Gumti,Debiddar,Cumilla,8.50,6.29,0,0,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Meghna,Chandpur,Chandpur,4.00,4.66,42,1,"FFWC Annual Flood Report 2020, Table 3.4 (tidal-প্রভাবিত)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Lower Meghna,Daulatkhan,Bhola,3.41,4.50,41,1,"FFWC Annual Flood Report 2020, Table 3.4 (tidal-প্রভাবিত)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Muhuri,Parshuram,Feni,13.00,14.32,4,1,"FFWC Annual Flood Report 2020, Table 3.5",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Halda,Narayanhat,Chattogram,15.25,14.47,0,0,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Halda,Panchpukuria,Chattogram,9.50,7.65,0,0,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Sangu,Bandarban,Bandarban,15.25,12.40,0,0,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Sangu,Dohazari,Chattogram,7.00,5.25,0,0,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Matamuhuri,Lama,Bandarban,12.25,12.44,1,1,"FFWC Annual Flood Report 2020, Table 3.5",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Matamuhuri,Chiringa,Cox's Bazar,6.25,7.18,2,1,"FFWC Annual Flood Report 2020, Table 3.5",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
+2020,Feni,Ramgarh,Khagrachhari,17.35,15.08,0,0,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)",http://old.ffwc.gov.bd/images/annual20.pdf,VERIFIED_FFWC_ANNUAL_REPORT
