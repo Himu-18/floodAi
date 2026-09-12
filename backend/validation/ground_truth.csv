@@ -201,48 +201,142 @@
 2019,Sylhet,Sarighat,Sarigowain,0,station,"FFWC Annual Flood Report 2019, Sec 3.3 (DL-এর নিচে)"
 2019,Thakurgaon,Thakurgaon,Tangon,0,station,"FFWC Annual Flood Report 2019, Sec 3.2 (DL-এর নিচে)"
 2020,Bagerhat,,Pashur,1,district,FFWC Annual Flood Report 2020
+2020,Bagerhat,Mongla,Pashure,1,station,"FFWC Annual Flood Report 2020, Table 3.2 (tidal-প্রভাবিত, সারা মৌসুম)"
 2020,Bandarban,,Matamuhuri,1,district,FFWC Annual Flood Report 2020
+2020,Bandarban,Bandarban,Sangu,0,station,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)"
+2020,Bandarban,Lama,Matamuhuri,1,station,"FFWC Annual Flood Report 2020, Table 3.5"
 2020,Barguna,,Southern rivers,1,district,FFWC Annual Flood Report 2020
 2020,Barisal,,Southern rivers,1,district,FFWC Annual Flood Report 2020
+2020,Barishal,Barisal,Kirtonkhola,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
 2020,Bhola,,Lower Meghna,1,district,FFWC Annual Flood Report 2020
+2020,Bhola,Daulatkhan,Lower Meghna,1,station,"FFWC Annual Flood Report 2020, Table 3.4 (tidal-প্রভাবিত)"
+2020,Bogura,Bogra,Karatoa,0,station,"FFWC Annual Flood Report 2020, Table 3.1 (DL crossই করেনি)"
+2020,Bogura,Sariakandi,Jamuna,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Brahmanbaria,,Titas,1,district,FFWC Annual Flood Report 2020
+2020,Brahmanbaria,B.Baria,Titas,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
 2020,Chandpur,,Meghna,1,district,FFWC Annual Flood Report 2020
+2020,Chandpur,Chandpur,Meghna,1,station,"FFWC Annual Flood Report 2020, Table 3.4 (tidal-প্রভাবিত)"
+2020,Chapainawabganj,Rohanpur,Mohananda,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
+2020,Chapainawabganj,Chapai-Nawabganj,Mohananda,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
+2020,Chapainawabganj,Pankha,Ganges,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
+2020,Chattogram,Narayanhat,Halda,0,station,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)"
+2020,Chattogram,Panchpukuria,Halda,0,station,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)"
+2020,Chattogram,Dohazari,Sangu,0,station,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)"
+2020,Chuadanga,Chuadanga,Mathabhanga,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
+2020,Chuadanga,Hatboalia,Mathabhanga,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
 2020,Cox's Bazar,,Matamuhuri,1,district,FFWC Annual Flood Report 2020
+2020,Cox's Bazar,Chiringa,Matamuhuri,1,station,"FFWC Annual Flood Report 2020, Table 3.5"
+2020,Cumilla,Comilla,Gumti,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
+2020,Cumilla,Debiddar,Gumti,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
 2020,Dhaka,,Padma/Buriganga-Turag system,1,district,FFWC Annual Flood Report 2020
 2020,Dhaka,Dhaka,Buriganga,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Dhaka,Demra,Balu,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Dhaka,Mirpur,Turag,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Dhaka,Nayarhat,Banshi,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Dhaka,Dhaka,Buriganga,0,station,"FFWC Annual Flood Report 2020, Table 3.1 (DL-এর নিচে)"
+2020,Dhaka,Demra,Balu,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Dhaka,Mirpur,Turag,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Dhaka,Nayarhat,Banshi,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Dinajpur,,Punarbhaba,1,district,FFWC Annual Flood Report 2020
+2020,Dinajpur,Dinajpur,Punarbhaba,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
+2020,Dinajpur,Bhusirbandar,Upper Atrai,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
 2020,Faridpur,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Faridpur,Kamarkhali,Gorai,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
+2020,Faridpur,Faridpur,Kumar,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
 2020,Feni,,Muhuri,1,district,FFWC Annual Flood Report 2020
+2020,Feni,Parshuram,Muhuri,1,station,"FFWC Annual Flood Report 2020, Table 3.5"
+2020,Gaibandha,Gaibandha,Ghagot,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Gaibandha,Fulchari,Jamuna,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Gazipur,Tongi,Tongi Khal,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Habiganj,,Khowai/Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Habiganj,Ballah,Khowai,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Habiganj,Habiganj,Khowai,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
+2020,Jamalpur,Bahadurabad,Jamuna,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Jamalpur,Jamalpur,Old Brahmaputra,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Jashore,Jhikargacha,Kobadak,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
 2020,Jhalakathi,,Southern rivers,1,district,FFWC Annual Flood Report 2020
+2020,Khagrachhari,Ramgarh,Feni,0,station,"FFWC Annual Flood Report 2020, Table 3.5 (DL-এর নিচে)"
 2020,Khulna,,Pashur,1,district,FFWC Annual Flood Report 2020
+2020,Khulna,Khulna,Pashure,1,station,"FFWC Annual Flood Report 2020, Table 3.2 (tidal-প্রভাবিত)"
+2020,Kishoreganj,Bhairab Bazar,Upper Meghna,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
+2020,Kurigram,Kurigram,Dharla,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Kurigram,Noonkhawa,Brahmaputra,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Kurigram,Chilmari,Brahmaputra,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Kushtia,Gorai Railway Bridge,Gorai,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
 2020,Madaripur,,Padma/Arial Khan,1,district,FFWC Annual Flood Report 2020
+2020,Madaripur,Madaripur,Arialkhan,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
 2020,Manikganj,,Padma,1,district,FFWC Annual Flood Report 2020
 2020,Manikganj,Aricha,Jamuna,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Manikganj,Taraghat,Kaliganga,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Manikganj,Jagir,Dhaleswari,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Manikganj,Aricha,Jamuna,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Manikganj,Elasin,Dhaleswari,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Manikganj,Taraghat,Kaliganga,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Manikganj,Jagir,Dhaleswari,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Moulvibazar,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2020
+2020,Moulvibazar,Manu Railway Bridge,Manu,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
+2020,Moulvibazar,Moulvibazar,Manu,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
+2020,Moulvibazar,Kamalganj,Dhalai,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
 2020,Munshiganj,,Padma,1,district,FFWC Annual Flood Report 2020
 2020,Munshiganj,Hariharpara,Buriganga,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Munshiganj,Rekabi Bazar,Dhaleswari,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Munshiganj,Hariharpara,Buriganga,0,station,"FFWC Annual Flood Report 2020, Table 3.1 (DL-এর নিচে)"
+2020,Munshiganj,Rekabi Bazar,Dhaleswari,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Munshiganj,Bhagyakul,Padma,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
+2020,Munshiganj,Mawa,Padma,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
+2020,Munshiganj,Meghna Bridge,Meghna,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে, tidal)"
+2020,Mymensingh,Mymensingh,Old Brahmaputra,0,station,"FFWC Annual Flood Report 2020, Table 3.1 (DL-এর নিচে)"
 2020,Naogaon,,Atrai/Little Jamuna,1,district,FFWC Annual Flood Report 2020
+2020,Naogaon,Naogaon,Little Jamuna,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
+2020,Naogaon,Mohadebpur,Atrai,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
+2020,Naogaon,Atrai,Atrai,1,station,"FFWC Annual Flood Report 2020, Table 3.2 (RHWL exceeded)"
 2020,Narayanganj,,Meghna basin,1,district,FFWC Annual Flood Report 2020
 2020,Narayanganj,Narayanganj,Lakhya,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Narayanganj,Lakhpur,Lakhya,0,station,"FFWC Annual Flood Report 2020, Table 3.1 (DL-এর নিচে)"
+2020,Narayanganj,Narayanganj,Lakhya,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Narayanganj,Baidyar Bazar,Meghna,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে, tidal)"
 2020,Narsingdi,,Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Narsingdi,Narsingdi,Meghna,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
 2020,Netrokona,,Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Netrokona,Khaliajuri,Baulai,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
+2020,Netrokona,Durgapur,Someswari,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Netrokona,Kalmakanda,Someswari,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Netrokona,Jariajanjail,Kangsha,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
+2020,Nilphamari,Dalia,Teesta,1,station,"FFWC Annual Flood Report 2020, Table 3.1 (RHWL exceeded)"
+2020,Pabna,Hardinge Bridge,Ganges,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
+2020,Panchagarh,Chakrahimpur,Karatoa,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Patuakhali,,Southern rivers,1,district,FFWC Annual Flood Report 2020
 2020,Pirojpur,,Southern rivers,1,district,FFWC Annual Flood Report 2020
 2020,Rajbari,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Rajbari,Goalundo,Padma,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
+2020,Rajshahi,Rajshahi,Ganges,0,station,"FFWC Annual Flood Report 2020, Table 3.2 (DL-এর নিচে)"
 2020,Rangpur,,Northern rivers,1,district,FFWC Annual Flood Report 2020
 2020,Rangpur,Kaunia,Teesta,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Rangpur,Badarganj,Jamuneswari,1,district,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Rangpur,Kaunia,Teesta,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Rangpur,Badarganj,Jamuneswari,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Satkhira,Sakra,Ichamati,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
+2020,Satkhira,Kalaroa,Betna,1,station,"FFWC Annual Flood Report 2020, Table 3.2 (tidal-প্রভাবিত দীর্ঘ duration)"
 2020,Shariatpur,,Padma,1,district,FFWC Annual Flood Report 2020
+2020,Shariatpur,Sureswar,Padma,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
+2020,Sherpur,Nakuagaon,Bhugai,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Sirajganj,Kazipur,Jamuna,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Sirajganj,Serajganj,Jamuna,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
+2020,Sirajganj,Singra,Gur,1,station,"FFWC Annual Flood Report 2020, Table 3.1 (RHWL exceeded)"
+2020,Sirajganj,Baghabari,Atrai,1,station,"FFWC Annual Flood Report 2020, Table 3.1"
 2020,Sunamganj,,Surma/Meghna basin,1,district,FFWC Annual Flood Report 2020
+2020,Sunamganj,Sunamganj,Surma,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Sunamganj,Derai,Old Surma,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Sunamganj,Lorergarh,Jadukata,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
 2020,Sylhet,,Surma-Kushiyara,1,district,FFWC Annual Flood Report 2020
+2020,Sylhet,Kanaighat,Surma,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Sylhet,Sylhet,Surma,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Sylhet,Amalshid,Kushiyara,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Sylhet,Sheola,Kushiyara,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
+2020,Sylhet,Sherpur,Kushiyara,0,station,"FFWC Annual Flood Report 2020, Table 3.4 (DL-এর নিচে)"
+2020,Sylhet,Sarighat,Sarigowain,1,station,"FFWC Annual Flood Report 2020, Table 3.4"
 2020,Thakurgaon,,Tangon,1,district,FFWC Annual Flood Report 2020
+2020,Thakurgaon,Thakurgaon,Tangon,1,station,"FFWC Annual Flood Report 2020, Table 3.2"
 2022,Gaibandha,Gaibandha,Ghagot,1,station,Prothom Alo 21 Jun 2022
 2022,Jamalpur,Bahadurabad,Jamuna,1,station,Prothom Alo 21 Jun 2022
 2022,Jamalpur,Bahadurabad,Jamuna,1,station,Dhaka Tribune 25 Jun 2022
