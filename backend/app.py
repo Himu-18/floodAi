@@ -593,7 +593,27 @@ def get_districts_map():
 
 @app.route('/api/stations/map')
 def get_stations_map():
-    return jsonify(FFWC_STATIONS)
+    # ⚠️ FIX (২০২৬-০৯): আগে প্রতিটা station marker সবসময় ধূসর থাকতো, ঝুঁকিপূর্ণ
+    # (danger level পার হয়ে গেছে) হলেও ক্লিক না করলে বোঝা যেত না। এখন FFWC-র
+    # cached live data (আলাদাভাবে fetch করার দরকার নেই, ইতিমধ্যে cache করা)
+    # দিয়ে প্রতিটা station-এ is_over_danger flag যোগ করা হচ্ছে, যাতে frontend
+    # সরাসরি লাল/সতর্কতা মার্কার হিসেবে দেখাতে পারে, ক্লিকের অপেক্ষা ছাড়াই।
+    live_cache = get_ffwc_live_cached()
+    result = []
+    for s in FFWC_STATIONS:
+        live = live_cache.get(s["id"])
+        s_out = dict(s)
+        if live and live.get("water_level") is not None:
+            danger = live.get("danger_level", s.get("danger_level"))
+            s_out["live_water_level"] = live.get("water_level")
+            s_out["live_recorded_at"] = live.get("recorded_at")
+            s_out["is_over_danger"] = (danger is not None and live["water_level"] >= danger)
+        else:
+            s_out["live_water_level"] = None
+            s_out["live_recorded_at"] = None
+            s_out["is_over_danger"] = False
+        result.append(s_out)
+    return jsonify(result)
 
 @app.route('/api/stations/<station_id>/live')
 def get_station_live(station_id):
