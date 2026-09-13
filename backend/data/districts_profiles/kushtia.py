@@ -1,6 +1,10 @@
 # ============================================================
 # FloodAI — data/district_profiles/kushtia.py — জেলা #২৭
-# ⚠️ এখনো model.py/app.py এর সাথে wire করা হয়নি।
+# ⚠️ reference_discharge/cn/risk_category correction district_profiles_loader.py
+# দিয়ে model.py-তে স্বয়ংক্রিয়ভাবে wire হয়ে গেছে (verified, ২০২৬-০৯)। primary
+# station Gorai-RB থেকে Talbaria-তে বদলানো হয়েছে (২০২৬-০৯-১২, লাইভ ফারাক্কা-
+# বন্যা ঘটনায় ধরা পড়েছিল Gorai primary থাকায় দৌলতপুরের real crisis দেখাচ্ছিল
+# না) — Talbaria-র আগে থেকেই verified উচ্চ reference_discharge (৭৫,০০০) ছিল।
 # ============================================================
 
 KUSHTIA_PROFILE = {
@@ -8,7 +12,7 @@ KUSHTIA_PROFILE = {
     "station_count": 2, "station_count_note": "✅ দুইটা station-ই flood_config.py-তে সঠিকভাবে linked।",
     "stations": [
         {
-            "name": "Talbaria", "ffwc_id": "SW91", "is_primary": False,
+            "name": "Talbaria", "ffwc_id": "SW91", "is_primary": True,
             "river": "গঙ্গা (Ganges)", "upazila": "Mirpur", "union": None,
             "river_structure": {
                 "category": "mega_trunk (real গঙ্গা mainstem, হার্ডিঞ্জ ব্রিজের ১৯ কিমি ভাটিতে, গড়াইয়ের offtake পয়েন্টের কাছেই)",
