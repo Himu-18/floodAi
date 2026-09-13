@@ -342,13 +342,20 @@ async function loadAllStationMarkers() {
             if (s.linked_district) return;
             if (typeof s.lat !== 'number' || typeof s.lon !== 'number') return;
 
+            // ⚠️ ২০২৬-০৯: is_over_danger হলে সরাসরি লাল, pulsing-এর মতো বড়
+            // মার্কার — ক্লিক করার আগেই ঝুঁকিপূর্ণ station চোখে পড়ে
+            const risky = !!s.is_over_danger;
             const marker = L.circleMarker([s.lat, s.lon], {
-                radius: 4,
-                fillColor: '#8a99ad',
-                color: '#8a99ad',
-                weight: 1,
-                fillOpacity: 0.55
+                radius: risky ? 8 : 4,
+                fillColor: risky ? '#c0392b' : '#8a99ad',
+                color: risky ? '#fff' : '#8a99ad',
+                weight: risky ? 2 : 1,
+                fillOpacity: risky ? 0.95 : 0.55
             }).addTo(floodLeafletMap);
+
+            const liveLine = risky
+                ? `<div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:4px">🔴 বিপদসীমার উপরে (${s.live_water_level} মি)</div>`
+                : '';
 
             marker.bindPopup(`
                 <div style="font-family:'Segoe UI',sans-serif;min-width:170px" id="stationPopup-${s.id.replace(/\W/g,'')}">
@@ -356,6 +363,7 @@ async function loadAllStationMarkers() {
                     <div style="font-size:12px;color:#4a6080;margin-bottom:2px">নদী: ${s.river || '—'}</div>
                     <div style="font-size:12px;color:#4a6080;margin-bottom:2px">জেলা: ${s.district || '—'}</div>
                     <div style="font-size:12px;color:#4a6080;margin-bottom:8px">বিপদসীমা: ${s.danger_level ?? '—'} মি</div>
+                    ${liveLine}
                     <button onclick="fetchStationLive('${s.id}')" style="width:100%;padding:6px;background:#4a6080;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">লাইভ পানির স্তর দেখুন</button>
                     <div id="stationLive-${s.id.replace(/\W/g,'')}" style="margin-top:6px;font-size:12px;color:#4a6080"></div>
                 </div>
