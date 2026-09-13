@@ -195,8 +195,14 @@ def get_correction_by_danger_level(district_name, danger_level):
         for c in corrections:
             if c.get("danger_level_m") is not None and abs(c["danger_level_m"] - danger_level) < 0.01:
                 return c
+        # ⚠️ FIX (২০২৬-০৯): danger_level না মিললে আগে ভুলভাবে primary station-এর
+        # correction ধার করে নেওয়া হতো — একই জেলার ভিন্ন নদী হলেও। এতে multi-river
+        # জেলায় (যেমন কুষ্টিয়া: গড়াই+পদ্মা) অপ্রাসঙ্গিক নদীর reference_discharge
+        # ব্যবহার হয়ে ভুল ratio তৈরি হতো। এখন match না পেলে None রিটার্ন করা হচ্ছে,
+        # যাতে get_reference_discharge()-এর generic danger_level×100 fallback ব্যবহৃত হয়।
+        return None
 
-    # fallback — primary station
+    # danger_level না দেওয়া থাকলে (যেমন single-river legacy কল) primary station fallback
     return get_primary_correction(district_name)
 
 
