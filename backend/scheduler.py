@@ -68,10 +68,33 @@ def collect_district(district):
 
     time.sleep(0.5)  # Rate limit
 
+def get_dynamic_high_risk_districts():
+    """
+    স্থির HIGH_RISK_DISTRICTS তালিকা (পরিচিত flood-prone অঞ্চল) + সাম্প্রতিক
+    collect_all রান-এ risk_score ≥৫০% পাওয়া যেকোনো জেলা — দুটো মিলিয়ে একটা
+    dynamic সেট বানানো হয়। এভাবে ফারাক্কা-জাতীয় নতুন/অপ্রত্যাশিত সংকট
+    (যেমন কুষ্টিয়া/রাজশাহী/চাঁপাইনবাবগঞ্জ, ২০২৬-০৯) এমনিতেই দ্রুত-আপডেট
+    রোটেশনে ঢুকে যাবে — কাউকে ম্যানুয়ালি তালিকা edit করতে হবে না।
+    ব্যর্থ হলে (network/DB সমস্যা) নিরাপদে স্থির তালিকায় fallback করে।
+    """
+    try:
+        r = requests.get(f"{BACKEND_URL}/api/districts/map", timeout=15)
+        if r.status_code == 200:
+            data = r.json()
+            dynamic = {d["name"] for d in data if (d.get("live_risk_score") or 0) >= 50}
+            if dynamic:
+                log(f"📈 dynamic high-risk থেকে যোগ হলো: {dynamic - set(HIGH_RISK_DISTRICTS)}")
+            return list(set(HIGH_RISK_DISTRICTS) | dynamic)
+    except Exception as e:
+        log(f"⚠️ dynamic high-risk fetch error, স্থির তালিকায় fallback: {e}")
+    return HIGH_RISK_DISTRICTS
+
+
 def collect_high_risk():
-    """প্রতি ১৫ মিনিটে high risk districts update"""
-    log("⏰ High risk districts updating...")
-    for district in HIGH_RISK_DISTRICTS:
+    """প্রতি ১৫ মিনিটে high risk districts (dynamic + static) update"""
+    districts = get_dynamic_high_risk_districts()
+    log(f"⏰ High risk districts updating... ({len(districts)}টা)")
+    for district in districts:
         collect_district(district)
     log("✅ High risk update done!")
 
