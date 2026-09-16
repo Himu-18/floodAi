@@ -203,10 +203,10 @@ def get_ffwc_live_cached():
 
 
 def fetch_river(lat, lon):
-    # ⚠️ FIX (২০২৬-০৯): আগে শুধু forecast_days=7 (আজ+ভবিষ্যৎ) আনা হতো, past_days
-    # ছিল না — তাই discharge "বাড়ছে না কমছে" এই trend তথ্য কোথাও পাওয়া যেত না,
-    # শুধু "আজকের absolute মান" দিয়ে risk score হিসাব হতো। এখন past_days=3
-    # যোগ করে ৩ দিন আগের discharge-ও আনা হচ্ছে, trend % হিসাব করার জন্য।
+    # ⚠️ FIX (২০২৬-০৯): past_days=3 যোগ করে trend বের করার সুযোগ হয়েছে, কিন্তু
+    # past data-তে মাঝেমধ্যে null/None থাকতে পারে (Open-Meteo model-lag) —
+    # তাই trend calculation ইচ্ছাকৃতভাবে আলাদা try/except-এ রাখা হয়েছে, যাতে
+    # সেটা ব্যর্থ হলেও আজকের আসল discharge (সবচেয়ে জরুরি সংখ্যা) নষ্ট না হয়।
     try:
         r = requests.get(
             "https://flood-api.open-meteo.com/v1/flood",
@@ -217,14 +217,24 @@ def fetch_river(lat, lon):
         data = r.json()
         values = data["daily"]["river_discharge"]
         dates = data["daily"]["time"]
-        today_idx = 3  # past_days=3 মানে index 3 = আজ
+        today_idx = 3 if len(values) > 3 else 0  # past data অপ্রত্যাশিতভাবে ছোট হলে নিরাপদ fallback
         today = values[today_idx]
-        three_days_ago = values[0] if values[0] else today
-        discharge_change_pct = round(((today - three_days_ago) / three_days_ago) * 100, 1) if three_days_ago else 0.0
+        if today is None:
+            raise ValueError("today's discharge value is null")
+
+        discharge_change_pct = 0.0
+        try:
+            three_days_ago = values[0]
+            if three_days_ago and today_idx >= 3:
+                discharge_change_pct = round(((today - three_days_ago) / three_days_ago) * 100, 1)
+        except Exception as trend_err:
+            print(f"discharge trend calc skipped (আসল discharge অক্ষুণ্ণ আছে): {trend_err}")
+
+        forecast_vals = [v for v in values[today_idx:]]
         return {
             "today": today,
             "discharge_change_pct": discharge_change_pct,
-            "forecast": values[today_idx:],
+            "forecast": forecast_vals,
             "dates": dates[today_idx:],
             "ok": True,
         }
