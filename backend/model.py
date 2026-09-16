@@ -130,7 +130,8 @@ def predict_flood(
     rainfall_intensity_data=None,
     upstream_rain_history=None,
     cyclone_signal=0,
-    tide_ratio=None
+    tide_ratio=None,
+    discharge_change_pct=0.0,
 ):
     if month is None:
         month = datetime.now().month
@@ -190,7 +191,12 @@ def predict_flood(
         discharge_ratio_feature = (discharge / reference_discharge) if reference_discharge else (discharge / 20000)
         X = np.array([[
             discharge,
-            0,                          # discharge_change (fallback 0)
+            0,                          # ⚠️ discharge_change ইচ্ছাকৃতভাবে 0 রাখা হয়েছে —
+                                        # ML model training-এর সময় এই feature সবসময় 0
+                                        # দেখেছে, তাই এখন হঠাৎ real trend value দিলে
+                                        # untested/অপ্রত্যাশিত আচরণ করতে পারে (retrain
+                                        # ছাড়া)। real trend শুধু rule-based fallback-এ
+                                        # ব্যবহার হচ্ছে (নিচে discharge_score-এ)।
             discharge_ratio_feature,    # discharge_ratio — এখন danger_level-ভিত্তিক
             upstream_rain,
             local_rain,
@@ -258,6 +264,23 @@ def predict_flood(
             elif discharge > 10000: discharge_score = 15
             elif discharge > 5000: discharge_score = 8
             else: discharge_score = 3
+
+        # ⚠️ FIX (২০২৬-০৯): discharge trend adjustment — আগে শুধু "আজকের
+        # absolute discharge" দিয়ে score বসতো, বন্যা recede করলেও (যেমন
+        # ২০২৬-০৯-এর ফারাক্কা-পরবর্তী কুষ্টিয়া/রাজশাহী) discharge কমতে শুরু
+        # করা সত্ত্বেও score প্রায় অপরিবর্তিত থেকে যেত। এখন গত ৩ দিনের
+        # discharge পরিবর্তনের হার (%) দিয়ে score-এ ছোট adjustment করা হচ্ছে —
+        # দ্রুত কমতে থাকলে score কিছুটা কমবে, দ্রুত বাড়তে থাকলে সামান্য বাড়বে।
+        # নদীর recession স্বাভাবিকভাবেই ধীর হয় (rising limb-এর চেয়ে অনেক
+        # ঢালু) — তাই এখানে adjustment মাঝারি মাত্রায় রাখা হয়েছে, absolute
+        # level-ই এখনো প্রধান factor, শুধু ঠিক দিকে সংকেত যোগ হলো।
+        if discharge_score > 0:
+            if discharge_change_pct <= -15:
+                discharge_score = round(discharge_score * 0.6)
+            elif discharge_change_pct <= -5:
+                discharge_score = round(discharge_score * 0.8)
+            elif discharge_change_pct >= 15:
+                discharge_score = min(30, round(discharge_score * 1.15))
         score += discharge_score
 
         if upstream_rain > 20: upstream_score = 25
@@ -446,6 +469,7 @@ def predict_flood(
         },
         "input_summary": {
             "discharge_m3s": round(discharge),
+            "discharge_change_pct_3day": discharge_change_pct,
             "upstream_rain_mm": upstream_rain,
             "local_rain_mm": local_rain,
             "soil_moisture": soil_moisture,
