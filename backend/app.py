@@ -203,22 +203,34 @@ def get_ffwc_live_cached():
 
 
 def fetch_river(lat, lon):
+    # ⚠️ FIX (২০২৬-০৯): আগে শুধু forecast_days=7 (আজ+ভবিষ্যৎ) আনা হতো, past_days
+    # ছিল না — তাই discharge "বাড়ছে না কমছে" এই trend তথ্য কোথাও পাওয়া যেত না,
+    # শুধু "আজকের absolute মান" দিয়ে risk score হিসাব হতো। এখন past_days=3
+    # যোগ করে ৩ দিন আগের discharge-ও আনা হচ্ছে, trend % হিসাব করার জন্য।
     try:
         r = requests.get(
             "https://flood-api.open-meteo.com/v1/flood",
-            params={"latitude": lat, "longitude": lon, "daily": "river_discharge", "forecast_days": 7},
+            params={"latitude": lat, "longitude": lon, "daily": "river_discharge",
+                    "forecast_days": 7, "past_days": 3},
             timeout=5
         )
         data = r.json()
+        values = data["daily"]["river_discharge"]
+        dates = data["daily"]["time"]
+        today_idx = 3  # past_days=3 মানে index 3 = আজ
+        today = values[today_idx]
+        three_days_ago = values[0] if values[0] else today
+        discharge_change_pct = round(((today - three_days_ago) / three_days_ago) * 100, 1) if three_days_ago else 0.0
         return {
-            "today": data["daily"]["river_discharge"][0],
-            "forecast": data["daily"]["river_discharge"],
-            "dates": data["daily"]["time"],
+            "today": today,
+            "discharge_change_pct": discharge_change_pct,
+            "forecast": values[today_idx:],
+            "dates": dates[today_idx:],
             "ok": True,
         }
     except Exception as e:
         print(f"fetch_river error: {e}")
-        return {"today": 0, "forecast": [], "dates": [], "ok": False}
+        return {"today": 0, "discharge_change_pct": 0.0, "forecast": [], "dates": [], "ok": False}
 
 # ── Tide (WorldTides) — Coastal & Tidal জেলার জন্য ──
 # tide astronomical (predictable), তাই বারবার fetch করার দরকার নেই —
@@ -699,6 +711,7 @@ def get_flood(district_name):
         r_ratio = (r_discharge / r_reference_discharge) if r_reference_discharge else 0
         rivers_status.append({
             "name": r["name"], "discharge_today": round(r_discharge),
+            "discharge_change_pct": r_data.get("discharge_change_pct", 0.0),
             "forecast": r_data["forecast"], "dates": r_data["dates"],
             "danger_level": r_danger, "ratio": round(r_ratio, 3),
             "is_primary": r.get("is_primary", False),
@@ -710,6 +723,7 @@ def get_flood(district_name):
     active_river = max(rivers_status, key=lambda x: x["ratio"])
 
     river = {"today": active_river["discharge_today"], "forecast": active_river["forecast"], "dates": active_river["dates"]}
+    discharge_change_pct = active_river.get("discharge_change_pct", 0.0)
     soil_moisture = fetch_soil_moisture(info["lat"], info["lon"])
 
     weather_data = fetch_weather(info["lat"], info["lon"])
@@ -743,6 +757,7 @@ def get_flood(district_name):
     try:
         prediction = predict_flood(
             discharge=discharge,
+            discharge_change_pct=discharge_change_pct,
             upstream_rain=upstream_rain,
             local_rain=local_rain,
             soil_moisture=soil_moisture,
@@ -1068,6 +1083,7 @@ def download_pdf(district_name):
         try:
             prediction = predict_flood(
                 discharge=discharge,
+                discharge_change_pct=river.get("discharge_change_pct", 0.0),
                 upstream_rain=upstream_data.get("rain", 0),
                 local_rain=weather_data.get("rain", 0),
                 soil_moisture=soil_moisture,
