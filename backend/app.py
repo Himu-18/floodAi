@@ -7,8 +7,9 @@ import os
 import re
 import time
 from pathlib import Path
-from flask import Flask, jsonify, request, send_file, send_from_directory
+from flask import Flask, jsonify, request, send_file, send_from_directory, session
 from flask_cors import CORS
+from functools import wraps
 import requests
 import sqlite3
 from datetime import datetime, timedelta
@@ -57,6 +58,51 @@ except ImportError:
 
 app = Flask(__name__)
 
+# ============================================================
+# SESSION / AUTH CONFIG
+# ============================================================
+# SECRET_KEY দিয়ে Flask session cookie sign হয় — এটা ছাড়া কেউ session
+# cookie জাল (forge) করে অন্য user হিসেবে login থাকার ভান করতে পারবে।
+# Production-এ (FLASK_DEBUG=0) SECRET_KEY বাধ্যতামূলক, local dev-এ না
+# থাকলে একটা insecure fallback ব্যবহার হবে (শুধু development-এর জন্য)।
+_IS_DEBUG = os.getenv("FLASK_DEBUG", "0") == "1"
+app.secret_key = os.getenv("SECRET_KEY")
+if not app.secret_key:
+    if _IS_DEBUG:
+        app.secret_key = "dev-only-insecure-key-never-use-in-production"
+        print("⚠️ SECRET_KEY .env-এ নেই — শুধু local dev-এর জন্য insecure fallback key ব্যবহার হচ্ছে।")
+    else:
+        raise RuntimeError(
+            "SECRET_KEY environment variable সেট নেই। Production-এ session secure রাখতে "
+            "এটা লাগবেই। জেনারেট করতে: python -c \"import secrets; print(secrets.token_hex(32))\""
+        )
+
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,   # JS দিয়ে cookie পড়া যাবে না (XSS থেকে session চুরি ঠেকায়)
+    SESSION_COOKIE_SAMESITE=os.getenv("SESSION_COOKIE_SAMESITE", "Lax"),
+    # Render-এ production HTTPS-এর উপর চলে, তাই Secure=True default।
+    # Local dev-এ http-এর উপর টেস্ট করার জন্য FLASK_DEBUG=1 থাকলে Secure বন্ধ থাকে।
+    SESSION_COOKIE_SECURE=os.getenv("SESSION_COOKIE_SECURE", "0" if _IS_DEBUG else "1") == "1",
+    PERMANENT_SESSION_LIFETIME=timedelta(days=7),
+)
+
+
+def login_required(view_func):
+    """Protected route-এর জন্য decorator। Session-এ user_id না থাকলে 401।
+    এখন কোনো route এটা ব্যবহার করছে না, কিন্তু user-specific feature
+    (saved district, verified-reporter role ইত্যাদি) যোগ করার সময় লাগবে:
+        @app.route('/api/some-protected-route')
+        @login_required
+        def some_view(): ...
+    """
+    @wraps(view_func)
+    def wrapped(*args, **kwargs):
+        if "user_id" not in session:
+            return jsonify({"error": "এই ফিচারের জন্য login প্রয়োজন"}), 401
+        return view_func(*args, **kwargs)
+    return wrapped
+
+
 def parse_csv_env(name, default):
     return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
 
@@ -65,7 +111,10 @@ CORS_ORIGINS = parse_csv_env(
     "http://127.0.0.1:5500,http://localhost:5500,"
     "http://127.0.0.1:8000,http://localhost:8000,null"
 )
-CORS(app, resources={r"/api/*": {"origins": CORS_ORIGINS}})
+# supports_credentials=True না দিলে browser session cookie-সহ cross-origin
+# request পাঠাবে/গ্রহণ করবে না — frontend আলাদা পোর্ট/ডোমেইন থেকে এলে login
+# কাজ করবে না এটা ছাড়া।
+CORS(app, resources={r"/api/*": {"origins": CORS_ORIGINS}}, supports_credentials=True)
 
 # ============================================================
 # API KEYS
@@ -76,6 +125,12 @@ WORLDTIDES_API_KEY = os.getenv("WORLDTIDES_API_KEY")  # Coastal & Tidal জে�
 CHAT_RATE_WINDOW_SECONDS = int(os.getenv("CHAT_RATE_WINDOW_SECONDS", "60"))
 CHAT_RATE_MAX_REQUESTS = int(os.getenv("CHAT_RATE_MAX_REQUESTS", "20"))
 _chat_hits = {}
+
+# Login/Register brute-force ঠেকাতে rate limit — chat-এর চেয়ে কড়া window,
+# কারণ password-guessing script অনেক দ্রুত request পাঠাতে পারে।
+AUTH_RATE_WINDOW_SECONDS = int(os.getenv("AUTH_RATE_WINDOW_SECONDS", "300"))
+AUTH_RATE_MAX_REQUESTS = int(os.getenv("AUTH_RATE_MAX_REQUESTS", "8"))
+_auth_hits = {}
 
 if not WEATHER_API_KEY or not GROQ_API_KEY:
     print("⚠️ WARNING: WEATHER_API_KEY বা GROQ_API_KEY .env ফাইলে পাওয়া যায়নি! "
@@ -112,18 +167,30 @@ def to_float(value, default=0):
     except (TypeError, ValueError):
         return default
 
-def is_chat_rate_limited(client_id):
-    if CHAT_RATE_MAX_REQUESTS <= 0:
+def get_client_id():
+    return (request.headers.get("X-Forwarded-For") or request.remote_addr or "local").split(",")[0].strip()
+
+
+def _is_rate_limited(store, client_id, window_seconds, max_requests):
+    if max_requests <= 0:
         return False
     now = time.time()
-    cutoff = now - CHAT_RATE_WINDOW_SECONDS
-    hits = [t for t in _chat_hits.get(client_id, []) if t >= cutoff]
-    if len(hits) >= CHAT_RATE_MAX_REQUESTS:
-        _chat_hits[client_id] = hits
+    cutoff = now - window_seconds
+    hits = [t for t in store.get(client_id, []) if t >= cutoff]
+    if len(hits) >= max_requests:
+        store[client_id] = hits
         return True
     hits.append(now)
-    _chat_hits[client_id] = hits
+    store[client_id] = hits
     return False
+
+
+def is_chat_rate_limited(client_id):
+    return _is_rate_limited(_chat_hits, client_id, CHAT_RATE_WINDOW_SECONDS, CHAT_RATE_MAX_REQUESTS)
+
+
+def is_auth_rate_limited(client_id):
+    return _is_rate_limited(_auth_hits, client_id, AUTH_RATE_WINDOW_SECONDS, AUTH_RATE_MAX_REQUESTS)
 
 def fetch_weather(lat, lon):
     try:
@@ -1270,7 +1337,7 @@ def chat():
         return jsonify({"error": "Message too long"}), 400
     if not GROQ_API_KEY:
         return jsonify({"error": "Chatbot API key configured নেই"}), 503
-    client_id = (request.headers.get("X-Forwarded-For") or request.remote_addr or "local").split(",")[0].strip()
+    client_id = get_client_id()
     if is_chat_rate_limited(client_id):
         return jsonify({"error": "Too many chat requests. একটু পরে আবার চেষ্টা করুন।"}), 429
 
@@ -1292,6 +1359,8 @@ def chat():
 # ── User Authentication ──
 @app.route('/api/register', methods=['POST'])
 def register():
+    if is_auth_rate_limited(get_client_id()):
+        return jsonify({"error": "অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।"}), 429
     data = get_json_body()
     name = (data.get('name') or '').strip()
     email = (data.get('email') or '').strip().lower()
@@ -1309,6 +1378,8 @@ def register():
 
 @app.route('/api/login', methods=['POST'])
 def login():
+    if is_auth_rate_limited(get_client_id()):
+        return jsonify({"error": "অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।"}), 429
     data = get_json_body()
     email = (data.get('email') or '').strip().lower()
     password = data.get('password') or ''
@@ -1316,11 +1387,36 @@ def login():
         return jsonify({"error": "Email and password required"}), 400
     user = get_user(email, password)
     if user:
+        # পুরনো কোনো session থাকলে আগে clear করা, তারপর নতুন করে সেট —
+        # session fixation ঠেকানোর জন্য standard practice।
+        session.clear()
+        session.permanent = True
+        session['user_id'] = user['id']
+        session['user_name'] = user['name']
+        session['user_email'] = user['email']
+        session['user_district'] = user['district']
         return jsonify({
             "message": "✅ Login successful!",
             "user": {"name": user["name"], "email": user["email"], "district": user["district"]}
         })
     return jsonify({"error": "Invalid email or password"}), 401
+
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return jsonify({"message": "✅ Logout successful!"})
+
+
+@app.route('/api/me', methods=['GET'])
+def me():
+    if "user_id" not in session:
+        return jsonify({"user": None})
+    return jsonify({"user": {
+        "name": session.get("user_name"),
+        "email": session.get("user_email"),
+        "district": session.get("user_district"),
+    }})
 
 
 # ============================================================
