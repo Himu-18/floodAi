@@ -14,3 +14,5 @@ services:
         value: "0"
       - key: SECRET_KEY
         generateValue: true
+      - key: VALIDATION_COLLECT_SECRET
+        generateValue: true
