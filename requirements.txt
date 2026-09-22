@@ -6,6 +6,7 @@ openpyxl
 python-dotenv
 groq
 schedule
+pytz
 numpy
 pandas
 scikit-learn

@@ -132,6 +132,14 @@ AUTH_RATE_WINDOW_SECONDS = int(os.getenv("AUTH_RATE_WINDOW_SECONDS", "300"))
 AUTH_RATE_MAX_REQUESTS = int(os.getenv("AUTH_RATE_MAX_REQUESTS", "8"))
 _auth_hits = {}
 
+# Community report spoofing ঠেকাতে rate limit — /api/report auth ছাড়া
+# public, আর predict_flood() recent_reports দেখে public flood_probability
+# বাড়িয়ে দেয় (৫টা "emergency" রিপোর্টেই ৮৫%+ "বিপদ" level force হয়ে যায়)।
+# এই limit ছাড়া script দিয়ে যেকোনো জেলার জন্য fake danger alert বানানো যেত।
+REPORT_RATE_WINDOW_SECONDS = int(os.getenv("REPORT_RATE_WINDOW_SECONDS", "300"))
+REPORT_RATE_MAX_REQUESTS = int(os.getenv("REPORT_RATE_MAX_REQUESTS", "5"))
+_report_hits = {}
+
 if not WEATHER_API_KEY or not GROQ_API_KEY:
     print("⚠️ WARNING: WEATHER_API_KEY বা GROQ_API_KEY .env ফাইলে পাওয়া যায়নি! "
           "backend/.env ফাইল ঠিকমতো আছে কিনা চেক করুন।")
@@ -191,6 +199,10 @@ def is_chat_rate_limited(client_id):
 
 def is_auth_rate_limited(client_id):
     return _is_rate_limited(_auth_hits, client_id, AUTH_RATE_WINDOW_SECONDS, AUTH_RATE_MAX_REQUESTS)
+
+
+def is_report_rate_limited(client_id):
+    return _is_rate_limited(_report_hits, client_id, REPORT_RATE_WINDOW_SECONDS, REPORT_RATE_MAX_REQUESTS)
 
 def fetch_weather(lat, lon):
     try:
@@ -515,12 +527,26 @@ def get_color_by_level(level):
     if level == "সাবধান": return "#f39c12"
     return "#27ae60"
 
+# ⚠️ FIX (২০২৬-০৯): আগে limit=20 রিপোর্টের মধ্যে যতগুলো road/house/rising/
+# emergency status — সব সময়েরটাই count হতো (৫ মিনিট আগের রিপোর্টও, ৫ দিন
+# আগেরটাও সমান গুরুত্ব পেত)। এখন শুধু শেষ REPORT_WINDOW_HOURS ঘণ্টার
+# রিপোর্ট count হয় — পুরনো emergency রিপোর্ট চিরকাল "সক্রিয়" থেকে যাওয়ার
+# bug আর প্রতিটা রিপোর্টের ইনফ্লুয়েন্স rate-limit-এর সাথে মিলিয়ে সীমিত করে।
+REPORT_WINDOW_HOURS = int(os.getenv("REPORT_WINDOW_HOURS", "6"))
+
 def get_active_report_count(district_name):
     active_reports = 0
     try:
-        reports = get_community_reports(district_name, limit=20)
+        reports = get_community_reports(district_name, limit=50)
+        cutoff = datetime.now() - timedelta(hours=REPORT_WINDOW_HOURS)
         for r in reports:
-            if r['status'] in ['road', 'house', 'rising', 'emergency']:
+            if r['status'] not in ('road', 'house', 'rising', 'emergency'):
+                continue
+            try:
+                ts = datetime.strptime(r['timestamp'], "%Y-%m-%d %H:%M:%S")
+            except (TypeError, ValueError):
+                continue  # timestamp missing/malformed হলে সেই রিপোর্ট গোনা হবে না
+            if ts >= cutoff:
                 active_reports += 1
     except Exception as e:
         print(f"get_active_report_count error: {e}")
@@ -1236,6 +1262,14 @@ def overall_stats():
 # তৈরি করবে, ভবিষ্যতে ML model real data দিয়ে retrain/evaluate করার জন্য।
 @app.route('/api/validation/collect', methods=['POST'])
 def collect_validation_entries():
+    # এই endpoint শুধু scheduler-এর নিজের ভেতরের cron call-এর জন্য — বাইরের
+    # কেউ বারবার হিট করলে DB-তে duplicate validation_log row জমতে থাকে।
+    # VALIDATION_COLLECT_SECRET সেট থাকলে matching header ছাড়া 403; না
+    # থাকলে (env var সেট না করলে) আগের মতোই open থাকে, backward-compatible।
+    expected_secret = os.getenv("VALIDATION_COLLECT_SECRET")
+    if expected_secret and request.headers.get("X-Internal-Secret") != expected_secret:
+        return jsonify({"error": "Forbidden"}), 403
+
     ffwc_live = get_ffwc_live_cached()
     latest_readings = {r["district"]: r for r in get_latest_readings()}
     saved, skipped = 0, 0
@@ -1306,6 +1340,8 @@ def active_warnings():
 # ── Community Reports ──
 @app.route('/api/report', methods=['POST'])
 def community_report():
+    if is_report_rate_limited(get_client_id()):
+        return jsonify({"error": "অনেকবার রিপোর্ট পাঠানো হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।"}), 429
     data = get_json_body()
     district = data.get('district')
     status = data.get('status')
