@@ -165,6 +165,44 @@ async function submitReport() {
     }
 }
 
+// ── AUTH / SESSION ──
+// credentials:'include' ছাড়া browser login-এর session cookie সংরক্ষণ বা
+// পরের request-এ পাঠাবে না (বিশেষত cross-origin local dev-এ, যেমন
+// live-server 127.0.0.1:5500 → backend 127.0.0.1:5000)।
+function applyAuthUI(user) {
+    const loginBtn = document.getElementById('btnLoginNav');
+    const signupBtn = document.getElementById('btnSignupNav');
+    if (!loginBtn || !signupBtn) return;
+    if (user) {
+        loginBtn.textContent = `👤 ${user.name}`;
+        loginBtn.onclick = logout;
+        signupBtn.style.display = 'none';
+    } else {
+        loginBtn.textContent = 'Login';
+        loginBtn.onclick = () => { document.getElementById('loginModal').style.display = 'flex'; };
+        signupBtn.style.display = '';
+    }
+}
+
+async function checkSession() {
+    try {
+        const res = await fetch(`${BACKEND}/api/me`, { credentials: 'include' });
+        const data = await res.json();
+        applyAuthUI(data.user || null);
+    } catch (e) {
+        console.error('Session check error:', e);
+    }
+}
+
+async function logout() {
+    try {
+        await fetch(`${BACKEND}/api/logout`, { method: 'POST', credentials: 'include' });
+    } catch (e) {
+        console.error('Logout error:', e);
+    }
+    applyAuthUI(null);
+}
+
 async function submitLogin() {
     const email = document.getElementById('loginEmail')?.value;
     const password = document.getElementById('loginPassword')?.value;
@@ -178,6 +216,7 @@ async function submitLogin() {
         const res = await fetch(`${BACKEND}/api/login`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
             body: JSON.stringify({ email, password })
         });
         const data = await res.json();
@@ -185,6 +224,7 @@ async function submitLogin() {
             alert('❌ ' + (data.error || 'Login ব্যর্থ হয়েছে'));
             return;
         }
+        applyAuthUI(data.user);
         alert(`✅ স্বাগতম, ${data.user.name}!`);
         closeModal('loginModal');
     } catch (e) {
@@ -209,6 +249,7 @@ async function submitSignup() {
         const res = await fetch(`${BACKEND}/api/register`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
             body: JSON.stringify({ name, email, password, phone, district })
         });
         const data = await res.json();
@@ -223,6 +264,8 @@ async function submitSignup() {
         alert('❌ Sign Up করতে সমস্যা হয়েছে। Backend চালু আছে কিনা চেক করুন।');
     }
 }
+
+checkSession();
 
 // ── MAP INIT ──
 const RISK_COLORS = {
