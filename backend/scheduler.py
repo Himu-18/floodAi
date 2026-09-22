@@ -8,6 +8,16 @@ import os
 import schedule
 from datetime import datetime
 
+# ⚠️ FIX (২০২৬-০৯): Render-এর সার্ভার default-এ UTC টাইমজোনে চলে, বাংলাদেশ
+# UTC+6। আগে schedule.every().day.at("06:00")-এ কোনো tz না দেওয়ায় এটা আসলে
+# UTC 06:00 = বাংলাদেশ সময় দুপুর ১২টায় চলত ("সকাল ৬টা"-র বদলে), একইভাবে
+# evening_report রাত ১২টায় আর collect_validation রাত ১১:৩০টায় চলত। এখন
+# schedule library-র at(time_str, tz) দিয়ে explicit "Asia/Dhaka" timezone
+# দেওয়া হচ্ছে — Render-এ TZ env var সেট থাকুক বা না থাকুক, সময়গুলো সবসময়
+# বাংলাদেশ local time অনুযায়ীই চলবে (requirements.txt-এ pytz যোগ করা হয়েছে,
+# schedule library-র tz সাপোর্টের জন্য এটা প্রয়োজন)।
+DHAKA_TZ = "Asia/Dhaka"
+
 BACKEND_URL = f"http://127.0.0.1:{os.getenv('PORT', '5000')}"
 
 # High risk districts — এগুলো বেশি frequently update হবে
@@ -128,7 +138,11 @@ def collect_validation():
     """
     log("📊 Validation log collecting...")
     try:
-        r = requests.post(f"{BACKEND_URL}/api/validation/collect", timeout=120)
+        headers = {}
+        _secret = os.getenv("VALIDATION_COLLECT_SECRET")
+        if _secret:
+            headers["X-Internal-Secret"] = _secret
+        r = requests.post(f"{BACKEND_URL}/api/validation/collect", timeout=120, headers=headers)
         if r.status_code == 200:
             data = r.json()
             log(f"✅ Validation log — {data.get('saved')} জেলা saved, {data.get('skipped')} skip")
@@ -147,9 +161,9 @@ def run_scheduler_loop():
     """
     schedule.every(15).minutes.do(collect_high_risk)
     schedule.every(1).hours.do(collect_all)
-    schedule.every().day.at("06:00").do(morning_report)
-    schedule.every().day.at("18:00").do(evening_report)
-    schedule.every().day.at("17:30").do(collect_validation)
+    schedule.every().day.at("06:00", DHAKA_TZ).do(morning_report)
+    schedule.every().day.at("18:00", DHAKA_TZ).do(evening_report)
+    schedule.every().day.at("17:30", DHAKA_TZ).do(collect_validation)
 
     log("🚀 FloodAI Scheduler started!")
     log("📋 Schedule:")
