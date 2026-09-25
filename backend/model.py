@@ -60,7 +60,7 @@ def load_ml_model():
     return _ML_MODEL_CACHE["model"], _ML_MODEL_CACHE["scaler"], _ML_MODEL_CACHE["features"]
 
 
-def get_reference_discharge(danger_level, district_name=None):
+def get_reference_discharge(danger_level, district_name=None, ffwc_id=None):
     """
     ⚠️ এটা একটা APPROXIMATION, real rating curve (stage-discharge relationship) না।
 
@@ -72,10 +72,18 @@ def get_reference_discharge(danger_level, district_name=None):
     ── জেলা-বাই-জেলা verification (২০২৬-০৮) ──
     district_profiles/ ফোল্ডারে এখন প্রতিটা জেলার real hydrology literature
     (academic paper, FFWC bulletin, BWDB report) থেকে verified reference
-    discharge আছে। district_name দেওয়া থাকলে সেটা আগে চেক করা হয় — পাওয়া গেলে
-    এই verified সংখ্যা ব্যবহার হয়, না পাওয়া গেলে (এখনো verify না-হওয়া জেলা)
-    পুরনো danger_level*100 approximation-এ fallback করে। এভাবে যে জেলাগুলো
-    এখনো profile করা হয়নি, সেগুলোতে কোনো regression হয় না।
+    discharge আছে। ffwc_id দেওয়া থাকলে সেটা দিয়ে আগে চেক করা হয় (unique station
+    ID, কোনো collision-ঝুঁকি নেই)। না পাওয়া গেলে district_name+danger_level
+    দিয়ে fallback match করা হয়, তাও না মিললে পুরনো danger_level*100
+    approximation-এ fallback করে।
+
+    ⚠️ FIX (২০২৬-০৯): শুধু danger_level দিয়ে match করলে একই জেলার দুইটা আলাদা
+    নদীর danger_level কাকতালীয়ভাবে সমান হলে (যেমন কুড়িগ্রাম: Noonkhawa/
+    ব্রহ্মপুত্র আর Kurigram/ধরলা দুটোরই 26.05m) ভুল নদীর correction চলে আসত —
+    Dharla-র মতো মাঝারি নদী ভুল করে ব্রহ্মপুত্রের (mega_trunk, ৫২ গুণ বেশি)
+    reference_discharge পেয়ে যাচ্ছিল। এখন ffwc_id (unique) কে primary key
+    হিসেবে ব্যবহার করা হচ্ছে, danger_level শুধু ffwc_id না থাকলে/না মিললে
+    fallback হিসেবে।
 
     ভবিষ্যতে বাকি জেলাগুলোও profile হয়ে গেলে, শুধু district_profiles/ ফোল্ডারে
     নতুন ফাইল যোগ করলেই এই ফাংশন স্বয়ংক্রিয়ভাবে সেটা ব্যবহার করবে — কোড বদলাতে হবে না।
@@ -83,31 +91,44 @@ def get_reference_discharge(danger_level, district_name=None):
     if not danger_level or danger_level <= 0:
         return None
 
-    if district_name:
-        try:
-            from data import district_profiles_loader as _dpl
+    try:
+        from data import district_profiles_loader as _dpl
+
+        if ffwc_id:
+            correction = _dpl.get_correction_by_station_id(ffwc_id)
+            if correction and correction.get("reference_discharge_m3s"):
+                return correction["reference_discharge_m3s"]
+
+        if district_name:
             correction = _dpl.get_correction_by_danger_level(district_name, danger_level)
             if correction and correction.get("reference_discharge_m3s"):
                 return correction["reference_discharge_m3s"]
-        except Exception as e:
-            print(f"⚠️ district_profiles_loader থেকে reference_discharge আনতে ব্যর্থ ({district_name}): {e}")
+    except Exception as e:
+        print(f"⚠️ district_profiles_loader থেকে reference_discharge আনতে ব্যর্থ ({district_name}, ffwc_id={ffwc_id}): {e}")
 
     return danger_level * 100
 
 
-def get_reference_discharge_correction_info(danger_level, district_name=None):
+def get_reference_discharge_correction_info(danger_level, district_name=None, ffwc_id=None):
     """
     get_reference_discharge()-এর মতোই, কিন্তু শুধু সংখ্যা না — পুরো correction info
     (is_large_divergence সহ) ফেরত দেয়, যাতে caller বুঝতে পারে ML feature হিসেবে
-    ব্যবহার করা নিরাপদ কিনা।
+    ব্যবহার করা নিরাপদ কিনা। ffwc_id দেওয়া থাকলে সেটা দিয়ে আগে (unique, collision-মুক্ত)
+    lookup করা হয়, একই যুক্তি যা get_reference_discharge()-এও প্রযোজ্য।
     """
-    if not danger_level or danger_level <= 0 or not district_name:
+    if not danger_level or danger_level <= 0:
         return None
     try:
         from data import district_profiles_loader as _dpl
-        return _dpl.get_correction_by_danger_level(district_name, danger_level)
+        if ffwc_id:
+            correction = _dpl.get_correction_by_station_id(ffwc_id)
+            if correction:
+                return correction
+        if district_name:
+            return _dpl.get_correction_by_danger_level(district_name, danger_level)
+        return None
     except Exception as e:
-        print(f"⚠️ district_profiles_loader correction info আনতে ব্যর্থ ({district_name}): {e}")
+        print(f"⚠️ district_profiles_loader correction info আনতে ব্যর্থ ({district_name}, ffwc_id={ffwc_id}): {e}")
         return None
 
 
