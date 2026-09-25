@@ -200,6 +200,17 @@ def get_correction_by_danger_level(district_name, danger_level):
         # জেলায় (যেমন কুষ্টিয়া: গড়াই+পদ্মা) অপ্রাসঙ্গিক নদীর reference_discharge
         # ব্যবহার হয়ে ভুল ratio তৈরি হতো। এখন match না পেলে None রিটার্ন করা হচ্ছে,
         # যাতে get_reference_discharge()-এর generic danger_level×100 fallback ব্যবহৃত হয়।
+        #
+        # ⚠️ REGRESSION FIX (২০২৬-০৯, পরের দিন ধরা পড়েছে): উপরের fix "zero-station"
+        # জেলাগুলোকে (লালমনিরহাট, এবং সম্ভবত আরও) ভেঙে দিয়েছিল — এদের profile-এ
+        # danger_level_m=None (কোনো real FFWC station নেই বলে) একটাই verified
+        # correction entry থাকে, যেটা উপরের abs()-ম্যাচে কখনো মেলে না, ফলে verified
+        # reference_discharge (যেমন লালমনিরহাটের ৪০০০) বাদ পড়ে generic danger_level×100
+        # fallback (৫২১৫) ব্যবহার হচ্ছিল। যেহেতু এই ক্ষেত্রে entry-টাই একমাত্র (কোনো
+        # multi-river ambiguity নেই, কুষ্টিয়ার সমস্যাটা এখানে প্রযোজ্যই না), তাই একটাই
+        # entry আর সেটার danger_level_m None হলে নিরাপদে সেটাই ব্যবহার করা যায়।
+        if len(corrections) == 1 and corrections[0].get("danger_level_m") is None:
+            return corrections[0]
         return None
 
     # danger_level না দেওয়া থাকলে (যেমন single-river legacy কল) primary station fallback
