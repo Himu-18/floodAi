@@ -574,8 +574,19 @@ def get_confluence_data(district_name):
         # যেত আর confluence override বর্ষাকালে প্রায় সবসময় ট্রিগার হতো। এখন
         # district_name পাস করায় district_profiles/-এর verified সংখ্যা
         # ব্যবহার হবে (রাজবাড়ী→৩০,০০০, মানিকগঞ্জ→৫০,০০০)।
-        padma_ref = get_reference_discharge(padma_info.get("danger_level"), PADMA_REFERENCE_DISTRICT)
-        jamuna_ref = get_reference_discharge(jamuna_info.get("danger_level"), JAMUNA_REFERENCE_DISTRICT)
+        # ⚠️ FIX (২০২৬-০৯): danger_level-only match কখনো কখনো ভুল নদীর correction
+        # তুলে আনত (একই জেলায় দুই নদীর danger_level কাকতালীয়ভাবে সমান হলে) —
+        # তাই এখানেও unique ffwc_id বের করে primary key হিসেবে পাস করা হচ্ছে।
+        padma_id_match = re.search(r"(SW[\w.]+)", padma_info.get("ffwc_station") or "")
+        jamuna_id_match = re.search(r"(SW[\w.]+)", jamuna_info.get("ffwc_station") or "")
+        padma_ref = get_reference_discharge(
+            padma_info.get("danger_level"), PADMA_REFERENCE_DISTRICT,
+            ffwc_id=padma_id_match.group(1) if padma_id_match else None,
+        )
+        jamuna_ref = get_reference_discharge(
+            jamuna_info.get("danger_level"), JAMUNA_REFERENCE_DISTRICT,
+            ffwc_id=jamuna_id_match.group(1) if jamuna_id_match else None,
+        )
 
         if not padma_ref or not jamuna_ref:
             return None
@@ -810,7 +821,15 @@ def get_flood(district_name):
         # কারণেই ছোট branch বারবার মূল নদীকে হারিয়ে যাচ্ছিল)। এখন discharge-কে
         # তার নিজস্ব verified/approximated reference_discharge (m³/s)-এর
         # সাপেক্ষে ভাগ করা হচ্ছে, যেটা একই unit — apples-to-apples তুলনা।
-        r_reference_discharge = get_reference_discharge(r_danger, district_name) if r_danger else None
+        # ⚠️ FIX (২০২৬-০৯): শুধু danger_level দিয়ে match করলে একই জেলার দুই নদীর
+        # danger_level কাকতালীয়ভাবে সমান হলে ভুল নদীর correction চলে আসতে পারে
+        # (যেমন কুড়িগ্রাম: Noonkhawa/ব্রহ্মপুত্র বনাম Kurigram/ধরলা, দুটোই 26.05m)।
+        # এখানে ffwc_id বের করে unique key হিসেবে আগে পাস করা হচ্ছে।
+        r_ffwc_id_match = re.search(r"(SW[\w.]+)", r.get("ffwc_station") or "")
+        r_reference_discharge = get_reference_discharge(
+            r_danger, district_name,
+            ffwc_id=r_ffwc_id_match.group(1) if r_ffwc_id_match else None,
+        ) if r_danger else None
         r_ratio = (r_discharge / r_reference_discharge) if r_reference_discharge else 0
         rivers_status.append({
             "name": r["name"], "discharge_today": round(r_discharge),
