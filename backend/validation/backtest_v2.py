@@ -40,6 +40,8 @@ from stations import VALIDATION_STATIONS
 from metrics import PredictionRecord, compute_metrics, compare_models
 
 from model import predict_flood, get_reference_discharge
+from data.flood_config import FLOOD_CONFIG
+from data.upstream_cities import get_upstream_coords
 
 OUTPUT_CSV = Path(__file__).parent / "backtest_v2_results.csv"
 
@@ -100,6 +102,67 @@ def fetch_historical_soil_moisture(lat, lon, date_str):
         return float(val) if val is not None else 0.6
     except Exception:
         return 0.6
+
+
+def fetch_historical_rain_intensity_6h(lat, lon, date_str):
+    """
+    ⚠️ FIX (backtest-এ hourly-vs-daily rainfall gap): লাইভ app.py-র flash_flood/
+    urban_waterlogging override logic ৬-ঘণ্টার rolling rainfall intensity
+    ব্যবহার করে (fetch_rainfall_intensity(), past_hours=6 দিয়ে "এখন" থেকে
+    পেছনে ৬ ঘণ্টা), কিন্তু এই ফাংশনটা শুধু "এখন"-এর জন্যই কাজ করে (Open-Meteo
+    forecast endpoint, historical তারিখের জন্য না)। backtest ঐতিহাসিক তারিখ
+    নিয়ে কাজ করে বলে আগে এই ফাংশন ব্যবহারই করা যেত না — predict_flood()-কে
+    rainfall_intensity_data একদমই দেওয়া হতো না, ফলে flash_flood/urban জেলার
+    জন্য backtest আসলে লাইভ কোডের ভিন্ন branch টেস্ট করছিল (দৈনিক-total
+    fallback), যেটা আসল লাইভ আচরণ প্রতিনিধিত্ব করে না।
+
+    এখানে archive-api-র hourly precipitation থেকে সেই তারিখের ভেতরে
+    সবচেয়ে ভারী ৬-ঘণ্টার rolling window বের করা হচ্ছে — ঠিক কোন ঘণ্টায়
+    আসল flood-সংকেত এসেছিল তা backtest জানে না (শুধু দিনটা জানে), তাই
+    "সেদিনের সবচেয়ে flash-flood-প্রবণ ৬ ঘণ্টা" এটাই সবচেয়ে fair, honest proxy।
+    """
+    try:
+        r = requests.get(
+            "https://archive-api.open-meteo.com/v1/archive",
+            params={"latitude": lat, "longitude": lon, "start_date": date_str, "end_date": date_str,
+                    "hourly": "precipitation"},
+            timeout=15
+        )
+        data = r.json()
+        values = data.get("hourly", {}).get("precipitation", [])
+        values = [v if v is not None else 0.0 for v in values]
+        if len(values) < 6:
+            return None
+        max_6h = max(sum(values[i:i + 6]) for i in range(len(values) - 5))
+        return round(max_6h, 1)
+    except Exception as e:
+        print(f"  ⚠️ rain intensity fetch error ({date_str}): {e}")
+        return None
+
+
+def get_rainfall_intensity_data_backtest(district_name, local_lat, local_lon, date_str):
+    """
+    app.py-র get_rainfall_intensity_data()-র backtest-সংস্করণ — একই শর্ত
+    (flood_type Flash Flood বা Urban Waterlogging হলেই কেবল), কিন্তু
+    fetch_historical_rain_intensity_6h() দিয়ে ঐতিহাসিক তারিখের জন্য।
+    """
+    info = FLOOD_CONFIG.get(district_name, {})
+    if info.get("flood_type") not in ("Flash Flood", "Urban Waterlogging"):
+        return None
+    try:
+        local_6h = fetch_historical_rain_intensity_6h(local_lat, local_lon, date_str)
+
+        upstream_coords = get_upstream_coords(info.get("upstream"))
+        upstream_6h = None
+        if upstream_coords:
+            upstream_6h = fetch_historical_rain_intensity_6h(upstream_coords[0], upstream_coords[1], date_str)
+
+        if local_6h is None and upstream_6h is None:
+            return None
+        return {"local_6h": local_6h or 0, "upstream_6h": upstream_6h or 0}
+    except Exception as e:
+        print(f"  ⚠️ get_rainfall_intensity_data_backtest error: {e}")
+        return None
 
 
 def load_flood_events():
@@ -199,6 +262,9 @@ def run_backtest():
                 rain = fetch_historical_rain(station["lat"], station["lon"], date_str)
                 discharge = fetch_historical_discharge(station["lat"], station["lon"], date_str)
                 soil = fetch_historical_soil_moisture(station["lat"], station["lon"], date_str)
+                rainfall_intensity_data = get_rainfall_intensity_data_backtest(
+                    station["district"], station["lat"], station["lon"], date_str
+                )
                 time.sleep(0.5)  # rate-limit সৌজন্যে
 
                 actual_flood = actual_flood_label(
@@ -211,6 +277,7 @@ def run_backtest():
                         discharge=discharge, upstream_rain=rain * 0.7, local_rain=rain,
                         soil_moisture=soil, lag_time=20, cn=80, risk_category="মাঝারি",
                         district_name=station["district"], danger_level=station["danger_level_m"],
+                        rainfall_intensity_data=rainfall_intensity_data,
                         month=date_obj.month,  # ⚠️ historical তারিখের আসল মাস — না দিলে predict_flood()
                                                 # ডিফল্টে আজকের (রান করার সময়ের) মাস ধরে নিত, যেটা
                                                 # ঐতিহাসিক backtest-এর জন্য ভুল হতো
@@ -228,7 +295,15 @@ def run_backtest():
                 # station-এর নিজস্ব reference_discharge_m3s (bankfull, একই
                 # unit) এর সাথে তুলনা করা হচ্ছে — এটাই সবচেয়ে সরল,
                 # unit-consistent baseline: "discharge >= bankfull হলেই flood"।
-                reference_discharge = get_reference_discharge(station["danger_level_m"], station["district"])
+                # ⚠️ আরেকটা FIX: ffwc_id না পাঠালে danger_level-only match
+                # কিছু station-এ (যেমন কুড়িগ্রাম/Dharla, SW77) ভুল করে অন্য
+                # station-এর (Noonkhawa, SW45) reference_discharge ধার করে
+                # ফেলতো — দুটোরই danger_level কাকতালীয়ভাবে একই। ffwc_id
+                # দিয়ে এখন unambiguous match হচ্ছে (station-ID wiring fix,
+                # ২০২৬-০৯)।
+                reference_discharge = get_reference_discharge(
+                    station["danger_level_m"], station["district"], ffwc_id=station.get("ffwc_id")
+                )
                 baseline_flood = bool(reference_discharge) and discharge >= reference_discharge
 
                 floodai_records.append(PredictionRecord(station["name"], date_str, predicted_flood, actual_flood))
