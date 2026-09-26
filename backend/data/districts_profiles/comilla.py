@@ -119,7 +119,7 @@ COMILLA_PROFILE = {
             "highest_recorded_m": 8.58,  # 2024 flood: "53cm above danger" per Wikipedia
             "verified_source": "Wikipedia (August 2024 Bangladesh floods) — ২০২৪ বন্যায় ৮.৫৮ মিটারে পৌঁছেছিল, danger-এর ৫৩cm উপরে",
 
-            "gap_found": "⚠️ এই station stations.py-তে আছে কিন্তু flood_config.py-র কুমিল্লার rivers লিস্টে নেই (শুধু Comilla/SW110 আছে) — মুন্সিগঞ্জের Mawa-র মতো একই প্যাটার্নের গ্যাপ।",
+            "gap_found": "✅ (২০২৬-০৯ ফিক্সড) আগে এই station flood_config.py-র কুমিল্লার rivers লিস্টে ছিল না — এখন 'গোমতী (Debidwar)' নামে যোগ করা হয়েছে (danger_level=8.05, ffwc_id=SW114), get_reference_discharge() station-ID দিয়ে সঠিকভাবে এর নিজস্ব corrected_estimate (1000) খুঁজে পাচ্ছে।",
 
             "ml_features_verified": {
                 "reference_discharge_m3s": {"old_buggy_value": 805, "corrected_estimate": 1000, "confidence": "low — Comilla station-এর অনুরূপ ধরা হয়েছে"},
