@@ -17,6 +17,12 @@ UPSTREAM_CITY_COORDS = {
     "Malda": (25.0108, 88.1411),
     "Siliguri": (26.7271, 88.3953),
     "Raiganj": (25.6188, 88.1289),
+    # Silchar (আসাম, বরাক ভ্যালি) — সুরমা-কুশিয়ারার মূল উৎস বরাক নদীর
+    # mainstem lag signal-এর জন্য। Cherrapunji/Shillong-এর ৬-৮ ঘণ্টার
+    # দ্রুত hill-runoff signal থেকে আলাদা — এটা ধীর, বড় catchment থেকে
+    # আসা sustained inflow ধরার জন্য (lag ~৩৬ ঘণ্টা, literature-এ
+    # ব্যবহৃত ও "physical lead time" হিসেবে cite করা একটা সংখ্যা)।
+    "Silchar": (24.8333, 92.7789),
 }
 
 
