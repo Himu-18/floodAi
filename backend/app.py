@@ -479,20 +479,27 @@ def fetch_soil_moisture_forecast(lat, lon, day_offset):
         return 0.5
 
 
-# ── Flash Flood-এর জন্য: গত ৬ ঘণ্টার rolling rainfall (মিমি)।
+# ── Flash Flood-এর জন্য: গত N ঘণ্টার rolling rainfall (মিমি)।
 # OpenWeatherMap-এর "rain.1h" শুধু গত ১ ঘণ্টার snapshot দেয়, যেখানে
 # গবেষণা বলছে flash flood-এর real trigger ৩-৬ ঘণ্টার তীব্রতা —
 # তাই Open-Meteo-র hourly + past_hours প্যারামিটার দিয়ে (বিনামূল্যে,
-# নতুন কোনো API key লাগে না) গত ৬ ঘণ্টার precipitation যোগ করে
+# নতুন কোনো API key লাগে না) গত N ঘণ্টার precipitation যোগ করে
 # ফেরত দেওয়া হচ্ছে। ব্যর্থ হলে None (caller fallback করবে)।
-def fetch_rainfall_intensity(lat, lon):
+#
+# ⚠️ hours প্যারামিটার যোগ করা হলো (২০২৬-০৯): আগে হার্ডকোড ৬ ঘণ্টা
+# ছিল (fast local hill-runoff signal-এর জন্য ঠিক আছে), কিন্তু বরাক
+# নদীর mainstem contribution (Silchar থেকে) ধরার জন্য ৩৬-ঘণ্টার
+# window-ও দরকার — একই ফাংশন, শুধু past_hours প্যারামিটারাইজ করা।
+# past_hours=6 default রাখা হয়েছে, তাই এখনো পুরনো সব call-site
+# (local_6h, fast upstream_6h) আগের মতোই কাজ করবে, কিছু ভাঙবে না।
+def fetch_rainfall_intensity(lat, lon, hours=6):
     try:
         r = requests.get(
             "https://api.open-meteo.com/v1/forecast",
             params={
                 "latitude": lat, "longitude": lon,
                 "hourly": "precipitation",
-                "past_hours": 6,
+                "past_hours": hours,
                 "forecast_days": 1,
             },
             timeout=5
@@ -500,9 +507,9 @@ def fetch_rainfall_intensity(lat, lon):
         data = r.json()
         values = data["hourly"]["precipitation"]
         # past_hours প্যারামিটার দিলে Open-Meteo array-র শুরুতে সেই past
-        # hour-গুলো বসায়, তাই প্রথম ৬টা এন্ট্রিই "গত ৬ ঘণ্টা"
-        past_6h = values[:6]
-        return round(sum(past_6h), 1)
+        # hour-গুলো বসায়, তাই প্রথম N-টা এন্ট্রিই "গত N ঘণ্টা"
+        past_window = values[:hours]
+        return round(sum(past_window), 1)
     except Exception as e:
         print(f"fetch_rainfall_intensity error: {e}")
         return None
@@ -637,10 +644,31 @@ def get_rainfall_intensity_data(district_name, info, local_lat, local_lon):
         if upstream_coords:
             upstream_6h = fetch_rainfall_intensity(upstream_coords[0], upstream_coords[1])
 
-        if local_6h is None and upstream_6h is None:
+        # ── বরাক-mainstem ৩৬-ঘণ্টা signal (২০২৬-০৯ যোগ করা) ──
+        # শুধু যেসব জেলার flood_config.py-তে 'upstream_mainstem' ফিল্ড
+        # আছে (এখন পর্যন্ত: সিলেট, সুনামগঞ্জ) তাদের জন্যই fetch হয় —
+        # বাকি জেলায় কোনো এক্সট্রা API call হয় না। এটা Shillong/Agartala-র
+        # দ্রুত (৬-৮ঘ) hill-runoff signal থেকে আলাদা: Silchar/বরাক নদীর
+        # ধীর, বড় catchment থেকে আসা sustained inflow ধরার চেষ্টা।
+        mainstem_36h = None
+        mainstem_field = info.get("upstream_mainstem")
+        if mainstem_field:
+            mainstem_coords = get_upstream_coords(mainstem_field)
+            if mainstem_coords:
+                mainstem_36h = fetch_rainfall_intensity(
+                    mainstem_coords[0], mainstem_coords[1], hours=36
+                )
+
+        if local_6h is None and upstream_6h is None and mainstem_36h is None:
             return None
 
-        return {"local_6h": local_6h or 0, "upstream_6h": upstream_6h or 0}
+        result = {"local_6h": local_6h or 0, "upstream_6h": upstream_6h or 0}
+        # mainstem_36h শুধু তখনই dict-এ থাকবে যখন এই জেলার জন্য প্রাসঙ্গিক —
+        # বাকি ৬২ জেলার জন্য key-টাই থাকবে না, flash_flood.py-তে .get()
+        # দিয়ে safe-ভাবে None ধরা যাবে (কোনো downstream ভাঙবে না)।
+        if mainstem_field:
+            result["mainstem_36h"] = mainstem_36h if mainstem_36h is not None else 0
+        return result
     except Exception as e:
         print(f"get_rainfall_intensity_data error: {e}")
         return None
