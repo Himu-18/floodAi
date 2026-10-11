@@ -104,7 +104,7 @@ def fetch_historical_soil_moisture(lat, lon, date_str):
         return 0.6
 
 
-def fetch_historical_rain_intensity_6h(lat, lon, date_str):
+def fetch_historical_rain_intensity_6h(lat, lon, date_str, hours=6):
     """
     ⚠️ FIX (backtest-এ hourly-vs-daily rainfall gap): লাইভ app.py-র flash_flood/
     urban_waterlogging override logic ৬-ঘণ্টার rolling rainfall intensity
@@ -120,23 +120,41 @@ def fetch_historical_rain_intensity_6h(lat, lon, date_str):
     সবচেয়ে ভারী ৬-ঘণ্টার rolling window বের করা হচ্ছে — ঠিক কোন ঘণ্টায়
     আসল flood-সংকেত এসেছিল তা backtest জানে না (শুধু দিনটা জানে), তাই
     "সেদিনের সবচেয়ে flash-flood-প্রবণ ৬ ঘণ্টা" এটাই সবচেয়ে fair, honest proxy।
+
+    ⚠️ hours প্যারামিটার যোগ করা হলো (২০২৬-০৯, app.py-র সাথে মিরর করে):
+    সুরমা-কুশিয়ারার mainstem_36h ফিচার (live app.py, commit 0e744db)
+    backtest-এ ও একইভাবে টেস্ট করতে হলে ৩৬-ঘণ্টার rolling window দরকার।
+    hours=6 default রাখা হয়েছে, তাই পুরনো সব call (local_6h, upstream_6h)
+    অপরিবর্তিত থাকবে।
+
+    ⚠️ multi-day window-এ (৩৬h+) একটা সীমাবদ্ধতা আছে: archive-api single-
+    day query দেয়, তাই ৩৬ ঘণ্টার rolling window সঠিকভাবে বের করতে
+    date_str-এর আগের দিনের ডেটাও লাগে (৩৬h window সহজেই আগের দিনে পড়ে
+    যেতে পারে) — তাই নিচে date_str-এর আগের দিন ও নিজের দিন দুটোই fetch
+    করে একসাথে জোড়া হচ্ছে।
     """
     try:
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+        # ৩৬h (বা তার বেশি) window-এর জন্য আগের দিনের ডেটাও দরকার হতে
+        # পারে — কত দিন আগে থেকে লাগবে তা hours থেকে হিসাব করা (রাউন্ড আপ)
+        extra_days = max(0, (hours - 1) // 24)
+        start_date = (date_obj - timedelta(days=extra_days)).strftime("%Y-%m-%d")
+
         r = requests.get(
             "https://archive-api.open-meteo.com/v1/archive",
-            params={"latitude": lat, "longitude": lon, "start_date": date_str, "end_date": date_str,
+            params={"latitude": lat, "longitude": lon, "start_date": start_date, "end_date": date_str,
                     "hourly": "precipitation"},
             timeout=15
         )
         data = r.json()
         values = data.get("hourly", {}).get("precipitation", [])
         values = [v if v is not None else 0.0 for v in values]
-        if len(values) < 6:
+        if len(values) < hours:
             return None
-        max_6h = max(sum(values[i:i + 6]) for i in range(len(values) - 5))
-        return round(max_6h, 1)
+        max_window = max(sum(values[i:i + hours]) for i in range(len(values) - hours + 1))
+        return round(max_window, 1)
     except Exception as e:
-        print(f"  ⚠️ rain intensity fetch error ({date_str}): {e}")
+        print(f"  ⚠️ rain intensity fetch error ({date_str}, hours={hours}): {e}")
         return None
 
 
@@ -145,6 +163,11 @@ def get_rainfall_intensity_data_backtest(district_name, local_lat, local_lon, da
     app.py-র get_rainfall_intensity_data()-র backtest-সংস্করণ — একই শর্ত
     (flood_type Flash Flood বা Urban Waterlogging হলেই কেবল), কিন্তু
     fetch_historical_rain_intensity_6h() দিয়ে ঐতিহাসিক তারিখের জন্য।
+
+    ⚠️ mainstem_36h মিরর করা হলো (২০২৬-০৯, live app.py commit 0e744db-এর
+    সাথে সামঞ্জস্যপূর্ণ): শুধু যেসব জেলার flood_config.py-তে
+    'upstream_mainstem' ফিল্ড আছে (এখন পর্যন্ত: সিলেট, সুনামগঞ্জ) তাদের
+    জন্যই এই বাড়তি fetch হয়, বাকি জেলায় আগের মতোই আচরণ অপরিবর্তিত।
     """
     info = FLOOD_CONFIG.get(district_name, {})
     if info.get("flood_type") not in ("Flash Flood", "Urban Waterlogging"):
@@ -157,9 +180,22 @@ def get_rainfall_intensity_data_backtest(district_name, local_lat, local_lon, da
         if upstream_coords:
             upstream_6h = fetch_historical_rain_intensity_6h(upstream_coords[0], upstream_coords[1], date_str)
 
-        if local_6h is None and upstream_6h is None:
+        mainstem_36h = None
+        mainstem_field = info.get("upstream_mainstem")
+        if mainstem_field:
+            mainstem_coords = get_upstream_coords(mainstem_field)
+            if mainstem_coords:
+                mainstem_36h = fetch_historical_rain_intensity_6h(
+                    mainstem_coords[0], mainstem_coords[1], date_str, hours=36
+                )
+
+        if local_6h is None and upstream_6h is None and mainstem_36h is None:
             return None
-        return {"local_6h": local_6h or 0, "upstream_6h": upstream_6h or 0}
+
+        result = {"local_6h": local_6h or 0, "upstream_6h": upstream_6h or 0}
+        if mainstem_field:
+            result["mainstem_36h"] = mainstem_36h if mainstem_36h is not None else 0
+        return result
     except Exception as e:
         print(f"  ⚠️ get_rainfall_intensity_data_backtest error: {e}")
         return None

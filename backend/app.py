@@ -867,6 +867,11 @@ def get_flood(district_name):
             "is_primary": r.get("is_primary", False),
             "ffwc_station": r.get("ffwc_station"), "ffwc_verified": r.get("ffwc_verified"),
             "fetch_ok": r_data.get("ok", False),
+            # ⚠️ ২০২৬-১০ যোগ করা: lat/lon আগে থেকেই r-তে ছিল (fetch_river()-এর
+            # জন্য ব্যবহৃত হতো) কিন্তু response-এ পাঠানো হতো না। জেলা-ভিত্তিক
+            # ম্যাপ ভিউ ফিচারের জন্য (প্রতিটা নদী-পয়েন্ট আলাদা মার্কার হিসেবে
+            # দেখানো) frontend-এর এই কোঅর্ডিনেট দরকার।
+            "lat": r["lat"], "lon": r["lon"],
         })
 
     # worst-case: সর্বোচ্চ ratio-র নদীটাই স্কোরিং চালাবে (tie হলে primary জিতবে, কারণ ও লিস্টে প্রথমে থাকে)
