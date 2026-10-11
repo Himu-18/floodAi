@@ -313,6 +313,12 @@ footer{background:#fff;border-top:1px solid var(--border);padding:1.5rem 3rem;te
         <tbody id="riverTableBody"></tbody>
       </table>
     </div>
+    <!-- জেলা-ভিত্তিক ম্যাপ ভিউ — "মানচিত্র" সেকশনের জাতীয় ম্যাপের মতোই,
+         কিন্তু শুধু বর্তমান জেলার নদী-পয়েন্টগুলো জুম-ইন করে দেখায় -->
+    <div class="card" id="districtMapCard" style="margin-top:1.5rem;padding:0;overflow:hidden;display:none">
+      <h3 style="font-size:14px;font-weight:600;color:var(--text);margin:0.8rem 1rem 0.5rem;display:flex;align-items:center;gap:8px"><i data-lucide="map-pin" width="17" height="17"></i>জেলার নদী-পয়েন্ট ম্যাপ</h3>
+      <div id="districtMap" style="height:320px;width:100%"></div>
+    </div>
   </div>
 </section>
 
