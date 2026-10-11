@@ -281,6 +281,78 @@ const LIVE_LEVEL_COLORS = {
     "নিরাপদ": "#27ae60"
 };
 let floodLeafletMap = null;
+let districtLeafletMap = null;
+let districtMapMarkers = [];
+
+// ── জেলা-ভিত্তিক ম্যাপ ভিউ (২০২৬-১০) ──
+// জাতীয় "মানচিত্র" সেকশনের ম্যাপের মতোই লুক, কিন্তু loadDistrict()-এ
+// পাওয়া riversStatus (একই জেলার একাধিক নদী-পয়েন্ট) দিয়ে শুধু সেই
+// জেলার bounding-box-এ জুম করে দেখায়। riversStatus-এ lat/lon না
+// থাকলে (পুরনো backend response, বা lat/lon-বিহীন কোনো পয়েন্ট) সেই
+// এন্ট্রি বাদ দিয়ে বাকিগুলো দিয়েই চালানো হয় — আংশিক ডেটা থাকলেও
+// কার্ডটা সম্পূর্ণ ভেঙে পড়বে না।
+function renderDistrictMap(riversStatus) {
+    const card = document.getElementById('districtMapCard');
+    const mapEl = document.getElementById('districtMap');
+    if (!card || !mapEl || typeof L === 'undefined') return;
+
+    const points = (riversStatus || []).filter(
+        r => typeof r.lat === 'number' && typeof r.lon === 'number'
+    );
+    if (!points.length) {
+        card.style.display = 'none';
+        return;
+    }
+    card.style.display = 'block';
+
+    if (!districtLeafletMap) {
+        districtLeafletMap = L.map('districtMap');
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(districtLeafletMap);
+    } else {
+        // ম্যাপ container hidden অবস্থা থেকে display:block হলে Leaflet-এর
+        // size-গণনা ভুল হয়ে যায় — invalidateSize() না দিলে ম্যাপ আধখেচড়া দেখায়
+        setTimeout(() => districtLeafletMap.invalidateSize(), 0);
+    }
+
+    // আগের জেলার মার্কার মুছে নতুনগুলো বসানো
+    districtMapMarkers.forEach(m => districtLeafletMap.removeLayer(m));
+    districtMapMarkers = [];
+
+    points.forEach(r => {
+        // ⚠️ risky-র সংজ্ঞা: এই জেলার rivers_status-এ আগে থেকেই থাকা
+        // ratio (discharge_today / reference_discharge) — জাতীয় ম্যাপের
+        // is_over_danger (actual FFWC water-level ভিত্তিক) থেকে আলাদা
+        // একটা ভিন্ন, model-এর নিজস্ব discharge-ratio সংকেত, কারণ এখানে
+        // FFWC-র live water-level ডেটা আসে না — শুধু discharge।
+        const risky = (typeof r.ratio === 'number') && r.ratio > 1.0;
+        const color = risky ? '#c0392b' : (r.ratio > 0.8 ? '#e67e22' : '#27ae60');
+
+        const marker = L.circleMarker([r.lat, r.lon], {
+            radius: risky ? 9 : 6,
+            fillColor: color,
+            color: '#fff',
+            weight: 2,
+            fillOpacity: 0.9
+        }).addTo(districtLeafletMap);
+
+        marker.bindPopup(`
+            <div style="font-family:'Segoe UI',sans-serif;min-width:160px">
+                <div style="font-weight:700;font-size:13px;margin-bottom:4px">${escapeHtml(r.name || '—')}${r.is_primary ? ' ★' : ''}</div>
+                <div style="font-size:12px;color:#4a6080">ডিসচার্জ: ${(r.discharge_today ?? 0).toLocaleString()} m³/s</div>
+                <div style="font-size:12px;color:#4a6080">বিপদসীমা: ${r.danger_level ?? '—'} মি</div>
+                ${r.ffwc_station ? `<div style="font-size:11px;color:#7a8ba0;margin-top:3px">${escapeHtml(r.ffwc_station)}</div>` : ''}
+            </div>
+        `);
+
+        districtMapMarkers.push(marker);
+    });
+
+    const bounds = L.latLngBounds(points.map(r => [r.lat, r.lon]));
+    districtLeafletMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 12 });
+}
 
 function initMap() {
     const mapEl = document.getElementById('floodMap');
@@ -538,6 +610,8 @@ async function loadDistrict(name) {
                     <td>${statusCell}</td>
                 </tr>`;
             }).join('');
+
+            renderDistrictMap(riversStatus);
         }
 
         if(data.weather) {
