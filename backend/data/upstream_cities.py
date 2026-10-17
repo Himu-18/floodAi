@@ -23,6 +23,10 @@ UPSTREAM_CITY_COORDS = {
     # আসা sustained inflow ধরার জন্য (lag ~৩৬ ঘণ্টা, literature-এ
     # ব্যবহৃত ও "physical lead time" হিসেবে cite করা একটা সংখ্যা)।
     "Silchar": (24.8333, 92.7789),
+    # Aizawl (মিজোরাম) — রাঙ্গামাটি, বান্দরবান, কক্সবাজারের upstream হিসেবে
+    # flood_config.py-তে আগে থেকেই ছিল, কিন্তু এই coordinate না থাকায় ৬ ঘণ্টার
+    # upstream rainfall signal ওই তিন জেলায় চুপচাপ ০ ধরা হচ্ছিল।
+    "Aizawl": (23.7271, 92.7176),
 }
 
 
