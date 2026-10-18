@@ -28,6 +28,14 @@ from flood_types import dam_affected
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR / "model"
 
+# ── Community report-এর প্রভাবের সীমা (২০২৬-১০) ──
+# /api/report public ও anonymous — তাই report একাই যেন "বিপদ" alert বানাতে না পারে।
+# নদী/আবহাওয়ার (hydrological) probability যদি THRESHOLD-এর নিচে থাকে (অর্থাৎ
+# "নিরাপদ" স্তর), report গুলো probability সর্বোচ্চ CAP পর্যন্ত তুলতে পারবে (এক ধাপ
+# ওপরে: "সাবধান") — "সতর্ক"/"বিপদ" তখনই হবে যখন নদী/আবহাওয়ার তথ্যও কিছুটা সমর্থন করে।
+REPORT_CORROBORATION_THRESHOLD = 30
+REPORT_UNCORROBORATED_CAP = 49
+
 # ── Module-level model cache ──
 # আগে load_ml_model() প্রতিটা predict_flood() কলে (মানে প্রতিটা /api/flood
 # request-এ) নতুন করে ৩টা pickle ফাইল ডিস্ক থেকে load করত — অহেতুক I/O,
@@ -153,6 +161,7 @@ def predict_flood(
     cyclone_signal=0,
     tide_ratio=None,
     discharge_change_pct=0.0,
+    ffwc_id=None,
 ):
     if month is None:
         month = datetime.now().month
@@ -173,7 +182,11 @@ def predict_flood(
     # discharge কে নদীর নিজস্ব danger_level এর সাপেক্ষে reference করা হচ্ছে —
     # এই একই reference_discharge এখন ML feature আর rule-based fallback দুই
     # জায়গাতেই ব্যবহার হবে, যাতে দুটো logic একই scientific assumption শেয়ার করে।
-    reference_discharge = get_reference_discharge(danger_level, district_name)
+    # ⚠️ FIX (২০২৬-১০): আগে এখানে ffwc_id পাস হতো না — শুধু district+danger_level
+    # দিয়ে match হতো, ফলে একই জেলার দুই নদীর danger_level সমান হলে (কুড়িগ্রাম:
+    # ধরলা বনাম ব্রহ্মপুত্র, দুটোই 26.05m) scoring-এ ভুল নদীর reference_discharge
+    # ব্যবহার হতো (app.py-র per-river ratio ঠিক ছিল, কিন্তু চূড়ান্ত score ভুল)।
+    reference_discharge = get_reference_discharge(danger_level, district_name, ffwc_id=ffwc_id)
 
     # ⚠️ জেলা-বাই-জেলা verification-এ কিছু জেলায় (বিশেষত পদ্মা/যমুনার মতো
     # mega_trunk নদী) দেখা গেছে verified reference_discharge পুরনো
@@ -183,7 +196,7 @@ def predict_flood(
     # ছাড়া)। তাই এই ধরনের জেলায় ML স্কিপ করে rule-based fallback ব্যবহার
     # করা হচ্ছে — এটা কম risky, কারণ rule-based logic সরাসরি এই corrected
     # সংখ্যা দিয়েই কাজ করে, কোনো training-time assumption বহন করে না।
-    correction_info = get_reference_discharge_correction_info(danger_level, district_name)
+    correction_info = get_reference_discharge_correction_info(danger_level, district_name, ffwc_id=ffwc_id)
     # ⚠️ FIX (২০২৬-০৮): আগে শুধু tidal নদীর জন্য ML স্কিপ করা হতো, কিন্তু
     # একই সমস্যা (discharge-ratio concept-টাই অর্থহীন) অন্য কারণেও হতে
     # পারে — যেমন বাঁধ-নিয়ন্ত্রিত নদী (তিস্তা ব্যারেজ/নীলফামারী, dry/wet
@@ -400,6 +413,7 @@ def predict_flood(
     # 🌟 COMMUNITY REPORT OVERRIDE
     # =========================================================
     reports_note = None
+    hydro_probability = probability  # report প্রয়োগের আগের, শুধু নদী/আবহাওয়া-ভিত্তিক মান
     if recent_reports >= 5:
         probability = max(probability, 85)
         reports_note = f"{recent_reports}টি সাম্প্রতিক কমিউনিটি রিপোর্ট নিশ্চিত করছে পরিস্থিতি গুরুতর"
@@ -409,6 +423,19 @@ def predict_flood(
     elif recent_reports >= 1:
         probability = min(probability + (recent_reports * 5), 100)
         reports_note = f"{recent_reports}টি কমিউনিটি রিপোর্ট পর্যবেক্ষণে রাখা হয়েছে"
+
+    # ⚠️ FIX (২০২৬-১০): নদী/আবহাওয়ার তথ্য "নিরাপদ" বললে report একাই "বিপদ" পর্যন্ত
+    # তুলতে পারত (fake alert-এর পথ)। এখন সর্বোচ্চ "সাবধান" পর্যন্ত — আর বার্তায়
+    # স্পষ্ট বলা হচ্ছে report যাচাই হয়নি।
+    report_capped = False
+    if (
+        recent_reports >= 1
+        and hydro_probability < REPORT_CORROBORATION_THRESHOLD
+        and probability > REPORT_UNCORROBORATED_CAP
+    ):
+        probability = REPORT_UNCORROBORATED_CAP
+        report_capped = True
+        reports_note = f"{recent_reports}টি কমিউনিটি রিপোর্ট পাওয়া গেছে, কিন্তু নদী/আবহাওয়ার তথ্যে এখনো যাচাই হয়নি"
 
     probability = round(probability, 1)
 
@@ -473,6 +500,7 @@ def predict_flood(
         "flood_type": flood_type,
         "vulnerable_areas": vulnerable_areas,
         "recent_reports": recent_reports,
+        "reports_capped_uncorroborated": report_capped,
         "score_breakdown": {
             "discharge": f"{discharge_score}/30",
             "upstream_rain": f"{upstream_score}/25",
