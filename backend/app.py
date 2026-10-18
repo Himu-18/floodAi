@@ -6,13 +6,17 @@
 import os
 import re
 import time
+import copy
+import hashlib
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from flask import Flask, jsonify, request, send_file, send_from_directory, session
 from flask_cors import CORS
 from functools import wraps
+from werkzeug.middleware.proxy_fix import ProxyFix
 import requests
 import sqlite3
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
 # .env ফাইল থেকে environment variable লোড করা (WEATHER_API_KEY, GROQ_API_KEY) —
@@ -57,6 +61,17 @@ except ImportError:
     pass
 
 app = Flask(__name__)
+
+# ⚠️ FIX (২০২৬-১০): আগে get_client_id() X-Forwarded-For header-এর প্রথম মান
+# সরাসরি বিশ্বাস করত — client নিজে এই header বসিয়ে প্রতিটা request-এ নতুন
+# "IP" দেখিয়ে login/report/chat rate limit পুরোপুরি এড়াতে পারত। এখন ProxyFix
+# শুধু নির্দিষ্ট সংখ্যক বিশ্বস্ত proxy hop-এর (TRUSTED_PROXY_HOPS) যোগ করা মান
+# গ্রহণ করে; client-এর বানানো বাড়তি header মান উপেক্ষা হয়।
+# Render-এ default 1 hop; লোকালে (proxy নেই) 0। Render-এ deploy-এর পর
+# /api/whoami দিয়ে নিজের IP ঠিক আসছে কিনা যাচাই করো (সংখ্যা ভুল হলে এখানে বদলাও)।
+_TRUSTED_PROXY_HOPS = int(os.getenv("TRUSTED_PROXY_HOPS", "1" if os.getenv("RENDER") else "0"))
+if _TRUSTED_PROXY_HOPS > 0:
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=_TRUSTED_PROXY_HOPS, x_proto=1, x_host=0)
 
 # ============================================================
 # SESSION / AUTH CONFIG
@@ -106,10 +121,15 @@ def login_required(view_func):
 def parse_csv_env(name, default):
     return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
 
+# ⚠️ FIX (২০২৬-১০): আগের default-এ "null" origin ছিল, আর supports_credentials=True —
+# render.yaml-এ CORS_ORIGINS সেট না থাকায় production-এও এই default চালু হতো।
+# frontend একই origin থেকে (Flask নিজেই index.html serve করে) আসে, তাই production-এ
+# কোনো cross-origin অনুমতিই দরকার নেই: Render-এ default খালি, লোকালে শুধু dev port।
 CORS_ORIGINS = parse_csv_env(
     "CORS_ORIGINS",
+    "" if os.getenv("RENDER") else
     "http://127.0.0.1:5500,http://localhost:5500,"
-    "http://127.0.0.1:8000,http://localhost:8000,null"
+    "http://127.0.0.1:8000,http://localhost:8000"
 )
 # supports_credentials=True না দিলে browser session cookie-সহ cross-origin
 # request পাঠাবে/গ্রহণ করবে না — frontend আলাদা পোর্ট/ডোমেইন থেকে এলে login
@@ -169,6 +189,11 @@ init_db()
 def get_json_body():
     return request.get_json(silent=True) or {}
 
+def extract_ffwc_id(station_str):
+    """'Kurigram (SW77)' জাতীয় স্ট্রিং থেকে unique FFWC station ID (SW...) বের করে।"""
+    m = re.search(r"(SW[\w.]+)", station_str or "")
+    return m.group(1) if m else None
+
 def to_float(value, default=0):
     try:
         return float(value)
@@ -176,7 +201,30 @@ def to_float(value, default=0):
         return default
 
 def get_client_id():
-    return (request.headers.get("X-Forwarded-For") or request.remote_addr or "local").split(",")[0].strip()
+    # ProxyFix (উপরে) ইতিমধ্যে বিশ্বস্ত proxy-র দেওয়া আসল IP remote_addr-এ বসিয়ে
+    # দিয়েছে — raw X-Forwarded-For আর কখনো সরাসরি পড়া হয় না (spoofable)।
+    return request.remote_addr or "local"
+
+
+def get_reporter_hash():
+    """Community report-এর জন্য salted, one-way client fingerprint — raw IP DB-তে
+    রাখা হয় না, আবার একই client-এর একাধিক report আলাদা সূত্র হিসেবে গোনাও হয় না।"""
+    raw = f"{app.secret_key}:{get_client_id()}"
+    return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+
+_RATE_STORE_MAX_KEYS = 5000
+
+
+def _prune_rate_store(store, cutoff):
+    # আগে store চিরকাল বাড়ত (প্রতিটা নতুন IP-র জন্য একটা key, কখনো মুছত না) —
+    # memory leak আর spoofed-IP flooding-এর পথ। এখন সীমা পার হলে পুরনো key সরানো হয়।
+    stale = [k for k, v in store.items() if not v or v[-1] < cutoff]
+    for k in stale:
+        store.pop(k, None)
+    if len(store) > _RATE_STORE_MAX_KEYS:
+        for k in sorted(store, key=lambda key: store[key][-1] if store[key] else 0)[: len(store) - _RATE_STORE_MAX_KEYS]:
+            store.pop(k, None)
 
 
 def _is_rate_limited(store, client_id, window_seconds, max_requests):
@@ -184,6 +232,8 @@ def _is_rate_limited(store, client_id, window_seconds, max_requests):
         return False
     now = time.time()
     cutoff = now - window_seconds
+    if len(store) > _RATE_STORE_MAX_KEYS:
+        _prune_rate_store(store, cutoff)
     hits = [t for t in store.get(client_id, []) if t >= cutoff]
     if len(hits) >= max_requests:
         store[client_id] = hits
@@ -204,6 +254,50 @@ def is_auth_rate_limited(client_id):
 def is_report_rate_limited(client_id):
     return _is_rate_limited(_report_hits, client_id, REPORT_RATE_WINDOW_SECONDS, REPORT_RATE_MAX_REQUESTS)
 
+# ── Short-TTL cache — শুধু *সফল* response cache হয় ──
+# (২০২৬-১০) আগে প্রতিটা /api/flood request-এ ৬–১০টা external API call সিরিয়ালি
+# চলত, cache ছাড়াই; scheduler প্রতি ১৫ মিনিটে ৯+ জেলা আর প্রতি ঘণ্টায় ৬৪ জেলা poll
+# করে — OpenWeather/Open-Meteo-র free quota দ্রুত শেষ হওয়ার ঝুঁকি। ব্যর্থ response
+# (ok=False) কখনো cache হয় না, তাই outage-এর সময় "ভুল অবস্থা" আটকে থাকে না।
+# TTL গুলো scheduler-এর ১৫ মিনিট polling-এর চেয়ে ছোট/কাছাকাছি, তাই live ডেটা
+# প্রায় সবসময় ১০–৩০ মিনিটের মধ্যে রিফ্রেশ হয়।
+WEATHER_CACHE_TTL = int(os.getenv("WEATHER_CACHE_TTL_SECONDS", "600"))
+RIVER_CACHE_TTL = int(os.getenv("RIVER_CACHE_TTL_SECONDS", "1800"))
+_FETCH_CACHE = {}
+_FETCH_CACHE_MAX = 2000
+
+
+def _cache_get(key, ttl):
+    item = _FETCH_CACHE.get(key)
+    if item and (time.time() - item[0]) < ttl:
+        return copy.deepcopy(item[1])
+    return None
+
+
+def _cache_put(key, value):
+    if len(_FETCH_CACHE) >= _FETCH_CACHE_MAX:
+        for k in sorted(_FETCH_CACHE, key=lambda key_: _FETCH_CACHE[key_][0])[: _FETCH_CACHE_MAX // 2]:
+            _FETCH_CACHE.pop(k, None)
+    _FETCH_CACHE[key] = (time.time(), copy.deepcopy(value))
+
+
+def _ttl_cached(namespace, ttl_getter):
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            key = (namespace, args, tuple(sorted(kwargs.items())))
+            cached = _cache_get(key, ttl_getter())
+            if cached is not None:
+                return cached
+            value = fn(*args, **kwargs)
+            if isinstance(value, dict) and value.get("ok"):
+                _cache_put(key, value)
+            return value
+        return wrapper
+    return decorator
+
+
+@_ttl_cached("weather", lambda: WEATHER_CACHE_TTL)
 def fetch_weather(lat, lon):
     try:
         r = requests.get(
@@ -224,6 +318,7 @@ def fetch_weather(lat, lon):
         print(f"fetch_weather error: {e}")
         return {"temp": None, "humidity": None, "rain": 0, "wind": None, "desc": "", "ok": False}
 
+@_ttl_cached("upstream", lambda: WEATHER_CACHE_TTL)
 def fetch_upstream(city):
     try:
         r = requests.get(
@@ -281,6 +376,7 @@ def get_ffwc_live_cached():
     return _ffwc_live_cache["data"]
 
 
+@_ttl_cached("river", lambda: RIVER_CACHE_TTL)
 def fetch_river(lat, lon):
     # ⚠️ FIX (২০২৬-০৯): past_days=3 যোগ করে trend বের করার সুযোগ হয়েছে, কিন্তু
     # past data-তে মাঝেমধ্যে null/None থাকতে পারে (Open-Meteo model-lag) —
@@ -416,6 +512,10 @@ def fetch_cyclone_signal():
     return result
 
 def fetch_soil_moisture(lat, lon):
+    cache_key = ("soil", lat, lon)
+    cached = _cache_get(cache_key, RIVER_CACHE_TTL)
+    if cached is not None:
+        return cached
     try:
         r = requests.get(
             "https://api.open-meteo.com/v1/forecast",
@@ -428,7 +528,9 @@ def fetch_soil_moisture(lat, lon):
         )
         data = r.json()
         values = data["hourly"]["soil_moisture_0_to_1cm"]
-        return round(sum(values) / len(values), 3)
+        result = round(sum(values) / len(values), 3)
+        _cache_put(cache_key, result)  # শুধু সফল হলে — ব্যর্থতার 0.5 default cache হয় না
+        return result
     except Exception as e:
         print(f"fetch_soil_moisture error: {e}")
         return 0.5
@@ -542,10 +644,17 @@ def get_color_by_level(level):
 REPORT_WINDOW_HOURS = int(os.getenv("REPORT_WINDOW_HOURS", "6"))
 
 def get_active_report_count(district_name):
+    """শেষ REPORT_WINDOW_HOURS ঘণ্টার *স্বতন্ত্র reporter*-এর সংখ্যা। একই client
+    (reporter_hash) যতগুলোই report পাঠাক, একবারই গোনা হয় — নাহলে একজন ৫টা report
+    দিয়েই threshold পার করে ফেলতে পারত। পুরনো (hash ছাড়া) রো প্রতিটা আলাদা গোনা হয়।"""
     active_reports = 0
     try:
         reports = get_community_reports(district_name, limit=50)
-        cutoff = datetime.now() - timedelta(hours=REPORT_WINDOW_HOURS)
+        # SQLite-এর CURRENT_TIMESTAMP সবসময় UTC — তাই cutoff-ও UTC-তে (Render-এ
+        # server TZ UTC হওয়ায় আগে ঠিক ছিল, কিন্তু লোকালে UTC+6 মেশিনে সব report ৬
+        # ঘণ্টা বেশি পুরনো দেখাত আর গোনাই হতো না)।
+        cutoff = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=REPORT_WINDOW_HOURS)
+        seen_reporters = set()
         for r in reports:
             if r['status'] not in ('road', 'house', 'rising', 'emergency'):
                 continue
@@ -554,6 +663,10 @@ def get_active_report_count(district_name):
             except (TypeError, ValueError):
                 continue  # timestamp missing/malformed হলে সেই রিপোর্ট গোনা হবে না
             if ts >= cutoff:
+                key = r.get('reporter_hash') or f"row:{r.get('id')}"
+                if key in seen_reporters:
+                    continue
+                seen_reporters.add(key)
                 active_reports += 1
     except Exception as e:
         print(f"get_active_report_count error: {e}")
@@ -698,6 +811,13 @@ def serve_assets(filename):
     # ব্যবহার করে, ফোল্ডারের বাইরে গেলে 404 দেয়)।
     return send_from_directory(str(PROJECT_ROOT / "assets"), filename)
 
+@app.route('/api/whoami')
+def api_whoami():
+    # Deploy-এর পর TRUSTED_PROXY_HOPS ঠিক আছে কিনা যাচাইয়ের জন্য: এখানে আসা IP
+    # যদি তোমার আসল IP হয় তাহলে ঠিক; সবার জন্য একই (proxy-র) IP এলে hop সংখ্যা ভুল।
+    return jsonify({"ip": get_client_id(), "trusted_proxy_hops": _TRUSTED_PROXY_HOPS})
+
+
 @app.route('/api/status')
 def api_status():
     return jsonify({
@@ -837,9 +957,22 @@ def get_flood(district_name):
         "ffwc_verified": info.get("ffwc_verified"), "is_primary": True,
     }]
 
+    # ⚠️ (২০২৬-১০) আগে প্রতিটা নদী, soil, weather, upstream সিরিয়ালি fetch হতো (প্রতিটা
+    # ৫ সেকেন্ড পর্যন্ত timeout) — worst case ২৫+ সেকেন্ড। এখন independent এই
+    # call গুলো একসাথে (parallel) চলে; প্রতিটা fetch_* নিজের exception নিজে ধরে,
+    # তাই এখানে .result() আগের মতোই নিরাপদ।
+    with ThreadPoolExecutor(max_workers=8) as _pool:
+        _river_futures = [_pool.submit(fetch_river, rv["lat"], rv["lon"]) for rv in rivers_list]
+        _soil_future = _pool.submit(fetch_soil_moisture, info["lat"], info["lon"])
+        _weather_future = _pool.submit(fetch_weather, info["lat"], info["lon"])
+        _upstream_future = _pool.submit(fetch_upstream, info["upstream"])
+        river_results = [f.result() for f in _river_futures]
+        soil_moisture = _soil_future.result()
+        weather_data = _weather_future.result()
+        upstream_data = _upstream_future.result()
+
     rivers_status = []
-    for r in rivers_list:
-        r_data = fetch_river(r["lat"], r["lon"])
+    for r, r_data in zip(rivers_list, river_results):
         r_discharge = float(r_data.get("today") or 0)
         r_danger = r.get("danger_level") or 0
         # ⚠️ FIX (২০২৬-০৮): আগে discharge (m³/s) কে সরাসরি danger_level (মিটার)
@@ -879,10 +1012,6 @@ def get_flood(district_name):
 
     river = {"today": active_river["discharge_today"], "forecast": active_river["forecast"], "dates": active_river["dates"]}
     discharge_change_pct = active_river.get("discharge_change_pct", 0.0)
-    soil_moisture = fetch_soil_moisture(info["lat"], info["lon"])
-
-    weather_data = fetch_weather(info["lat"], info["lon"])
-    upstream_data = fetch_upstream(info["upstream"])
 
     discharge = float(active_river["discharge_today"])
     active_danger_level = active_river["danger_level"] or info["danger_level"]
@@ -934,7 +1063,8 @@ def get_flood(district_name):
             # বিবেচনা করা হচ্ছে (দুটোর মধ্যে বড়টা), যাতে কোনো একটা মিস
             # করলে অন্যটা catch করে।
             cyclone_signal=max(live_cyclone_signal, info.get("cyclone_signal", 0)),
-            tide_ratio=tide_ratio
+            tide_ratio=tide_ratio,
+            ffwc_id=extract_ffwc_id(active_river.get("ffwc_station")),
         )
     except Exception as e:
         print(f"Prediction Error: {e}")
@@ -946,6 +1076,25 @@ def get_flood(district_name):
             "ml_model_used": False
         }
 
+    # ⚠️ FIX (২০২৬-১০, smoke-run-এ ধরা পড়েছে): সব live API ব্যর্থ হলে discharge/rain=০ ধরে
+    # prediction "নিরাপদ" বলত, আর frontend (script.js) data_unavailable flag কখনো পড়ে না —
+    # অর্থাৎ outage-এর সময় নাগরিক প্রধান badge-এ "নিরাপদ" দেখত (DB-তে save না হলেও
+    # স্ক্রিনে false-safe)। এখন ডেটা অসম্পূর্ণ আর হিসাব করা মান ৫০%-এর নিচে হলে স্তর
+    # সর্বনিম্ন "সতর্ক" করা হয় (প্রস্তুত থাকো, কিন্তু "নিরাপদ" দাবি করো না) — গণনা করা
+    # মান ইতিমধ্যে ≥৫০% (সতর্ক/বিপদ) হলে কিছু বদলায় না, তাই কোনো সতর্কতা নামানো হয় না।
+    data_unavailable = not (active_river.get("fetch_ok") and weather_data.get("ok") and upstream_data.get("ok"))
+    if data_unavailable and prediction.get("probability", 0) < 50:
+        prediction = {
+            **prediction,
+            "original_probability": prediction.get("probability", 0),
+            "probability": 50,
+            "level": "সতর্ক",
+            "color": "orange",
+            "data_incomplete": True,
+            "message": f"⚠️ {district_name}-এর লাইভ নদী/আবহাওয়ার তথ্য এই মুহূর্তে সম্পূর্ণ পাওয়া যাচ্ছে না, তাই নিরাপদ বলা যাচ্ছে না। সাবধানে থাকুন ও সরকারি সতর্কতা (FFWC/BMD) অনুসরণ করুন।",
+            "action": ["আবহাওয়ার খবরে নজর রাখুন", "FFWC/BMD-র সর্বশেষ বুলেটিন দেখুন", "প্রয়োজনীয় প্রস্তুতি নিন"],
+        }
+
     risk_score = prediction.get("probability", 0)
 
     # ⚠️ FIX (২০২৬-০৮): আগে API ব্যর্থ হলেও (river/weather/upstream fetch fail
@@ -955,7 +1104,7 @@ def get_flood(district_name):
     # DB-তে নতুন করে save করা হয় না — শেষ known-good reading DB-তে থেকে যায়,
     # এবং response-এ data_unavailable flag যোগ হয় যাতে frontend/user বুঝতে
     # পারে এই মুহূর্তের ডেটা সম্পূর্ণ live না।
-    data_unavailable = not (active_river.get("fetch_ok") and weather_data.get("ok") and upstream_data.get("ok"))
+    # (data_unavailable উপরে, prediction-এর ঠিক পরেই হিসাব করা হয়েছে)
 
     if not data_unavailable:
         try:
@@ -1007,7 +1156,8 @@ def get_weather(district_name):
         upstream = fetch_upstream(info["upstream"])
         return jsonify({"district": district_name, "local": local, "upstream": upstream})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"get_weather error ({district_name}): {e}")
+        return jsonify({"error": "আবহাওয়ার তথ্য এখন পাওয়া যাচ্ছে না"}), 500
 
 # ── River Forecast API ──
 @app.route('/api/river/<district_name>')
@@ -1049,6 +1199,10 @@ def get_flood_forecast(district_name):
     info = DISTRICTS[district_name]
 
     river = fetch_river(info["river_lat"], info["river_lon"])
+    # ⚠️ FIX (২০২৬-১০): river fetch ব্যর্থ হলে fetch_river() discharge=0 ধরে নেয় —
+    # আগে সেই ০ দিয়েই পূর্বাভাস চালিয়ে "কম ঝুঁকি" দেখাত (false-safe)। এখন স্পষ্ট 503।
+    if not river.get("ok"):
+        return jsonify({"error": "নদীর পূর্বাভাস ডেটা এখন পাওয়া যাচ্ছে না", "data_unavailable": True}), 503
     discharge_arr = river.get("forecast") or []
     lag_time_hours = info.get("lag_time", 24)
     lag_days_shift = round(lag_time_hours / 24)
@@ -1057,6 +1211,8 @@ def get_flood_forecast(district_name):
     for d in (1, 3, 7):
         if d >= len(discharge_arr):
             continue  # Open-Meteo flood API সাধারণত ৭ দিন পর্যন্তই দেয়
+        if discharge_arr[d] is None:
+            continue  # model-lag-এ ভবিষ্যৎ দিনের মান null থাকতে পারে — float(None) crash ঠেকাতে
 
         discharge_d = float(discharge_arr[d])
         local_rain_d = fetch_daily_rain_forecast(d, lat=info["lat"], lon=info["lon"])
@@ -1072,6 +1228,7 @@ def get_flood_forecast(district_name):
                 flood_type=info.get("flood_type", "Riverine"),
                 vulnerable_areas=info.get("vulnerable_areas", []),
                 danger_level=info["danger_level"],
+                ffwc_id=extract_ffwc_id(info.get("ffwc_station")),
             )
         except Exception as e:
             print(f"forecast day+{d} prediction error: {e}")
@@ -1115,7 +1272,7 @@ def get_satellite(district_name):
         return jsonify({"district": district_name, **sat_data})
     except Exception as e:
         print(f"Satellite Data Error: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "স্যাটেলাইট তথ্য এখন পাওয়া যাচ্ছে না"}), 500
 
 # ── Upstream Forecast API ──
 @app.route('/api/upstream/forecast/<district_name>')
@@ -1203,11 +1360,14 @@ def high_risk_unions():
 # ── Historical Data API ──
 @app.route('/api/history/<district_name>')
 def history(district_name):
+    if district_name not in DISTRICTS:
+        return jsonify({"error": "জেলা পাওয়া যায়নি"}), 404
     try:
         data = get_history(district_name)
         return jsonify(data)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"history error ({district_name}): {e}")
+        return jsonify({"error": "ইতিহাস লোড করা যায়নি"}), 500
 
 # ── PDF Generation API ──
 @app.route('/api/report/pdf/<district_name>')
@@ -1255,11 +1415,21 @@ def download_pdf(district_name):
                 rainfall_intensity_data=rainfall_intensity_data,
                 upstream_rain_history=upstream_rain_history,
                 cyclone_signal=max(live_cyclone_signal, info.get("cyclone_signal", 0)),
-                tide_ratio=tide_ratio
+                tide_ratio=tide_ratio,
+                ffwc_id=extract_ffwc_id(info.get("ffwc_station")),
             )
         except Exception as e:
             print(f"Prediction Error (PDF): {e}")
-            prediction = {"level": "নিরাপদ", "probability": 0, "message": "ML Error Fallback"}
+            # ⚠️ FIX (২০২৬-১০): আগে এখানে "নিরাপদ"/০% দেওয়া হতো — prediction ব্যর্থ
+            # হলে ভুলভাবে নিরাপদ বলা (false-safe)। /api/flood-এর fallback-এর সাথে
+            # মিলিয়ে এখন "সতর্ক"/৪০% এবং স্পষ্ট বার্তা।
+            prediction = {
+                "level": "সতর্ক",
+                "probability": 40,
+                "message": f"⚠️ {district_name} এর রিয়েল-টাইম বিশ্লেষণ এই মুহূর্তে সম্ভব হয়নি — এই রিপোর্টের ঝুঁকি-স্তর নির্ভরযোগ্য নয়। সাবধানে থাকুন ও সরকারি সতর্কতা অনুসরণ করুন।",
+                "action": ["আবহাওয়ার খবরে নজর রাখুন", "প্রয়োজনীয় প্রস্তুতি নিন"],
+                "ml_model_used": False,
+            }
 
         data = {
             "district": district_name,
@@ -1285,7 +1455,8 @@ def download_pdf(district_name):
         except NameError:
             return jsonify({"error": "pdf_report module not found"}), 500
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"download_pdf error ({district_name}): {e}")
+        return jsonify({"error": "PDF রিপোর্ট তৈরি করা যায়নি"}), 500
 
 # ── Overall System Stats ──
 @app.route('/api/stats')
@@ -1363,7 +1534,17 @@ def collect_validation_entries():
 
 @app.route('/api/validation/log')
 def view_validation_log():
-    limit = int(request.args.get("limit", 500))
+    # ⚠️ FIX (২০২৬-১০): আগে এটা সম্পূর্ণ public ছিল, limit-এ কোনো সীমা ছিল না
+    # (পুরো টেবিল dump) আর limit=abc দিলে ValueError → 500। এখন /collect-এর মতোই
+    # VALIDATION_COLLECT_SECRET সেট থাকলে X-Internal-Secret লাগবে, আর limit 1–1000।
+    expected_secret = os.getenv("VALIDATION_COLLECT_SECRET")
+    if expected_secret and request.headers.get("X-Internal-Secret") != expected_secret:
+        return jsonify({"error": "Forbidden"}), 403
+    try:
+        limit = int(request.args.get("limit", 500))
+    except (TypeError, ValueError):
+        limit = 500
+    limit = max(1, min(limit, 1000))
     return jsonify(get_validation_log(limit))
 
 @app.route('/api/warnings/active')
@@ -1406,13 +1587,17 @@ def community_report():
         district, status,
         (data.get('description') or '').strip()[:500],
         to_float(data.get('lat')), to_float(data.get('lon')),
+        reporter_hash=get_reporter_hash(),
     )
     return jsonify({"message": "✅ Report submitted!"})
 
 @app.route('/api/reports/<district_name>')
 def get_reports(district_name):
+    if district_name not in DISTRICTS:
+        return jsonify({"error": "জেলা পাওয়া যায়নি"}), 404
     data = get_community_reports(district_name)
-    return jsonify(data)
+    # reporter_hash অভ্যন্তরীণ (dedupe-এর জন্য) — public response-এ যাবে না
+    return jsonify([{k: v for k, v in row.items() if k != "reporter_hash"} for row in data])
 
 # ── Chatbot ──
 @app.route('/api/chat', methods=['POST'])

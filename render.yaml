@@ -16,3 +16,13 @@ services:
         generateValue: true
       - key: VALIDATION_COLLECT_SECRET
         generateValue: true
+      # ── Persistent database (Render Disk লাগে — paid instance) ──
+      # Render-এর filesystem ephemeral: disk ছাড়া floodai.db প্রতিটা deploy/restart-এ
+      # মুছে যায় (users, community_reports, validation_log)। Disk যোগ করলে নিচের
+      # দুটো অংশ uncomment করো (disk ছাড়া FLOODAI_DB_PATH সেট করলে app চালু হবে না)।
+      # - key: FLOODAI_DB_PATH
+      #   value: /var/data/floodai.db
+    # disk:
+    #   name: floodai-data
+    #   mountPath: /var/data
+    #   sizeGB: 1

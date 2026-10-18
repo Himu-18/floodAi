@@ -1,14 +1,18 @@
-Flask
-flask-cors
-requests
-beautifulsoup4
-openpyxl
-python-dotenv
-groq
-schedule
-pytz
-numpy
-pandas
-scikit-learn
-reportlab
-gunicorn
+Flask==3.1.3
+Werkzeug==3.1.9
+flask-cors==6.0.5
+requests==2.34.2
+beautifulsoup4==4.15.0
+openpyxl==3.1.5
+python-dotenv==1.2.4
+groq==1.7.0
+schedule==1.2.2
+pytz==2026.5
+numpy==2.5.4
+pandas==3.0.6
+# ⚠️ backend/model/*.pkl scikit-learn 1.9.0 দিয়ে train হয়েছে (pickle-এর ভেতরের version
+# metadata থেকে নিশ্চিত)। অন্য version-এ pickle load ব্যর্থ হয় এবং app নিঃশব্দে
+# rule-based fallback-এ নেমে যায় — তাই exact pin। মডেল retrain করলে এটা বদলাও।
+scikit-learn==1.9.0
+reportlab==5.0.1
+gunicorn==26.2.0
