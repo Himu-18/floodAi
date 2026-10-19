@@ -53,7 +53,8 @@ except ImportError:
 from database import (
     init_db, save_reading, save_community_report,
     get_history, get_community_reports, register_user, get_user,
-    get_latest_readings, DB_PATH, save_validation_entry, get_validation_log
+    get_latest_readings, DB_PATH, save_validation_entry, get_validation_log,
+    count_active_reporters
 )
 try:
     from pdf_report import generate_flood_report
@@ -69,7 +70,24 @@ app = Flask(__name__)
 # গ্রহণ করে; client-এর বানানো বাড়তি header মান উপেক্ষা হয়।
 # Render-এ default 1 hop; লোকালে (proxy নেই) 0। Render-এ deploy-এর পর
 # /api/whoami দিয়ে নিজের IP ঠিক আসছে কিনা যাচাই করো (সংখ্যা ভুল হলে এখানে বদলাও)।
-_TRUSTED_PROXY_HOPS = int(os.getenv("TRUSTED_PROXY_HOPS", "1" if os.getenv("RENDER") else "0"))
+def _parse_proxy_hops(raw, default):
+    """ভুল env value (যেমন "abc", "-1", "99") app চালু হওয়াই আটকাত বা সব client-কে
+    একই IP বানিয়ে দিত — এখন default-এ ফিরে যায় আর ০–৫ সীমায় আটকায়।"""
+    try:
+        hops = int(str(raw).strip())
+    except (TypeError, ValueError):
+        print(f"⚠️ TRUSTED_PROXY_HOPS={raw!r} বৈধ সংখ্যা নয়, {default} ব্যবহার হচ্ছে")
+        return default
+    if not 0 <= hops <= 5:
+        print(f"⚠️ TRUSTED_PROXY_HOPS={hops} সীমার (০–৫) বাইরে, {default} ব্যবহার হচ্ছে")
+        return default
+    return hops
+
+
+_TRUSTED_PROXY_HOPS = _parse_proxy_hops(
+    os.getenv("TRUSTED_PROXY_HOPS", "1" if os.getenv("RENDER") else "0"),
+    1 if os.getenv("RENDER") else 0,
+)
 if _TRUSTED_PROXY_HOPS > 0:
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=_TRUSTED_PROXY_HOPS, x_proto=1, x_host=0)
 
@@ -512,10 +530,16 @@ def fetch_cyclone_signal():
     return result
 
 def fetch_soil_moisture(lat, lon):
+    return fetch_soil_moisture_status(lat, lon)["value"]
+
+
+def fetch_soil_moisture_status(lat, lon):
+    """{"value", "ok"} — ব্যর্থ হলে value=০.৫ (neutral default) কিন্তু ok=False, যাতে
+    caller জানে এটা আসল মান না (আগে ব্যর্থতা আর আসল ০.৫ আলাদা করার উপায় ছিল না)।"""
     cache_key = ("soil", lat, lon)
     cached = _cache_get(cache_key, RIVER_CACHE_TTL)
     if cached is not None:
-        return cached
+        return {"value": cached, "ok": True}
     try:
         r = requests.get(
             "https://api.open-meteo.com/v1/forecast",
@@ -530,10 +554,10 @@ def fetch_soil_moisture(lat, lon):
         values = data["hourly"]["soil_moisture_0_to_1cm"]
         result = round(sum(values) / len(values), 3)
         _cache_put(cache_key, result)  # শুধু সফল হলে — ব্যর্থতার 0.5 default cache হয় না
-        return result
+        return {"value": result, "ok": True}
     except Exception as e:
         print(f"fetch_soil_moisture error: {e}")
-        return 0.5
+        return {"value": 0.5, "ok": False}
 
 # ── Multi-day forecast (২০২৬-০৯)-এর জন্য: নির্দিষ্ট day_offset দিনের
 # পূর্বাভাসিত মোট বৃষ্টিপাত। lat/lon (স্থানীয়) অথবা city (upstream শহর)
@@ -649,25 +673,11 @@ def get_active_report_count(district_name):
     দিয়েই threshold পার করে ফেলতে পারত। পুরনো (hash ছাড়া) রো প্রতিটা আলাদা গোনা হয়।"""
     active_reports = 0
     try:
-        reports = get_community_reports(district_name, limit=50)
-        # SQLite-এর CURRENT_TIMESTAMP সবসময় UTC — তাই cutoff-ও UTC-তে (Render-এ
-        # server TZ UTC হওয়ায় আগে ঠিক ছিল, কিন্তু লোকালে UTC+6 মেশিনে সব report ৬
-        # ঘণ্টা বেশি পুরনো দেখাত আর গোনাই হতো না)।
-        cutoff = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=REPORT_WINDOW_HOURS)
-        seen_reporters = set()
-        for r in reports:
-            if r['status'] not in ('road', 'house', 'rising', 'emergency'):
-                continue
-            try:
-                ts = datetime.strptime(r['timestamp'], "%Y-%m-%d %H:%M:%S")
-            except (TypeError, ValueError):
-                continue  # timestamp missing/malformed হলে সেই রিপোর্ট গোনা হবে না
-            if ts >= cutoff:
-                key = r.get('reporter_hash') or f"row:{r.get('id')}"
-                if key in seen_reporters:
-                    continue
-                seen_reporters.add(key)
-                active_reports += 1
+        # পুরোটা SQL-এ (database.count_active_reporters) — "সর্বশেষ ৫০ row" সীমা আর
+        # Python-side timezone হিসাব দুটোই আর নেই।
+        active_reports = count_active_reporters(
+            district_name, ('road', 'house', 'rising', 'emergency'), REPORT_WINDOW_HOURS
+        )
     except Exception as e:
         print(f"get_active_report_count error: {e}")
     return active_reports
@@ -963,11 +973,12 @@ def get_flood(district_name):
     # তাই এখানে .result() আগের মতোই নিরাপদ।
     with ThreadPoolExecutor(max_workers=8) as _pool:
         _river_futures = [_pool.submit(fetch_river, rv["lat"], rv["lon"]) for rv in rivers_list]
-        _soil_future = _pool.submit(fetch_soil_moisture, info["lat"], info["lon"])
+        _soil_future = _pool.submit(fetch_soil_moisture_status, info["lat"], info["lon"])
         _weather_future = _pool.submit(fetch_weather, info["lat"], info["lon"])
         _upstream_future = _pool.submit(fetch_upstream, info["upstream"])
         river_results = [f.result() for f in _river_futures]
-        soil_moisture = _soil_future.result()
+        soil_status = _soil_future.result()
+        soil_moisture = soil_status["value"]
         weather_data = _weather_future.result()
         upstream_data = _upstream_future.result()
 
@@ -1082,18 +1093,36 @@ def get_flood(district_name):
     # স্ক্রিনে false-safe)। এখন ডেটা অসম্পূর্ণ আর হিসাব করা মান ৫০%-এর নিচে হলে স্তর
     # সর্বনিম্ন "সতর্ক" করা হয় (প্রস্তুত থাকো, কিন্তু "নিরাপদ" দাবি করো না) — গণনা করা
     # মান ইতিমধ্যে ≥৫০% (সতর্ক/বিপদ) হলে কিছু বদলায় না, তাই কোনো সতর্কতা নামানো হয় না।
-    data_unavailable = not (active_river.get("fetch_ok") and weather_data.get("ok") and upstream_data.get("ok"))
-    if data_unavailable and prediction.get("probability", 0) < 50:
-        prediction = {
-            **prediction,
-            "original_probability": prediction.get("probability", 0),
-            "probability": 50,
-            "level": "সতর্ক",
-            "color": "orange",
-            "data_incomplete": True,
-            "message": f"⚠️ {district_name}-এর লাইভ নদী/আবহাওয়ার তথ্য এই মুহূর্তে সম্পূর্ণ পাওয়া যাচ্ছে না, তাই নিরাপদ বলা যাচ্ছে না। সাবধানে থাকুন ও সরকারি সতর্কতা (FFWC/BMD) অনুসরণ করুন।",
-            "action": ["আবহাওয়ার খবরে নজর রাখুন", "FFWC/BMD-র সর্বশেষ বুলেটিন দেখুন", "প্রয়োজনীয় প্রস্তুতি নিন"],
-        }
+    # ── Data-quality (২০২৬-১০, review-এর পর): risk-score আর data-quality আলাদা ──
+    # (১) *যেকোনো* নদী ব্যর্থ হলে তা critical — আগে শুধু scoring-এর নদী (active_river)
+    #     দেখা হতো; ব্যর্থ নদীর discharge=০ → ratio=০ → সে কখনো "সবচেয়ে ঝুঁকিপূর্ণ"
+    #     হিসেবে নির্বাচিত হতো না, অর্থাৎ বিপদে থাকা নদী নিঃশব্দে হিসাব থেকে বাদ পড়ত।
+    # (২) soil-moisture ব্যর্থ হলে neutral ০.৫ ধরা হয় — এটা শুধু "partial" চিহ্নিত হয়,
+    #     স্তর বদলায় না (ইনপুট হিসেবে তুলনামূলক ছোট)।
+    # (৩) critical ব্যর্থতায় probability-র সংখ্যা *বদলানো হয় না* (আগে ৫০% বসানো হতো, যেটা
+    #     calibrated সম্ভাবনা না) — শুধু স্তর সর্বনিম্ন "সতর্ক" করা হয় + স্পষ্ট flag/বার্তা।
+    failed_sources = [f"river:{rv['name']}" for rv in rivers_status if not rv.get("fetch_ok")]
+    if not weather_data.get("ok"):
+        failed_sources.append("weather")
+    if not upstream_data.get("ok"):
+        failed_sources.append("upstream_weather")
+    data_unavailable = bool(failed_sources)  # critical ব্যর্থতা
+    if not soil_status.get("ok"):
+        failed_sources.append("soil_moisture")
+    data_quality = "degraded" if data_unavailable else ("partial" if failed_sources else "complete")
+
+    prediction = {**prediction, "data_quality": data_quality, "failed_sources": failed_sources}
+    if data_unavailable:
+        prediction["data_incomplete"] = True
+        if prediction.get("level") in ("নিরাপদ", "সাবধান"):
+            prediction.update({
+                "original_level": prediction.get("level"),
+                "safety_floor_applied": True,
+                "level": "সতর্ক",
+                "color": "orange",
+                "message": f"⚠️ {district_name}-এর লাইভ নদী/আবহাওয়ার তথ্য এই মুহূর্তে সম্পূর্ণ পাওয়া যাচ্ছে না, তাই নিরাপদ বলা যাচ্ছে না (এটি ডেটা-ঘাটতির সতর্কতা, হিসাব করা বন্যা-সম্ভাবনা নয়)। সরকারি সতর্কতা (FFWC/BMD) অনুসরণ করুন।",
+                "action": ["আবহাওয়ার খবরে নজর রাখুন", "FFWC/BMD-র সর্বশেষ বুলেটিন দেখুন", "প্রয়োজনীয় প্রস্তুতি নিন"],
+            })
 
     risk_score = prediction.get("probability", 0)
 
@@ -1124,6 +1153,8 @@ def get_flood(district_name):
         "risk_category": info["risk"],
         "flood_type": info.get("flood_type", "Riverine"),
         "data_unavailable": data_unavailable,
+        "data_quality": data_quality,
+        "failed_sources": failed_sources,
         "discharge_today": round(discharge),
         "forecast": river["forecast"],
         "dates": river["dates"],

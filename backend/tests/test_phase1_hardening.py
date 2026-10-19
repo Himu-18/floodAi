@@ -161,8 +161,65 @@ def test_outage_never_reports_safe(client, app_module, monkeypatch):
     )
     monkeypatch.setattr(app_module, "fetch_weather", lambda lat, lon: {"temp": None, "humidity": None, "rain": 0, "wind": None, "desc": "", "ok": False})
     monkeypatch.setattr(app_module, "fetch_upstream", lambda city: {"city": "x", "rain": 0, "humidity": None, "temp": None, "ok": False})
-    monkeypatch.setattr(app_module, "fetch_soil_moisture", lambda lat, lon: 0.5)
+    monkeypatch.setattr(app_module, "fetch_soil_moisture_status", lambda lat, lon: {"value": 0.5, "ok": True})
     j = client.get(f"/api/flood/{KURIGRAM}").get_json()
     assert j["data_unavailable"] is True
+    assert j["data_quality"] == "degraded"
     assert j["warning_level"] != "নিরাপদ"
     assert j["prediction"]["data_incomplete"] is True
+    # সংখ্যা বানানো হয় না: স্তর floor হয়েছে, কিন্তু probability আসল হিসাব করা মান (৫০ বসানো নয়)
+    assert j["prediction"]["safety_floor_applied"] is True
+    assert j["flood_probability"] < 50
+
+
+# ── Partial outage: শুধু একটি *অ-active* নদী ব্যর্থ হলেও "নিরাপদ" নয় ──
+def _ok_river(discharge):
+    return {"today": discharge, "discharge_change_pct": 0.0, "forecast": [discharge] * 7, "dates": ["d"] * 7, "ok": True}
+
+
+def test_failed_secondary_river_is_not_silently_ignored(client, app_module, monkeypatch):
+    rivers = app_module.DISTRICTS[KURIGRAM]["rivers"]
+    primary = (rivers[0]["lat"], rivers[0]["lon"])
+    failing = next((r for r in rivers if (r["lat"], r["lon"]) != primary), None)
+    assert failing is not None  # কুড়িগ্রামে অন্তত একটি আলাদা-coordinate নদী থাকার কথা
+
+    def fake_river(lat, lon):
+        if (lat, lon) == (failing["lat"], failing["lon"]):
+            return {"today": 0, "discharge_change_pct": 0.0, "forecast": [], "dates": [], "ok": False}
+        return _ok_river(10)
+
+    monkeypatch.setattr(app_module, "fetch_river", fake_river)
+    monkeypatch.setattr(app_module, "fetch_weather", lambda lat, lon: {"temp": 30, "humidity": 80, "rain": 0, "wind": 1, "desc": "", "ok": True})
+    monkeypatch.setattr(app_module, "fetch_upstream", lambda city: {"city": "x", "rain": 0, "humidity": 50, "temp": 30, "ok": True})
+    monkeypatch.setattr(app_module, "fetch_soil_moisture_status", lambda lat, lon: {"value": 0.3, "ok": True})
+    j = client.get(f"/api/flood/{KURIGRAM}").get_json()
+    assert j["data_unavailable"] is True
+    assert any(src.startswith("river:") for src in j["failed_sources"])
+    assert j["warning_level"] != "নিরাপদ"
+
+
+def test_soil_only_failure_is_partial_not_unavailable(client, app_module, monkeypatch):
+    monkeypatch.setattr(app_module, "fetch_river", lambda lat, lon: _ok_river(10))
+    monkeypatch.setattr(app_module, "fetch_weather", lambda lat, lon: {"temp": 30, "humidity": 80, "rain": 0, "wind": 1, "desc": "", "ok": True})
+    monkeypatch.setattr(app_module, "fetch_upstream", lambda city: {"city": "x", "rain": 0, "humidity": 50, "temp": 30, "ok": True})
+    monkeypatch.setattr(app_module, "fetch_soil_moisture_status", lambda lat, lon: {"value": 0.5, "ok": False})
+    j = client.get(f"/api/flood/{KURIGRAM}").get_json()
+    assert j["data_unavailable"] is False
+    assert j["data_quality"] == "partial"
+    assert j["failed_sources"] == ["soil_moisture"]
+
+
+# ── Report dedupe: ৫০-row সীমায় ধরা পড়ে না ──
+def test_distinct_reporters_counted_beyond_50_rows(app_module):
+    d = "রংপুর"
+    for i in range(3):
+        database.save_community_report(d, "emergency", "x", 0, 0, reporter_hash=f"early-{i}")
+    for _ in range(60):  # একজন ৬০টা report দিয়ে বাকিদের ৫০-এর বাইরে ঠেলে দিল
+        database.save_community_report(d, "emergency", "x", 0, 0, reporter_hash="spammer")
+    assert app_module.get_active_report_count(d) == 4
+
+
+# ── Proxy hops: ভুল env value app ভাঙে না ──
+@pytest.mark.parametrize("raw,default,expected", [("2", 1, 2), ("abc", 1, 1), ("-1", 0, 0), ("99", 1, 1), (" 3 ", 0, 3)])
+def test_proxy_hops_parsing(app_module, raw, default, expected):
+    assert app_module._parse_proxy_hops(raw, default) == expected
