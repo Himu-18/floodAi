@@ -4,7 +4,10 @@ services:
     runtime: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    # --workers 1 ইচ্ছাকৃত: rate-limit/cache dict process-local, আর background scheduler
+    # thread app import-এ চালু হয় (একাধিক worker = প্রতিটায় আলাদা limit + scheduler
+    # ডুপ্লিকেট)। scale করতে হলে আগে rate limit Redis-এ আর scheduler আলাদা service-এ নাও।
+    startCommand: gunicorn app:app --workers 1 --bind 0.0.0.0:$PORT
     envVars:
       - key: WEATHER_API_KEY
         sync: false
