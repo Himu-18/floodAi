@@ -1155,6 +1155,8 @@ def get_flood(district_name):
         "data_unavailable": data_unavailable,
         "data_quality": data_quality,
         "failed_sources": failed_sources,
+        # data_time = এই response তৈরির সময় (পর্যবেক্ষণের সময় নয় — নদীর তথ্য দৈনিক মডেল-ভিত্তিক)
+        "data_time": datetime.now(timezone.utc).isoformat(),
         "discharge_today": round(discharge),
         "forecast": river["forecast"],
         "dates": river["dates"],
