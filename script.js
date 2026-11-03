@@ -23,7 +23,8 @@ const LEVEL_STYLE = {
     'সতর্ক':    { icon: 'fa-triangle-exclamation',  text: '#af601a', bg: '#fdf0e4', border: '#e67e22' },
     'সাবধান':   { icon: 'fa-triangle-exclamation',  text: '#b9770e', bg: '#fef5e7', border: '#f39c12' },
     'স্বাভাবিক': { icon: 'fa-circle-check',          text: '#1e8449', bg: '#eafaf1', border: '#27ae60' },
-    'নিরাপদ':   { icon: 'fa-circle-check',          text: '#1e8449', bg: '#eafaf1', border: '#27ae60' }
+    'নিরাপদ':   { icon: 'fa-circle-check',          text: '#1e8449', bg: '#eafaf1', border: '#27ae60' },
+    'অনির্ণীত': { icon: 'fa-circle-question',       text: '#4a5568', bg: '#edf0f4', border: '#8a97a8' }
 };
 function levelStyleFor(level) {
     return LEVEL_STYLE[level] || LEVEL_STYLE['নিরাপদ'];
@@ -553,13 +554,242 @@ async function loadMapWarnings() {
     }
 }
 
+// ── ট্রাস্ট লেয়ার (২০২৬-১০) ──
+// লক্ষ্য: ডেটা না এলে বা অসম্পূর্ণ হলে ব্যবহারকারী যেন ভুল আশ্বাস না পায়।
+// ১) backend আগে থেকেই data_unavailable flag পাঠাত, কিন্তু frontend তা কখনো
+//    পড়ত না — তাই live API ফেল করলেও "নিরাপদ" দেখানোর ঝুঁকি ছিল। এখন পড়া হয়।
+// ২) সার্ভার ঘুম থেকে জাগার সময় (Render free tier) অপেক্ষার বার্তা দেখায়।
+// ৩) সার্ভারে পৌঁছানো না গেলে শেষ সফল ডেটা (সময়সহ, "পুরনো" চিহ্নিত করে) দেখায়।
+// ৪) প্রতিটা ফলাফলের পাশে হালনাগাদ সময় ও সরকারি সতর্কতার লিংক রাখে।
+const TRUST_CACHE_PREFIX = 'floodai:district:v1:';
+const TRUST_FFWC_URL = 'http://www.ffwc.gov.bd';
+// সংরক্ষিত ডেটার সর্বোচ্চ বয়স: এর চেয়ে পুরনো হলে ঝুঁকি-স্তর আর দেখানো হয় না
+// (flash flood কয়েক ঘণ্টায় বদলে যায়, পুরনো "নিরাপদ" বিপজ্জনক হতে পারে)।
+const TRUST_CACHE_MAX_AGE_MS = 6 * 60 * 60 * 1000;
+
+function trustCfg() {
+    const c = (typeof window !== 'undefined' && window.FLOODAI_TRUST) || {};
+    return { wakeMs: c.wakeMs || 6000, abortMs: c.abortMs || 75000 };
+}
+function trustCacheSave(name, data) {
+    try { localStorage.setItem(TRUST_CACHE_PREFIX + name, JSON.stringify({ savedAt: Date.now(), data: data })); } catch (e) {}
+}
+function trustCacheLoad(name) {
+    try {
+        const raw = localStorage.getItem(TRUST_CACHE_PREFIX + name);
+        if (!raw) return null;
+        const o = JSON.parse(raw);
+        if (!(o && o.data && o.savedAt) || !trustCacheValid(name, o.data)) return null;
+        o.expired = (Date.now() - o.savedAt) > TRUST_CACHE_MAX_AGE_MS;
+        return o;
+    } catch (e) { return null; }
+}
+// ডেটা "সম্পূর্ণ" ধরা হয় backend-এর চুক্তি অনুযায়ী:
+//   data_unavailable=false এবং data_quality = "complete" | "partial"
+//   ("partial" = শুধু গৌণ উৎস, যেমন মাটির আর্দ্রতা, নেই — স্তর বদলায় না)।
+// "degraded" (নদী/আবহাওয়া/উজান ব্যর্থ) বা data_quality অনুপস্থিত হলে সম্পূর্ণ ধরা হয় না — fail-safe।
+function isDataComplete(data) {
+    if (!data || data.data_unavailable) return false;
+    return data.data_quality === 'complete' || data.data_quality === 'partial';
+}
+// failed_sources ("river:সুরমা", "weather", "upstream_weather", "soil_moisture") → পাঠযোগ্য নাম
+function trustMissingLabels(data) {
+    const fs = (data && Array.isArray(data.failed_sources)) ? data.failed_sources : [];
+    const rivers = [], out = [];
+    fs.forEach(function (s) {
+        if (typeof s !== 'string') return;
+        if (s.indexOf('river:') === 0) rivers.push(s.slice(6));
+        else if (s === 'weather') out.push('স্থানীয় আবহাওয়া');
+        else if (s === 'upstream_weather') out.push('উজানের আবহাওয়া');
+        else if (s === 'soil_moisture') out.push('মাটির আর্দ্রতা');
+    });
+    // নদী বেশি হলে নাম না গুনে সংখ্যা দেখানো (ব্যানার যেন দীর্ঘ না হয়)
+    if (rivers.length > 2) out.unshift('নদীর প্রবাহ (' + rivers.length.toLocaleString('bn-BD') + 'টি পয়েন্ট)');
+    else if (rivers.length) out.unshift('নদীর প্রবাহ (' + rivers.join(', ') + ')');
+    return out;
+}
+// localStorage অবিশ্বস্ত ধরা হয়: আকার ও জেলার নাম না মিললে বাদ
+function trustCacheValid(name, d) {
+    return !!(d && typeof d === 'object' && d.district === name &&
+              typeof d.river === 'string' && Array.isArray(d.rivers_status));
+}
+// "ঝুঁকি নেই" আর "ঝুঁকির তথ্য নেই" এক নয়। অসম্পূর্ণ/পুরনো ডেটায়:
+//  • হিসাব "নিরাপদ" এলে, অথবা backend ডেটা-ঘাটতির কারণে স্তর জোর করে "সতর্ক" তুলে দিলে
+//    (safety_floor_applied) — সেটা আসল হিসাব-করা ঝুঁকি না, তাই "অনির্ণীত" দেখানো হয়।
+//  • হিসাব সাবধান/সতর্ক/বিপদ এলে দেখানো হয় (অনুপস্থিত ইনপুট ০ ধরা হয় বলে হিসাব শুধু
+//    কমের দিকে ভুল হতে পারে — তাই উঁচু সতর্কতা কখনো লুকানো হয় না)।
+function trustSanitizeData(data) {
+    const pred = Object.assign({}, data.prediction || data.ml_prediction || {});
+    const lvl = pred.level || data.warning_level || 'নিরাপদ';
+    const floored = pred.safety_floor_applied === true;
+    if (lvl !== 'নিরাপদ' && !floored) return data;
+    pred.level = 'অনির্ণীত';
+    pred.probability = null;
+    // backend-এর floor-বার্তা (ডেটা-ঘাটতির স্পষ্ট ব্যাখ্যা) থাকলে সেটাই রাখা হয়
+    if (!floored || !pred.message) {
+        pred.message = 'ঝুঁকির তথ্য অসম্পূর্ণ বা পুরনো — এই মুহূর্তে "ঝুঁকি নেই" বলা যাচ্ছে না। অফিসিয়াল সতর্কতা দেখুন।';
+    }
+    return Object.assign({}, data, { prediction: pred, ml_prediction: pred, warning_level: 'অনির্ণীত', flood_probability: null });
+}
+// নতুন জেলা বাছলেই আগের জেলার সব ঝুঁকি-সংক্রান্ত তথ্য মুছে ফেলা
+function trustResetDisplay() {
+    const el = function (id) { return document.getElementById(id); };
+    ['metRiver', 'metDanger', 'metDischarge', 'metRisk', 'wTemp', 'wHumidity', 'wRain', 'wWind', 'riskPercent']
+        .forEach(function (id) { const e = el(id); if (e) e.textContent = '—'; });
+    ['riverTableBody', 'forecastGrid', 'upstreamCards', 'upstreamFlow', 'warningText']
+        .forEach(function (id) { const e = el(id); if (e) e.innerHTML = ''; });
+    const fill = el('riskFill'); if (fill) fill.style.width = '0%';
+    const badge = el('warningBadge');
+    if (badge) { badge.innerHTML = ''; badge.className = badge.className.replace(/badge-(danger|warn|safe)/g, '').trim(); }
+    const act = el('actionList'); if (act) act.remove();
+    const wc = el('warningCard'); if (wc) wc.style.display = 'none';
+    const dm = el('districtMapCard'); if (dm) dm.style.display = 'none';
+    const b = el('trustBanner'); if (b) b.style.display = 'none';
+}
+function trustAgeText(ms) {
+    const mins = Math.max(0, Math.round((Date.now() - ms) / 60000));
+    const h = Math.floor(mins / 60), m = mins % 60;
+    const bn = function (n) { return n.toLocaleString('bn-BD'); };
+    if (h === 0) return bn(m) + ' মিনিট আগের';
+    return bn(h) + ' ঘণ্টা ' + (m ? bn(m) + ' মিনিট ' : '') + 'আগের';
+}
+function trustFormatTime(ms) {
+    try { return new Date(ms).toLocaleString('bn-BD', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }); }
+    catch (e) { return new Date(ms).toISOString(); }
+}
+function trustEnsureBanner() {
+    let el = document.getElementById('trustBanner');
+    if (el) return el;
+    const anchor = document.getElementById('warningCard');
+    if (!anchor || !anchor.parentNode) return null;
+    el = document.createElement('div');
+    el.id = 'trustBanner';
+    el.setAttribute('role', 'status');
+    el.style.cssText = 'margin:0 0 1rem;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;color:var(--text);display:none';
+    anchor.parentNode.insertBefore(el, anchor);
+    return el;
+}
+// kind: wake | stale | error | ok — সব লেখা textContent দিয়ে বসে (innerHTML নয়),
+// তাই ভবিষ্যতে API থেকে আসা লেখা যোগ করলেও HTML injection-এর ঝুঁকি নেই।
+function showTrustBanner(kind, message, extraLine) {
+    const el = trustEnsureBanner();
+    if (!el) return;
+    const styles = {
+        wake:  ['rgba(52,120,246,0.12)',  '#3478f6'],
+        stale: ['rgba(240,176,74,0.16)',  '#e0971f'],
+        error: ['rgba(224,64,52,0.12)',   '#d9382c'],
+        ok:    ['rgba(120,140,170,0.10)', '#8a9bb5']
+    };
+    const st = styles[kind] || styles.ok;
+    el.style.background = st[0];
+    el.style.borderLeft = '4px solid ' + st[1];
+    while (el.firstChild) el.removeChild(el.firstChild);
+    const addLine = function (text, small) {
+        const d = document.createElement('div');
+        if (small) d.style.cssText = 'font-size:12px;color:var(--muted);margin-top:3px';
+        d.textContent = text;
+        el.appendChild(d);
+        return d;
+    };
+    addLine(message, false);
+    if (extraLine) addLine(extraLine, true);
+    const disc = addLine('AI-ভিত্তিক সহায়ক তথ্য, সরকারি সতর্কতার বিকল্প নয়। অফিসিয়াল সতর্কতা: ', true);
+    const a = document.createElement('a');
+    a.href = TRUST_FFWC_URL; a.target = '_blank'; a.rel = 'noopener';
+    a.style.color = 'var(--blue)'; a.textContent = 'FFWC';
+    disc.appendChild(a);
+    el.style.display = 'block';
+}
+
+let trustReqSeq = 0;          // সর্বশেষ অনুরোধের ক্রম
+let trustActiveCtrl = null;   // সর্বশেষ চলমান অনুরোধ
+async function fetchDistrictData(name) {
+    const cfg = trustCfg();
+    // নতুন জেলা বাছলে আগের ধীর অনুরোধ বাতিল — নইলে দেরিতে এসে নতুন জেলার তথ্য মুছে দিতে পারে
+    if (trustActiveCtrl) { try { trustActiveCtrl.abort(); } catch (e) {} }
+    const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    trustActiveCtrl = ctrl;
+    const wakeTimer = setTimeout(function () {
+        showTrustBanner('wake', '⏳ সার্ভার জেগে উঠছে — প্রথমবার ৩০-৫০ সেকেন্ড লাগতে পারে, একটু অপেক্ষা করুন।');
+    }, cfg.wakeMs);
+    let abortTimer = null;
+    // AbortController না থাকলেও যেন সময়সীমা কাজ করে: timeout নিজেই reject করে (Promise.race)
+    const timeoutP = new Promise(function (_, reject) {
+        abortTimer = setTimeout(function () {
+            if (ctrl) { try { ctrl.abort(); } catch (e) {} }
+            reject(new Error('timeout'));
+        }, cfg.abortMs);
+    });
+    try {
+        const work = (async function () {
+            const res = await fetch(`${BACKEND}/api/flood/${encodeURIComponent(name)}`, ctrl ? { signal: ctrl.signal } : undefined);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return await res.json();
+        })();
+        work.catch(function () {});   // race হারালে unhandled rejection এড়াতে
+        return await Promise.race([work, timeoutP]);
+    } finally {
+        clearTimeout(wakeTimer);
+        clearTimeout(abortTimer);
+    }
+}
+
+function applyTrustOverlay(name, data, fromCache, savedAt) {
+    const warningText = document.getElementById('warningText');
+    if (fromCache) {
+        const old = (Date.now() - savedAt) > 60 * 60 * 1000;
+        showTrustBanner('stale',
+            '⚠️ সার্ভারের সাথে যোগাযোগ করা যায়নি — নিচে ' + trustAgeText(savedAt) + ' সংরক্ষিত "শেষ জানা অবস্থা" দেখানো হচ্ছে।' +
+                (old ? ' এটি অনেক পুরনো হতে পারে, এর ওপর নির্ভর করবেন না।' : ''),
+            'শেষ সফল আপডেট: ' + trustFormatTime(savedAt) + ' · এখনকার ঝুঁকি জানা যাচ্ছে না');
+        if (warningText) warningText.textContent = '⚠️ শেষ জানা অবস্থা (পুরনো) — ' + warningText.textContent;
+        return;
+    }
+    if (!isDataComplete(data)) {
+        const missing = trustMissingLabels(data);
+        const what = missing.length ? 'পাওয়া যাচ্ছে না: ' + missing.join(', ') : 'কিছু লাইভ ডেটা পাওয়া যাচ্ছে না';
+        showTrustBanner('stale',
+            '⚠️ ' + what + ' — ঝুঁকি-স্তর অসম্পূর্ণ ডেটার হিসাব। প্রকৃত ঝুঁকি এর চেয়ে বেশিও হতে পারে; "নিরাপদ" কখনো দেখানো হচ্ছে না।',
+            'হালনাগাদ চেষ্টা: ' + trustFormatTime(Date.now()));
+        if (warningText) warningText.textContent = '⚠️ লাইভ ডেটা অসম্পূর্ণ — ' + warningText.textContent;
+        return;
+    }
+    trustCacheSave(name, data);
+    const t = data && data.data_time ? Date.parse(data.data_time) : NaN;
+    // ⚠️ এটা "হিসাব করার সময়", পর্যবেক্ষণের সময় না: নদীর তথ্য দৈনিক মডেল-ভিত্তিক (Open-Meteo flood API)
+    showTrustBanner('ok', '✓ ঝুঁকির হিসাব সম্পন্ন',
+        'হিসাবের সময়: ' + trustFormatTime(isNaN(t) ? Date.now() : t) + ' · নদীর তথ্য দিনভিত্তিক মডেল-হিসাব, মুহূর্তের মাপ নয়' +
+        (data.data_quality === 'partial' ? ' · গৌণ ডেটা অনুপস্থিত: ' + trustMissingLabels(data).join(', ') + ' (নিরপেক্ষ মান ধরা হয়েছে)' : ''));
+}
+
 // ── MAIN FLOOD DATA LOADER ──
 async function loadDistrict(name) {
     if (!name) return;
 
+    let data = null, fromCache = false, savedAt = null;
+    const mySeq = ++trustReqSeq;
+    trustResetDisplay();   // আগের জেলার ঝুঁকি-তথ্য কখনো নতুন জেলার নামের নিচে থাকবে না
     try {
-        const res = await fetch(`${BACKEND}/api/flood/${encodeURIComponent(name)}`);
-        const data = await res.json();
+        data = await fetchDistrictData(name);
+    } catch (e) {
+        if (mySeq !== trustReqSeq) return;   // বাতিল/পুরনো অনুরোধ — চুপচাপ বাদ
+        console.error("Flood API load error:", e);
+        const cached = trustCacheLoad(name);
+        if (cached && !cached.expired) {
+            data = cached.data; fromCache = true; savedAt = cached.savedAt;
+        } else {
+            showTrustBanner('error',
+                '❌ এই মুহূর্তে সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।',
+                cached
+                    ? 'সংরক্ষিত তথ্য ' + trustAgeText(cached.savedAt) + ' — অনেক পুরনো, তাই ঝুঁকি-স্তর দেখানো হচ্ছে না।'
+                    : 'ইন্টারনেট ঠিক থাকলে সার্ভার জেগে উঠতে সময় নিচ্ছে হতে পারে।');
+            return;
+        }
+    }
+    if (mySeq !== trustReqSeq) return;       // এর মধ্যে অন্য জেলা বাছা হলে এই উত্তর বাদ
+    if (fromCache || !isDataComplete(data)) data = trustSanitizeData(data);
+
+    try {
 
         const metRiver = document.getElementById('metRiver');
         if(metRiver) metRiver.textContent = data.river;
@@ -633,6 +863,7 @@ async function loadDistrict(name) {
         if(localLevel === 'বিপদ') localLevelColor = '#c0392b';
         else if(localLevel === 'সতর্ক') localLevelColor = '#e67e22';
         else if(localLevel === 'সাবধান') localLevelColor = '#f39c12';
+        else if(localLevel === 'অনির্ণীত') localLevelColor = '#6b7a90';
 
         let actualUpstreamCity = upCity.city;
         if (!actualUpstreamCity || actualUpstreamCity === 'উজান') {
@@ -815,20 +1046,25 @@ async function loadDistrict(name) {
             const riskPercent = document.getElementById('riskPercent');
             const fill = document.getElementById('riskFill');
 
-            if(riskPercent) riskPercent.textContent = predLocal.probability || 0;
+            // অনির্ণীত = তথ্য অসম্পূর্ণ/পুরনো: কখনো "০% ঝুঁকি" দেখানো হবে না
+            const unknownLevel = predLocal.level === 'অনির্ণীত';
+            if(riskPercent) riskPercent.textContent = unknownLevel ? '—' : (predLocal.probability || 0);
             if(fill) {
-                fill.style.width = (predLocal.probability || 0) + '%';
+                fill.style.width = unknownLevel ? '0%' : (predLocal.probability || 0) + '%';
                 fill.style.background = (predLocal.probability || 0) >= 70 ? '#c0392b' :
                                         (predLocal.probability || 0) >= 50 ? '#e67e22' :
                                         (predLocal.probability || 0) >= 30 ? '#f39c12' : '#27ae60';
+                if(unknownLevel) fill.style.background = '#8a97a8';
             }
 
             const badge = document.getElementById('warningBadge');
             if(badge) {
-                badge.innerHTML = predLocal.level === 'বিপদ' ? `${levelIcon('বিপদ')} বিপদ!` :
+                badge.innerHTML = unknownLevel ? `${levelIcon('অনির্ণীত')} তথ্য অসম্পূর্ণ` :
+                                   predLocal.level === 'বিপদ' ? `${levelIcon('বিপদ')} বিপদ!` :
                                    predLocal.level === 'সতর্ক' ? `${levelIcon('সতর্ক')} সতর্ক` :
                                    predLocal.level === 'সাবধান' ? `${levelIcon('সাবধান')} সাবধান` : `${levelIcon('নিরাপদ')} নিরাপদ`;
-                badge.className = predLocal.level === 'বিপদ' ? 'badge-danger' :
+                badge.className = unknownLevel ? 'badge-warn' :
+                                 predLocal.level === 'বিপদ' ? 'badge-danger' :
                                  predLocal.level === 'সতর্ক' || predLocal.level === 'সাবধান' ?
                                  'badge-warn' : 'badge-safe';
             }
@@ -864,12 +1100,12 @@ async function loadDistrict(name) {
         const lon = data.lon || 90.4125;
         loadWeatherForecast(lat, lon);
 
+        applyTrustOverlay(name, data, fromCache, savedAt);
+
     } catch(e) {
-        console.error("Flood API load error:", e);
-        const warningText = document.getElementById('warningText');
-        const warningCard = document.getElementById('warningCard');
-        if(warningText) warningText.textContent = '❌ Backend চালু নেই বা এরর হয়েছে: py backend/app.py চেক করুন';
-        if(warningCard) warningCard.style.display = 'block';
+        console.error("Flood render error:", e);
+        showTrustBanner('error',
+            '❌ ডেটা দেখাতে সমস্যা হয়েছে। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।');
     }
 }
 
