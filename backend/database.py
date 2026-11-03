@@ -12,7 +12,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # absolute path বানানো হচ্ছে, যাতে কোথা থেকে চালাও তাতে কিছু আসে যায় না —
 # সবসময় backend/floodai.db-ই ব্যবহার হবে।
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "floodai.db"
+
+# ⚠️ FIX (২০২৬-১০): Render-এর filesystem ephemeral — backend/floodai.db প্রতিটা
+# deploy/restart-এ মুছে যায় (users, community_reports, validation_log সব)।
+# FLOODAI_DB_PATH দিয়ে DB-কে একটা persistent disk-এ (যেমন Render Disk-এর
+# mount path: /var/data/floodai.db) সরানো যায়। সেট না থাকলে আগের মতোই
+# backend/floodai.db — লোকাল ডেভেলপমেন্টে কিছু বদলাবে না।
+_db_env = os.getenv("FLOODAI_DB_PATH", "").strip()
+DB_PATH = Path(_db_env).expanduser().resolve() if _db_env else BASE_DIR / "floodai.db"
+try:
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+except OSError as _e:
+    print(f"⚠️ DB ফোল্ডার তৈরি করা যায়নি ({DB_PATH.parent}): {_e}")
 
 
 def init_db():
@@ -39,7 +50,8 @@ def init_db():
             status TEXT,
             description TEXT,
             lat REAL,
-            lon REAL
+            lon REAL,
+            reporter_hash TEXT
         );
 
         CREATE TABLE IF NOT EXISTS users (
@@ -69,6 +81,12 @@ def init_db():
             UNIQUE(district, timestamp)
         );
     """)
+
+    # পুরনো DB-তে reporter_hash কলাম নেই — CREATE TABLE IF NOT EXISTS সেটা যোগ
+    # করে না, তাই একবার ALTER দিয়ে migrate করা হচ্ছে (idempotent)।
+    cols = [row[1] for row in cursor.execute("PRAGMA table_info(community_reports)").fetchall()]
+    if "reporter_hash" not in cols:
+        cursor.execute("ALTER TABLE community_reports ADD COLUMN reporter_hash TEXT")
 
     conn.commit()
     conn.close()
@@ -124,15 +142,15 @@ def save_reading(district, discharge, soil_moisture,
     finally:
         conn.close()
 
-def save_community_report(district, status, description, lat, lon):
+def save_community_report(district, status, description, lat, lon, reporter_hash=None):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     try:
         cursor.execute("""
             INSERT INTO community_reports
-            (district, status, description, lat, lon)
-            VALUES (?,?,?,?,?)
-        """, (district, status, description, lat, lon))
+            (district, status, description, lat, lon, reporter_hash)
+            VALUES (?,?,?,?,?,?)
+        """, (district, status, description, lat, lon, reporter_hash))
         conn.commit()
     except Exception as e:
         print(f"DB Error (save_community_report): {e}")
@@ -202,6 +220,32 @@ def get_community_reports(district, limit=10):
     except Exception as e:
         print(f"DB Error (get_community_reports): {e}")
         return []
+    finally:
+        conn.close()
+
+def count_active_reporters(district, statuses, hours):
+    """শেষ `hours` ঘণ্টায় `statuses`-এর যেকোনো একটি দিয়ে report পাঠানো *স্বতন্ত্র* reporter
+    সংখ্যা — পুরোটাই SQL-এ। (আগে সর্বশেষ ৫০টা row পড়ে Python-এ dedupe হতো: একজন বেশি
+    report দিয়ে বাকিদের ৫০-এর বাইরে ঠেলে দিলে distinct সংখ্যা কম গোনা হতো।)
+    SQLite-এর CURRENT_TIMESTAMP ও datetime('now') দুটোই UTC, তাই timezone-সমস্যা নেই।
+    hash ছাড়া পুরনো row প্রতিটা আলাদা গোনা হয়।"""
+    statuses = list(statuses)
+    if not statuses:
+        return 0
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        placeholders = ",".join("?" for _ in statuses)
+        row = conn.execute(
+            f"""SELECT COUNT(DISTINCT COALESCE(reporter_hash, 'row:' || id))
+                FROM community_reports
+                WHERE district = ? AND status IN ({placeholders})
+                  AND timestamp >= datetime('now', ?)""",
+            (district, *statuses, f"-{int(hours)} hours"),
+        ).fetchone()
+        return int(row[0] or 0)
+    except Exception as e:
+        print(f"DB Error (count_active_reporters): {e}")
+        return 0
     finally:
         conn.close()
 
